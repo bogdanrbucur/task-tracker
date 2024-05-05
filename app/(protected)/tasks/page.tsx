@@ -45,9 +45,9 @@ export default async function TasksPage({ searchParams }: Props) {
 
 		return {
 			...task,
-			assignedTo: assignedTo?.name,
+			assignedTo: assignedTo?.firstName ? assignedTo?.firstName : null + " " + assignedTo?.lastName ? assignedTo?.lastName : null,
 			status: status?.name,
-			creator: creator?.name,
+			creator: creator?.firstName ? creator?.firstName : null + " " + creator?.lastName ? creator?.lastName : null,
 		} as TaskExtended;
 	});
 

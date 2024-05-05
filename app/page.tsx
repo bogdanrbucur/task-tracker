@@ -1,5 +1,9 @@
-import Image from "next/image";
+import ProtectedWrapper from "./ProtectedWrapper";
 
 export default function Home() {
-	return <h1>Hello world!</h1>;
+	return (
+		<ProtectedWrapper>
+			<h1>Hello world!</h1>;
+		</ProtectedWrapper>
+	);
 }

@@ -31,25 +31,27 @@ model Status {
   tasks Task[]
 }
 
+model User {
+  id             String      @id
+  firstName      String
+  lastName       String?
+  email          String      @unique
+  sessions       Session[]
+  canCreateUsers Boolean?    @default(false)
+  canCreateTasks Boolean?    @default(false)
+  canCloseTasks  Boolean?    @default(false)
+  createdTasks   Task[]      @relation("CreatedByUser")
+  assignedTasks  Task[]      @relation("AssignedToUser")
+  Department     Department? @relation(fields: [departmentId], references: [id])
+  departmentId   Int?
+  hashedPassword String
+}
+
 model Session {
   id        String   @id
   expiresAt DateTime
   userId    String
   user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
-}
-
-model User {
-  id             String      @id @default(cuid())
-  name           String?
-  email          String      @unique
-  sessions       Session[]
-  canCreateUsers Boolean
-  canCreateTasks Boolean
-  canCloseTasks  Boolean
-  createdTasks   Task[]      @relation("CreatedByUser")
-  assignedTasks  Task[]      @relation("AssignedToUser")
-  Department     Department? @relation(fields: [departmentId], references: [id])
-  departmentId   Int?
 }
 
 model Department {

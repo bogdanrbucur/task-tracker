@@ -10,3 +10,7 @@
 ### Setup shadcn-ui
 
 [Follow instructions](https://ui.shadcn.com/docs/installation/next).
+
+### Setup authentication and authorization with Lucia and Oslo
+
+[Follow instructions](https://www.robinwieruch.de/next-authentication/).
