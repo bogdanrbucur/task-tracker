@@ -1,3 +1,7 @@
+# Task Tracker
+
+A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and shadcn-ui. Work in progress...
+
 ### Setup Primsa with SQLite
 
 1. `npm install prisma --save-dev`
