@@ -14,3 +14,20 @@
 ### Setup authentication and authorization with Lucia and Oslo
 
 [Follow instructions](https://www.robinwieruch.de/next-authentication/).
+
+### TODO
+
+- [ ] Allow dashboard viewing without login but nothing else
+- [ ] Display Sign In button in navbar if user is not siggned in
+- [ ] Make a proper Sign In page and form validation
+- [ ] Task creation page. Access only with rights.
+- [ ] Task view page
+- [ ] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
+- [ ] Greeting in upper right corner of the navbar for the user
+- [ ] User view page
+- [ ] User password change if that user is viewing the page
+- [ ] Replace the React Icon logo with an actual generic .png
+- [ ] Add a favicon
+- [ ] Add Due Date to the Task model
+- [ ] Scheduled function to check for overdue tasks and set the status to Overdue
+- [ ] Create Admin page to edit Departments and Statuses
