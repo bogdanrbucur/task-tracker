@@ -23,9 +23,9 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 
 - [x] Allow dashboard viewing without login but nothing else
 - [x] Display Sign In button in navbar if user is not siggned in
-- [ ] Make a proper Sign In page and form validation
-- [ ] Task creation page. Access only with rights.
+- [x] Make a proper Sign In page and form validation
 - [ ] Task view page
+- [ ] Task creation page. Access only with rights.
 - [ ] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
 - [ ] Greeting in upper right corner of the navbar for the user
 - [ ] User view page
