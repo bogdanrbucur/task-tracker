@@ -1,4 +1,4 @@
-// src/features/auth/queries/get-auth.ts
+// Server action to get the given user's permissions
 
 import { cache } from "react";
 import prisma from "@/prisma/client";

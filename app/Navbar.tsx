@@ -20,9 +20,11 @@ const Navbar = async () => {
 				<Link href="/" className={buttonVariants({ variant: "ghost" })}>
 					<GrTask size="23" />
 				</Link>
-				<Link href="/tasks" className={buttonVariants({ variant: "ghost" })}>
-					Tasks
-				</Link>
+				{user && (
+					<Link href="/tasks" className={buttonVariants({ variant: "ghost" })}>
+						Tasks
+					</Link>
+				)}
 				{userPermissions?.canCreateUsers && (
 					<Link href="/users" className={buttonVariants({ variant: "ghost" })}>
 						Users
@@ -36,6 +38,11 @@ const Navbar = async () => {
 							Sign Out
 						</Button>
 					</form>
+				)}
+				{!user && (
+					<Link href="/sign-in" className={buttonVariants({ variant: "outline" })}>
+						Sign In
+					</Link>
 				)}
 				<ModeToggle />
 			</div>

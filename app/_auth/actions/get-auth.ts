@@ -1,4 +1,4 @@
-// src/features/auth/queries/get-auth.ts
+// Server action to get the current user and session
 
 import { cookies } from "next/headers";
 import { cache } from "react";

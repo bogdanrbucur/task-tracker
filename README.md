@@ -2,7 +2,7 @@
 
 A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and shadcn-ui. Work in progress...
 
-### Setup Primsa with SQLite
+## Setup Primsa with SQLite
 
 1. `npm install prisma --save-dev`
 2. `npx prisma init --datasource-provider sqlite`
@@ -11,18 +11,18 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 5. `npx prisma generate` to generate the client
 6. `npx prisma studio` to open the studio
 
-### Setup shadcn-ui
+## Setup shadcn-ui
 
 [Follow instructions](https://ui.shadcn.com/docs/installation/next).
 
-### Setup authentication and authorization with Lucia and Oslo
+## Setup authentication and authorization with Lucia and Oslo
 
 [Follow instructions](https://www.robinwieruch.de/next-authentication/).
 
-### TODO
+## TODO
 
-- [ ] Allow dashboard viewing without login but nothing else
-- [ ] Display Sign In button in navbar if user is not siggned in
+- [x] Allow dashboard viewing without login but nothing else
+- [x] Display Sign In button in navbar if user is not siggned in
 - [ ] Make a proper Sign In page and form validation
 - [ ] Task creation page. Access only with rights.
 - [ ] Task view page

@@ -1,6 +1,6 @@
 // src/app/sign-in/page.tsx
 
-import { SignInForm } from "@/app/_auth/components/sign-in-form";
+import { SignInForm } from "@/app/_auth/components/SignInForm";
 
 const SignInPage = () => {
 	return (
