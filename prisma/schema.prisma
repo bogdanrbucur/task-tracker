@@ -11,24 +11,45 @@ datasource db {
 }
 
 model Task {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   title            String
   description      String?
-  comments         String?
   createdByUserId  String?
   assignedToUserId String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  createdByUser    User?    @relation("CreatedByUser", fields: [createdByUserId], references: [id])
-  assignedToUser   User?    @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
-  statusId         Int      @default(1)
-  status           Status   @relation(fields: [statusId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  createdByUser    User?     @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  assignedToUser   User?     @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
+  statusId         Int       @default(1)
+  status           Status    @relation(fields: [statusId], references: [id])
+  changes          Change[]  @relation("Changes") // New relation to Change model
+  comments         Comment[] @relation("Comments") // New relation to Comment model
 }
 
 model Status {
   id    Int    @id @default(autoincrement())
   name  String @unique
   tasks Task[]
+}
+
+model Change {
+  id      Int      @id @default(autoincrement())
+  taskId  Int // Foreign key to Task model
+  task    Task     @relation("Changes", fields: [taskId], references: [id])
+  time    DateTime @default(now())
+  changes String // Field to store the changes as a string
+  userId  String?
+  user    User?    @relation("ChangeUser", fields: [userId], references: [id])
+}
+
+model Comment {
+  id      Int      @id @default(autoincrement())
+  taskId  Int // Foreign key to Task model
+  task    Task     @relation("Comments", fields: [taskId], references: [id])
+  userId  String // Foreign key to User model
+  user    User     @relation("UserComment", fields: [userId], references: [id])
+  time    DateTime @default(now())
+  comment String // Field to store the comment
 }
 
 model User {
@@ -42,9 +63,13 @@ model User {
   canCloseTasks  Boolean?    @default(false)
   createdTasks   Task[]      @relation("CreatedByUser")
   assignedTasks  Task[]      @relation("AssignedToUser")
-  Department     Department? @relation(fields: [departmentId], references: [id])
+  department     Department? @relation(fields: [departmentId], references: [id])
   departmentId   Int?
   hashedPassword String
+  comments       Comment[]   @relation("UserComment")
+  changes        Change[]    @relation("ChangeUser")
+  manager        User?       @relation("ManagerToUser", fields: [id], references: [id])
+  subordinates   User[]      @relation("ManagerToUser")
 }
 
 model Session {

@@ -35,3 +35,4 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [ ] Add Due Date to the Task model
 - [ ] Scheduled function to check for overdue tasks and set the status to Overdue
 - [ ] Create Admin page to edit Departments and Statuses
+- [ ] Add history to the Task model and implement it in the Task view page. Every change should be recorded.
