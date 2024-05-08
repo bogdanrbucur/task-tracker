@@ -3,13 +3,15 @@
  * @see https://v0.dev/t/JrUA9HgbhjF
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-// import AvatarAndName from "@/components/AvatarAndName";
+import AvatarAndName from "@/components/AvatarAndName";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
 // This is the type of the props passed to the page component
@@ -55,9 +57,18 @@ export default async function TaskDetailsPage({ params }: Props) {
 								</Button>
 							</div>
 						</div>
-						<div>
-							<div className="mb-2">Assigned to:</div>
-							<AvatarAndName firstName={task.assignedToUser?.firstName} lastName={task.assignedToUser?.lastName} />
+						<div className="grid md:grid-cols-2">
+							<div>
+								<div className="mb-2">Assigned to:</div>
+								<AvatarAndName firstName={task.assignedToUser?.firstName} lastName={task.assignedToUser?.lastName} />
+							</div>
+							<div>
+								<div className="mb-2">Due on:</div>
+								<div className="flex items-center">
+									<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+									<div className={dueColor(task.dueDate)}>{formatDate(task.dueDate)}</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					<Separator className="my-6" />
@@ -144,19 +155,3 @@ function ClockIcon() {
 		</svg>
 	);
 }
-
-export const AvatarAndName = ({ firstName, lastName }: { firstName: string | undefined; lastName: string | undefined | null }) => {
-	if (!firstName) return null;
-
-	const initials = firstName.slice(0, 1).toUpperCase() + lastName?.slice(0, 1).toUpperCase();
-
-	return (
-		<div className="flex items-center gap-4">
-			<Avatar>
-				<AvatarImage alt={initials} />
-				<AvatarFallback>{initials}</AvatarFallback>
-			</Avatar>
-			{firstName} {lastName}
-		</div>
-	);
-};

@@ -24,15 +24,16 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Allow dashboard viewing without login but nothing else
 - [x] Display Sign In button in navbar if user is not siggned in
 - [x] Make a proper Sign In page and form validation
-- [ ] Task view page
+- [x] Task view page
+- [x] Add Due Date to the Task model
 - [ ] Task creation page. Access only with rights.
 - [ ] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
 - [ ] Greeting in upper right corner of the navbar for the user
 - [ ] User view page
+- [ ] User creation page
 - [ ] User password change if that user is viewing the page
 - [ ] Replace the React Icon logo with an actual generic .png
 - [ ] Add a favicon
-- [ ] Add Due Date to the Task model
 - [ ] Scheduled function to check for overdue tasks and set the status to Overdue
 - [ ] Create Admin page to edit Departments and Statuses
 - [ ] Add history to the Task model and implement it in the Task view page. Every change should be recorded.

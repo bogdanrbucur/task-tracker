@@ -10,7 +10,6 @@ export interface UserPermissions {
 }
 
 export const getUserPermissions = cache(async (userId: string): Promise<UserPermissions> => {
-	console.log(`Checking permissions for user ${userId}`);
 	const user = await prisma.user.findUnique({ where: { id: userId } });
 	// Get all the permissions from the UserPermissions interface and build the response object
 	if (!user) {

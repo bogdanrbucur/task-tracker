@@ -1,11 +1,11 @@
 import Pagination from "@/components/Pagination";
 import prisma from "@/prisma/client";
-import { Task } from "@prisma/client";
+import { Status, Task } from "@prisma/client";
 import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
 
 export interface TaskExtended extends Task {
 	assignedTo?: string;
-	status: string;
+	status: Status;
 	creator?: string;
 }
 
@@ -30,6 +30,7 @@ export default async function TasksPage({ searchParams }: Props) {
 		orderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
+		include: { status: true },
 	});
 
 	const taskCount = await prisma.task.count({ where });
@@ -38,6 +39,8 @@ export default async function TasksPage({ searchParams }: Props) {
 	const dbStatuses = await prisma.status.findMany();
 
 	// Make a new array tasksExtended and replace the userId and statusId with the actual user and status objects
+
+	// TODO need to fix this shit and grab everything from the ORM
 	const tasksExtended = tasks.map((task) => {
 		const assignedTo = users.find((user) => user.id === task.assignedToUserId);
 		const status = dbStatuses.find((status) => status.id === task.statusId);
@@ -46,7 +49,7 @@ export default async function TasksPage({ searchParams }: Props) {
 		return {
 			...task,
 			assignedTo: assignedTo?.firstName ? assignedTo?.firstName : null + " " + assignedTo?.lastName ? assignedTo?.lastName : null,
-			status: status?.name,
+			status,
 			creator: creator?.firstName ? creator?.firstName : null + " " + creator?.lastName ? creator?.lastName : null,
 		} as TaskExtended;
 	});

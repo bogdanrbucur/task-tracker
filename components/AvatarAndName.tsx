@@ -1,7 +1,7 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-const AvatarAndName = ({ firstName, lastName }: { firstName: string | undefined; lastName: string | undefined | null }) => {
+export const AvatarAndName = ({ firstName, lastName }: { firstName: string | undefined; lastName: string | undefined | null }) => {
 	if (!firstName) return null;
 
 	const initials = firstName.slice(0, 1).toUpperCase() + lastName?.slice(0, 1).toUpperCase();

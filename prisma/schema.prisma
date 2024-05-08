@@ -24,11 +24,13 @@ model Task {
   status           Status    @relation(fields: [statusId], references: [id])
   changes          Change[]  @relation("Changes") // New relation to Change model
   comments         Comment[] @relation("Comments") // New relation to Comment model
+  dueDate          DateTime
 }
 
 model Status {
   id    Int    @id @default(autoincrement())
   name  String @unique
+  color String
   tasks Task[]
 }
 

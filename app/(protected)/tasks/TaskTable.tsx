@@ -1,10 +1,10 @@
+import StatusBadge from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
-import NextLink from "next/link";
+import { default as Link, default as NextLink } from "next/link";
 import { TaskExtended } from "./page";
-import Link from "next/link";
 
 type StatusTypes = "1" | "2" | "3" | undefined;
 
@@ -53,10 +53,13 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
-							<div className="block md:hidden">{task.status}</div>
+							<div className="block md:hidden">{task.status.name}</div>
 						</TableCell>
-						<TableCell className="hidden md:table-cell">{task.status}</TableCell>
+						<TableCell className="hidden md:table-cell">
+							<StatusBadge statusObj={task.status} />
+						</TableCell>
 						<TableCell className="hidden md:table-cell">{formatDate(task.createdAt)}</TableCell>
+						<TableCell className={dueColor(task.dueDate)}>{formatDate(task.dueDate)}</TableCell>
 						<TableCell className="hidden md:table-cell">{task.assignedTo}</TableCell>
 					</TableRow>
 				))}
@@ -71,11 +74,8 @@ const columns: { label: string; value: keyof Task; className?: string }[] = [
 	{ label: "Title", value: "title" },
 	{ label: "Status", value: "statusId", className: "hidden md:table-cell" },
 	{ label: "Created", value: "createdAt", className: "hidden md:table-cell" },
+	{ label: "Due Date", value: "dueDate", className: "hidden md:table-cell" },
 	{ label: "Assigned to", value: "assignedToUserId", className: "hidden md:table-cell" },
 ];
 
 export const columnNames = columns.map((column) => column.value);
-
-const formatDate = (date: Date) => {
-	return format(date, "dd MMM yyyy");
-};
