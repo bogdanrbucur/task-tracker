@@ -23,6 +23,9 @@ export default async function TaskDetailsPage({ params }: Props) {
 	// TODO check authentication
 	//
 
+	// TODO error handling if id is not a number
+	//
+
 	const task = await prisma.task.findUnique({
 		where: { id: Number(params.id) },
 		include: {
@@ -72,6 +75,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 						</div>
 					</div>
 					<Separator className="my-6" />
+					{/* START Comments section */}
 					<div className="space-y-6">
 						<h2 className="text-lg font-semibold">Comments</h2>
 						<div className="space-y-4">
@@ -103,6 +107,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 							</div>
 						</div>
 					</div>
+					{/* END Comments section */}
 				</div>
 				<div className="space-y-6">
 					<Card>

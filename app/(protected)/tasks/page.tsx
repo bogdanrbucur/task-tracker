@@ -2,6 +2,7 @@ import Pagination from "@/components/Pagination";
 import prisma from "@/prisma/client";
 import { Status, Task } from "@prisma/client";
 import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
+import TaskTopSection from "./TaskTopSection";
 
 export interface TaskExtended extends Task {
 	assignedTo?: string;
@@ -35,7 +36,8 @@ export default async function TasksPage({ searchParams }: Props) {
 
 	const taskCount = await prisma.task.count({ where });
 
-	const users = await prisma.user.findMany();
+	// Get all users and statuses from the database with all properties except hashedPassword
+	const users = await prisma.user.findMany({ select: { id: true, firstName: true, lastName: true } });
 	const dbStatuses = await prisma.status.findMany();
 
 	// Make a new array tasksExtended and replace the userId and statusId with the actual user and status objects
@@ -56,6 +58,7 @@ export default async function TasksPage({ searchParams }: Props) {
 
 	return (
 		<div className="container mx-auto py-2">
+			<TaskTopSection />
 			<TaskTable tasks={tasksExtended} searchParams={searchParams} />
 			<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
 		</div>
