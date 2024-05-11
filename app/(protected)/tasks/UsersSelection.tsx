@@ -4,18 +4,20 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { cn } from "@/lib/utils";
 import React from "react";
 
-export function UsersSelection({ users, onChange }: { users: SelectionUser[]; onChange: (value: string | null) => void }) {
-	const [user, setUser] = React.useState<string | null>();
+export function UsersSelection({ users, onChange, defaultUser }: { users: SelectionUser[]; onChange: (value: string | null) => void; defaultUser?: SelectionUser }) {
+	const [user, setUser] = React.useState<string | null>(defaultUser?.id ?? null);
 
 	function handleOnChange(user: string | null) {
 		setUser(user);
 		onChange(user);
 	}
 
+	const defaultUserDisplay = defaultUser ? `${defaultUser.firstName} ${defaultUser.lastName} ${defaultUser.department ? `(${defaultUser.department.name})` : ""}` : null;
+
 	return (
 		<Select onValueChange={handleOnChange}>
 			<SelectTrigger className={cn("w-[250px]", !user && "text-muted-foreground")}>
-				<SelectValue placeholder="Select a user" />
+				<SelectValue placeholder={!user ? "Select a user" : defaultUserDisplay} />
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>

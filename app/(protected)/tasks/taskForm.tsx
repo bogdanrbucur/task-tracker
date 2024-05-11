@@ -1,16 +1,15 @@
 "use client";
-import React, { useState } from "react";
-import submitTask from "./new/submitTask";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/app/(protected)/tasks/DatePicker";
 import { UsersSelection } from "@/app/(protected)/tasks/UsersSelection";
-import { Button } from "@/components/ui/button";
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { User } from "lucia";
-import { useFormState } from "react-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { useFormState } from "react-dom";
+import submitTask from "./new/submitTask";
 
 export type SelectionUser = {
 	id: string;
@@ -26,7 +25,7 @@ const initialState = {
 	message: null,
 };
 
-const taskForm = ({ users, user }: { users: SelectionUser[]; user: User }) => {
+const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; task?: any }) => {
 	const [state, formAction] = useFormState(submitTask, initialState);
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -44,19 +43,19 @@ const taskForm = ({ users, user }: { users: SelectionUser[]; user: User }) => {
 
 	return (
 		<div className="container mx-auto max-w-2xl px-4 py-12">
-			<h1 className="mb-8 text-3xl font-bold">New Task</h1>
+			<h1 className="mb-8 text-3xl font-bold">{task ? "Edit Task" : "New Task"}</h1>
 			<form className="space-y-6" onSubmit={handleSubmit}>
 				<div className="space-y-2">
 					<label className="text-sm font-medium" htmlFor="title">
 						Title
 					</label>
-					<Input name="title" placeholder="Enter task title" />
+					<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} />
 				</div>
 				<div className="space-y-2">
 					<label className="text-sm font-medium" htmlFor="description">
 						Description
 					</label>
-					<Textarea name="description" placeholder="Enter task description" />
+					<Textarea name="description" placeholder="Enter task description" defaultValue={task ? task.description : undefined} />
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div className="space-y-2">
@@ -64,7 +63,7 @@ const taskForm = ({ users, user }: { users: SelectionUser[]; user: User }) => {
 							Due Date
 						</label>
 						<div>
-							<DatePicker onChange={setSelectedDate} />
+							<DatePicker onChange={setSelectedDate} defaultDate={task?.dueDate} />
 						</div>
 					</div>
 					<div className="flex md:justify-end">
@@ -72,7 +71,7 @@ const taskForm = ({ users, user }: { users: SelectionUser[]; user: User }) => {
 							<label className="text-sm font-medium text-left" htmlFor="assignedUser">
 								Assigned To
 							</label>
-							<UsersSelection users={users} onChange={setSelectedUserId} />
+							<UsersSelection users={users} onChange={setSelectedUserId} defaultUser={task?.assignedToUser} />
 						</div>
 					</div>
 				</div>
@@ -84,7 +83,7 @@ const taskForm = ({ users, user }: { users: SelectionUser[]; user: User }) => {
 					</Alert>
 				)}
 				<div className="flex justify-center md:justify-end">
-					<Button type="submit">Create Task</Button>
+					<Button type="submit">{task ? "Save Task" : "Create Task"}</Button>
 				</div>
 			</form>
 		</div>

@@ -9,11 +9,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export function DatePicker({ onChange }: { onChange: (date: Date | null) => void }) {
-	const [date, setDate] = React.useState<Date | null>();
+export function DatePicker({ defaultDate, onChange }: { defaultDate?: Date; onChange: (date: Date | null) => void }) {
+	const [date, setDate] = React.useState<Date | null>(defaultDate ?? null);
 
 	function handleOnChange(date: Date | null | undefined) {
-		// if (date === undefined) date = null;
+		if (date === undefined) date = null;
 		setDate(date);
 		onChange(date ? date : null);
 	}
@@ -23,7 +23,7 @@ export function DatePicker({ onChange }: { onChange: (date: Date | null) => void
 			<PopoverTrigger asChild>
 				<Button variant={"outline"} className={cn("w-[250px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
 					<CalendarIcon className="mr-2 h-4 w-4" />
-					{date ? format(date, "dd MMM yyyy") : <span>Pick a date</span>}
+					{date ? format(date, "dd MMM yyyy") : defaultDate ? format(defaultDate, "dd MMM yyyy") : <span>Pick a date</span>}
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-0">

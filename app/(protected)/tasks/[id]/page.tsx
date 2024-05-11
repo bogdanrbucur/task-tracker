@@ -14,6 +14,7 @@ import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -55,8 +56,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 								{task.status.name}
 							</Badge>
 							<div className="flex gap-4">
-								<Button size="sm" variant="outline">
-									Edit
+								<Button asChild size="sm" variant="outline">
+									<Link href={`/tasks/${task.id}/edit`}>Edit</Link>
 								</Button>
 								<Button size="sm" variant="outline">
 									Complete
