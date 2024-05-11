@@ -1,9 +1,9 @@
 import prisma from "@/prisma/client";
-import { Creator, NewTask } from "./new/submitTask";
+import { Editor, NewTask } from "./new/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
 
 // Create a new task in the database
-export async function createTask(task: NewTask, editingUser: Creator) {
+export async function createTask(task: NewTask, editingUser: Editor) {
 	const newTask = await prisma.task.create({
 		data: {
 			title: task.title,
@@ -18,10 +18,7 @@ export async function createTask(task: NewTask, editingUser: Creator) {
 
 	console.log(`Task ${newTask.id} created successfully`);
 
-	// Add the changes to the task
+	// Record the task creation in the task history
 	const newChange = await recordTaskHistory(newTask, editingUser);
-	console.log(newChange);
-
-	console.log(newTask);
 	return newTask;
 }

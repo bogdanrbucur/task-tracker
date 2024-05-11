@@ -1,13 +1,11 @@
+import getUserNameAndDeptById from "@/app/users/getUserById";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
-import { Creator } from "./new/submitTask";
+import { Editor } from "./new/submitTask";
 
-export async function recordTaskHistory(task: Task, editingUser: Creator, changes?: string[]) {
+export async function recordTaskHistory(task: Task, editingUser: Editor, changes?: string[]) {
 	// Get the assignedToUser object by the ID
-	const assignedToUser = await prisma.user.findUnique({
-		where: { id: task.assignedToUserId! },
-		select: { firstName: true, lastName: true },
-	});
+	const assignedToUser = await getUserNameAndDeptById(task.assignedToUserId!);
 
 	const editingUserFullName = `${editingUser.firstName} ${editingUser.lastName}`;
 

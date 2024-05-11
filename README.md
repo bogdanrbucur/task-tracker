@@ -27,6 +27,7 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Task view page
 - [x] Add Due Date to the Task model
 - [x] Task creation page. Access only with rights.
+- [x] Add history to the Task model and implement it in the Task view page. Every change should be recorded.
 - [ ] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
 - [ ] Greeting in upper right corner of the navbar for the user
 - [ ] User view page
@@ -36,4 +37,3 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [ ] Add a favicon
 - [ ] Scheduled function to check for overdue tasks and set the status to Overdue
 - [ ] Create Admin page to edit Departments and Statuses
-- [ ] Add history to the Task model and implement it in the Task view page. Every change should be recorded.

@@ -23,12 +23,7 @@ const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 
 	if (!task) return notFound();
 
-	return (
-		<>
-			<div>Editing task {params.id}</div>
-			<TaskForm user={user!} users={users} task={task} />
-		</>
-	);
+	return <TaskForm user={user!} users={users} task={task} />;
 };
 
 export default EditIssuePage;

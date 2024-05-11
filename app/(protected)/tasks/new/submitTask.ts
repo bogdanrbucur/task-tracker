@@ -1,7 +1,7 @@
 // server function to add new task
 "use server";
 
-import prisma from "@/prisma/client";
+import getUserNameAndDeptById from "@/app/users/getUserById";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -16,12 +16,9 @@ export type NewTask = {
 	assignedToUserId: string;
 };
 export type UpdateTask = NewTask & { id: string };
-export type Creator = { firstName: string; lastName: string; id: string };
+export type Editor = { firstName: string; lastName: string; id: string };
 
 export default async function submitTask(prevState: any, formData: FormData) {
-	// const formRawData = Object.fromEntries(formData.entries());
-	// console.log(formRawData);
-
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		id: z.string().nullable(),
@@ -44,20 +41,14 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			assignedToUserId: formData.get("assignedToUserId") as string,
 			createdByUserId: formData.get("editingUser") as string,
 		});
-		// console.log(data);
 
 		// Get the created by user object by the ID
-		const editingUser = await prisma.user.findUnique({
-			where: { id: data.createdByUserId },
-			select: { firstName: true, lastName: true, id: true },
-		});
+		const editingUser = await getUserNameAndDeptById(data.createdByUserId);
 
 		// If a task ID is provided, update the existing task
 		if (data.id) newTask = await updateTask(data as UpdateTask, editingUser!);
 		// If no task ID is provided, create a new task
 		else newTask = await createTask(data as NewTask, editingUser!);
-
-		// console.log(newTask);
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {

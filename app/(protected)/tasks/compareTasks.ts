@@ -1,22 +1,19 @@
-import { Task } from "@prisma/client";
-import { Creator, UpdateTask } from "./new/submitTask";
+import getUserNameAndDeptById from "@/app/users/getUserById";
 import { formatDate } from "@/lib/utilityFunctions";
-import prisma from "@/prisma/client";
+import { Task } from "@prisma/client";
+import { Editor } from "./new/submitTask";
 
-export default async function compareTasks(oldTask: Task, newTask: Task, editingUser: Creator) {
+export default async function compareTasks(oldTask: Task, newTask: Task, editingUser: Editor) {
 	const changes: string[] = [];
 
 	const editingUserFullName = `${editingUser.firstName} ${editingUser.lastName}`;
 
 	// Get the assignedToUser object by the ID
-	const assignedToUserOld = await prisma.user.findUnique({
-		where: { id: oldTask.assignedToUserId! },
-		select: { firstName: true, lastName: true },
-	});
-	const assignedToUserNew = await prisma.user.findUnique({
-		where: { id: newTask.assignedToUserId! },
-		select: { firstName: true, lastName: true },
-	});
+	const assignedToUserOld = await getUserNameAndDeptById(oldTask.assignedToUserId!);
+	const assignedToUserNew = await getUserNameAndDeptById(newTask.assignedToUserId!);
+
+	const oldUser = `${assignedToUserOld?.firstName} ${assignedToUserOld?.lastName}`;
+	const newUser = `${assignedToUserNew?.firstName} ${assignedToUserNew?.lastName}`;
 
 	if (oldTask.title !== newTask.title) {
 		changes.push(`Title changed from "${oldTask.title}" to "${newTask.title}" by ${editingUserFullName}`);
@@ -31,9 +28,7 @@ export default async function compareTasks(oldTask: Task, newTask: Task, editing
 	}
 
 	if (oldTask.assignedToUserId !== newTask.assignedToUserId) {
-		changes.push(
-			`Assigned to changed from ${assignedToUserOld?.firstName} ${assignedToUserOld?.lastName} to ${assignedToUserNew?.firstName} ${assignedToUserNew?.lastName} by ${editingUserFullName}`
-		);
+		changes.push(`Assigned to changed from ${oldUser} to ${newUser} by ${editingUserFullName}`);
 	}
 
 	return changes;

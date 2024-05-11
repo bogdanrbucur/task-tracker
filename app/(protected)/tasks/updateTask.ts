@@ -1,9 +1,9 @@
 import prisma from "@/prisma/client";
-import { Creator, UpdateTask } from "./new/submitTask";
-import { recordTaskHistory } from "./recordTaskHistory";
 import compareTasks from "./compareTasks";
+import { Editor, UpdateTask } from "./new/submitTask";
+import { recordTaskHistory } from "./recordTaskHistory";
 
-export async function updateTask(task: UpdateTask, editingUser: Creator) {
+export async function updateTask(task: UpdateTask, editingUser: Editor) {
 	// Get the old task for comparison
 	const oldTask = await prisma.task.findUnique({
 		where: { id: Number(task.id) },
@@ -27,7 +27,7 @@ export async function updateTask(task: UpdateTask, editingUser: Creator) {
 	// Determine what was changed
 	const changes = await compareTasks(oldTask!, updatedTask, editingUser);
 
-	// Add the changes to the task
+	// Add the changes to the task history
 	const newChange = await recordTaskHistory(updatedTask, editingUser, changes);
 	return updatedTask;
 }
