@@ -6,6 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/DatePicker";
 import { UsersSelection } from "@/components/UsersSelection";
 import { Button } from "@/components/ui/button";
+import { getAuth } from "@/app/_auth/actions/get-auth";
+import { User } from "lucia";
+import { useFormState } from "react-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export type SelectionUser = {
 	id: string;
@@ -17,7 +22,12 @@ export type SelectionUser = {
 	} | null;
 };
 
-const taskForm = ({ users }: { users: SelectionUser[] }) => {
+const initialState = {
+	message: null,
+};
+
+const taskForm = ({ users, user }: { users: SelectionUser[]; user: User }) => {
+	const [state, formAction] = useFormState(submitTask, initialState);
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -25,10 +35,11 @@ const taskForm = ({ users }: { users: SelectionUser[] }) => {
 		event.preventDefault();
 		const formData = new FormData(event.target);
 		formData.append("assignedToUserId", selectedUserId ?? "");
-		formData.append("dueDate", selectedDate ?? "");
+		formData.append("dueDate", selectedDate?.toISOString() ?? "");
+		formData.append("createdByUserId", user.id);
 
-		// Invoke
-		submitTask(formData);
+		// Invoke the server side function to add new task
+		formAction(formData);
 	};
 
 	return (
@@ -65,6 +76,13 @@ const taskForm = ({ users }: { users: SelectionUser[] }) => {
 						</div>
 					</div>
 				</div>
+				{state?.message && (
+					<Alert variant="destructive">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>Task could not be created</AlertTitle>
+						<AlertDescription>{state?.message}</AlertDescription>
+					</Alert>
+				)}
 				<div className="flex justify-center md:justify-end">
 					<Button type="submit">Create Task</Button>
 				</div>

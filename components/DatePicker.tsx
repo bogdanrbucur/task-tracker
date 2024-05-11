@@ -10,12 +10,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 
 export function DatePicker({ onChange }: { onChange: (date: Date | null) => void }) {
-	const [date, setDate] = React.useState<Date | undefined>();
+	const [date, setDate] = React.useState<Date | null>();
 
-	function handleOnChange(date: Date | undefined | null) {
-		if (date === undefined) date = null;
+	function handleOnChange(date: Date | null | undefined) {
+		// if (date === undefined) date = null;
 		setDate(date);
-		onChange(date);
+		onChange(date ? date : null);
 	}
 
 	return (
@@ -27,7 +27,7 @@ export function DatePicker({ onChange }: { onChange: (date: Date | null) => void
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-0">
-				<Calendar weekStartsOn={1} mode="single" selected={date} onSelect={handleOnChange} initialFocus />
+				<Calendar weekStartsOn={1} mode="single" selected={date ? date : undefined} onSelect={handleOnChange} initialFocus />
 			</PopoverContent>
 		</Popover>
 	);

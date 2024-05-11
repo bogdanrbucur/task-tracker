@@ -4,10 +4,11 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import AvatarAndName from "@/components/AvatarAndName";
+import TaskHistory from "@/components/TaskHistory";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
@@ -32,6 +33,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 			assignedToUser: true,
 			createdByUser: true,
 			status: true,
+			changes: true,
+			comments: true,
 		},
 	});
 
@@ -114,49 +117,10 @@ export default async function TaskDetailsPage({ params }: Props) {
 						<CardHeader>
 							<CardTitle>Task History</CardTitle>
 						</CardHeader>
-						<CardContent className="space-y-4">
-							<div className="flex items-center justify-between gap-1">
-								<div className="flex items-center gap-2">
-									<ClockIcon />
-									<div className="text-sm text-gray-500 dark:text-gray-400">Created and assigned to Olivia Davis by John Lewis 5 days ago</div>
-								</div>
-								<Badge className="px-2 py-1 text-xs" variant="secondary">
-									Created
-								</Badge>
-							</div>
-							<div className="flex items-center justify-between gap-1">
-								<div className="flex items-center gap-2">
-									<ClockIcon />
-									<div className="text-sm text-gray-500 dark:text-gray-400">Description updated 2 days ago</div>
-								</div>
-								<Badge className="px-2 py-1 text-xs" variant="secondary">
-									Updated
-								</Badge>
-							</div>
-						</CardContent>
+						<TaskHistory changes={task.changes} />
 					</Card>
 				</div>
 			</div>
 		</Card>
-	);
-}
-
-function ClockIcon() {
-	return (
-		<svg
-			className="flex-shrink-0 text-gray-500 dark:text-gray-400"
-			xmlns="http://www.w3.org/2000/svg"
-			width="16"
-			height="16"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="2"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		>
-			<circle cx="12" cy="12" r="10" />
-			<polyline points="12 6 12 12 16 14" />
-		</svg>
 	);
 }
