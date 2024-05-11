@@ -7,6 +7,11 @@ import React from "react";
 export function UsersSelection({ users, onChange, defaultUser }: { users: SelectionUser[]; onChange: (value: string | null) => void; defaultUser?: SelectionUser }) {
 	const [user, setUser] = React.useState<string | null>(defaultUser?.id ?? null);
 
+	// Set the default date as the return from the compoennt, if it is provided
+	React.useEffect(() => {
+		if (defaultUser) handleOnChange(defaultUser.id);
+	}, [defaultUser]);
+
 	function handleOnChange(user: string | null) {
 		setUser(user);
 		onChange(user);

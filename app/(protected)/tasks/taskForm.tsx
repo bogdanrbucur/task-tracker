@@ -35,7 +35,8 @@ const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; t
 		const formData = new FormData(event.target);
 		formData.append("assignedToUserId", selectedUserId ?? "");
 		formData.append("dueDate", selectedDate?.toISOString() ?? "");
-		formData.append("createdByUserId", user.id);
+		formData.append("editingUser", user.id);
+		task && formData.append("taskId", task.id);
 
 		// Invoke the server side function to add new task
 		formAction(formData);
