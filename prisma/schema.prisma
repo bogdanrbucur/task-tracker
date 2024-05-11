@@ -13,7 +13,7 @@ datasource db {
 model Task {
   id               Int       @id @default(autoincrement())
   title            String
-  description      String?
+  description      String
   createdByUserId  String?
   assignedToUserId String?
   createdAt        DateTime  @default(now())
@@ -40,8 +40,8 @@ model Change {
   task    Task     @relation("Changes", fields: [taskId], references: [id])
   time    DateTime @default(now())
   changes String // Field to store the changes as a string
-  userId  String?
-  user    User?    @relation("ChangeUser", fields: [userId], references: [id])
+  userId  String
+  user    User    @relation("ChangeUser", fields: [userId], references: [id])
 }
 
 model Comment {
@@ -57,7 +57,7 @@ model Comment {
 model User {
   id             String      @id
   firstName      String
-  lastName       String?
+  lastName       String
   email          String      @unique
   sessions       Session[]
   canCreateUsers Boolean?    @default(false)

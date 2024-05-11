@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import AvatarAndName from "@/components/AvatarAndName";
-import TaskHistory from "@/components/TaskHistory";
+import TaskHistory from "@/app/(protected)/tasks/TaskHistory";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -26,7 +26,7 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Make a proper Sign In page and form validation
 - [x] Task view page
 - [x] Add Due Date to the Task model
-- [ ] Task creation page. Access only with rights.
+- [x] Task creation page. Access only with rights.
 - [ ] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
 - [ ] Greeting in upper right corner of the navbar for the user
 - [ ] User view page

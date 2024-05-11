@@ -50,6 +50,8 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			include: { assignedToUser: true },
 		});
 
+		if (!newTask) throw new Error("Task creation failed");
+
 		if (newTask) {
 			console.log("Task created successfully");
 			// Add the changes to the task
@@ -58,9 +60,9 @@ export default async function submitTask(prevState: any, formData: FormData) {
 					taskId: newTask.id,
 					userId: data.createdByUserId,
 					time: new Date(),
-					changes: `Task created by ${createdByUser?.firstName} ${createdByUser?.lastName ? createdByUser?.lastName : ""} and assigned to ${
-						newTask.assignedToUser?.firstName
-					} ${newTask.assignedToUser?.lastName ? newTask.assignedToUser?.lastName : ""} on ${formatDate(newTask.createdAt)}`,
+					changes: `Task created by ${createdByUser?.firstName} ${createdByUser?.lastName} and assigned to ${newTask.assignedToUser?.firstName} ${
+						newTask.assignedToUser?.lastName
+					}`,
 				},
 			});
 
