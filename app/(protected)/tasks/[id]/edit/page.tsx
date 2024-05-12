@@ -1,10 +1,9 @@
-import prisma from "@/prisma/client";
-import React from "react";
-import TaskForm from "../../taskForm";
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
-import { notFound } from "next/navigation";
 import getUsers from "@/app/users/getUsers";
+import prisma from "@/prisma/client";
+import { notFound } from "next/navigation";
+import TaskForm from "../../taskForm";
 
 const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 	// Check user permissions
@@ -13,13 +12,13 @@ const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 	if (user) userPermissions = await getUserPermissions(user.id);
 	if (!userPermissions?.canCreateTasks) return notFound();
 
-	const users = await getUsers();
-
 	// Fetch the task with the given ID
 	const task = await prisma.task.findUnique({
 		where: { id: Number(params.id) },
 		include: { assignedToUser: true },
 	});
+
+	const users = await getUsers();
 
 	if (!task) return notFound();
 

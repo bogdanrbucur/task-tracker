@@ -3,8 +3,10 @@
  * @see https://v0.dev/t/JrUA9HgbhjF
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import AvatarAndName from "@/components/AvatarAndName";
 import TaskHistory from "@/app/(protected)/tasks/TaskHistory";
+import { getAuth } from "@/app/_auth/actions/get-auth";
+import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
+import AvatarAndName from "@/components/AvatarAndName";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,8 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -22,11 +24,13 @@ interface Props {
 }
 
 export default async function TaskDetailsPage({ params }: Props) {
-	// TODO check authentication
-	//
+	// error handling if id is not a number
+	if (!Number(params.id)) return notFound();
 
-	// TODO error handling if id is not a number
-	//
+	// Check user permissions
+	const { user } = await getAuth();
+	let userPermissions;
+	if (user) userPermissions = await getUserPermissions(user.id);
 
 	const task = await prisma.task.findUnique({
 		where: { id: Number(params.id) },
@@ -38,6 +42,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 			comments: true,
 		},
 	});
+
+	const canCompleteTask = userPermissions?.canCreateTasks || user?.id === task?.assignedToUser?.id;
 
 	// If the issue is not found, we return a 404 page, included in Next.js
 	if (!task) return notFound();
@@ -56,12 +62,16 @@ export default async function TaskDetailsPage({ params }: Props) {
 								{task.status.name}
 							</Badge>
 							<div className="flex gap-4">
-								<Button asChild size="sm" variant="outline">
-									<Link href={`/tasks/${task.id}/edit`}>Edit</Link>
-								</Button>
-								<Button size="sm" variant="outline">
-									Complete
-								</Button>
+								{userPermissions?.canCreateTasks && (
+									<Button asChild size="sm" variant="outline">
+										<Link href={`/tasks/${task.id}/edit`}>Edit</Link>
+									</Button>
+								)}
+								{canCompleteTask && (
+									<Button size="sm" variant="outline">
+										Complete
+									</Button>
+								)}
 							</div>
 						</div>
 						<div className="grid md:grid-cols-2">

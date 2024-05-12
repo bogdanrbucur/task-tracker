@@ -6,12 +6,18 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import { GrTask } from "react-icons/gr";
 import { signOut } from "./_auth/actions/sign-out";
 import { getUserPermissions } from "./_auth/actions/get-permissions";
+import getUserNameAndDeptById from "./users/getUserById";
+import NavBarWelcome from "@/components/NavBarWelcome";
 
 const Navbar = async () => {
 	const { user } = await getAuth();
 
 	let userPermissions;
-	if (user) userPermissions = await getUserPermissions(user.id);
+	let userProps;
+	if (user) {
+		userPermissions = await getUserPermissions(user.id);
+		userProps = await getUserNameAndDeptById(user.id);
+	}
 
 	return (
 		<nav className="p-3 flex justify-between space-x-3">
@@ -31,7 +37,8 @@ const Navbar = async () => {
 					</Link>
 				)}
 			</section>
-			<div className="flex space-x-3">
+			<div className="flex space-x-3 items-center">
+				<NavBarWelcome userProps={userProps}/>
 				{user && (
 					<form action={signOut}>
 						<Button variant="outline" type="submit">

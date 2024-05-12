@@ -1,7 +1,7 @@
 import prisma from "@/prisma/client";
 import NodeCache from "node-cache";
 
-export type UserNameAndDept = {
+export type UserDetails = {
 	id: string;
 	firstName: string;
 	lastName: string;
@@ -16,7 +16,7 @@ export type UserNameAndDept = {
 const userCache = new NodeCache({ stdTTL: 60 * 60, checkperiod: 10 * 60 });
 
 export default async function getUserNameAndDeptById(id: string) {
-	let user = userCache.get(id) as UserNameAndDept | undefined;
+	let user = userCache.get(id) as UserDetails | undefined;
 
 	if (!user) {
 		// console.log(`Fetching user ${id} from database...`);
@@ -25,7 +25,7 @@ export default async function getUserNameAndDeptById(id: string) {
 		user = (await prisma.user.findUnique({
 			where: { id: id },
 			select: { id: true, firstName: true, lastName: true, departmentId: true },
-		})) as UserNameAndDept;
+		})) as UserDetails;
 
 		// If the user has no department, set it to null
 		if (user.departmentId === null) user.department = null;
