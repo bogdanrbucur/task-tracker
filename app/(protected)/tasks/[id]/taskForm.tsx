@@ -1,6 +1,6 @@
 "use client";
-import { DatePicker } from "@/app/(protected)/tasks/DatePicker";
-import { UsersSelection } from "@/app/(protected)/tasks/UsersSelection";
+import { DatePicker } from "@/app/(protected)/tasks/new/DatePicker";
+import { UsersSelection } from "@/app/(protected)/tasks/new/UsersSelection";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
-import submitTask from "./new/submitTask";
+import submitTask from "../new/submitTask";
 
 export type SelectionUser = {
 	id: string;

@@ -3,7 +3,7 @@ import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
 import getUsers from "@/app/users/getUsers";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
-import TaskForm from "../../taskForm";
+import TaskForm from "../taskForm";
 
 const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 	// Check user permissions

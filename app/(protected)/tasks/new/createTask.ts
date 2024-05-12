@@ -1,6 +1,6 @@
 import prisma from "@/prisma/client";
-import { Editor, NewTask } from "./new/submitTask";
-import { recordTaskHistory } from "./recordTaskHistory";
+import { Editor, NewTask } from "./submitTask";
+import { recordTaskHistory } from "../[id]/recordTaskHistory";
 
 // Create a new task in the database
 export async function createTask(task: NewTask, editingUser: Editor) {

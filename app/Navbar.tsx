@@ -6,7 +6,7 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import { GrTask } from "react-icons/gr";
 import { signOut } from "./_auth/actions/sign-out";
 import { getUserPermissions } from "./_auth/actions/get-permissions";
-import getUserNameAndDeptById from "./users/getUserById";
+import getUserPropsById from "./users/getUserById";
 import NavBarWelcome from "@/components/NavBarWelcome";
 
 const Navbar = async () => {
@@ -16,7 +16,7 @@ const Navbar = async () => {
 	let userProps;
 	if (user) {
 		userPermissions = await getUserPermissions(user.id);
-		userProps = await getUserNameAndDeptById(user.id);
+		userProps = await getUserPropsById(user.id);
 	}
 
 	return (
@@ -38,7 +38,7 @@ const Navbar = async () => {
 				)}
 			</section>
 			<div className="flex space-x-3 items-center">
-				<NavBarWelcome userProps={userProps}/>
+				<NavBarWelcome userProps={userProps} />
 				{user && (
 					<form action={signOut}>
 						<Button variant="outline" type="submit">

@@ -15,7 +15,7 @@ export type UserDetails = {
 // Cache the users for 60 minutes. Check every 10 min to see if the cache is stale.
 const userCache = new NodeCache({ stdTTL: 60 * 60, checkperiod: 10 * 60 });
 
-export default async function getUserNameAndDeptById(id: string) {
+export default async function getUserPropsById(id: string) {
 	let user = userCache.get(id) as UserDetails | undefined;
 
 	if (!user) {

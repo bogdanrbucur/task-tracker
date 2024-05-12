@@ -6,11 +6,11 @@ const hours = date.getHours();
 let timeOfDay: { greeting: string; emoji: string } = { greeting: "", emoji: "" };
 
 if (hours < 11) {
-	timeOfDay = { greeting: "Good morning", emoji: "🌄" };
+	timeOfDay = { greeting: "Good morning", emoji: "🌞" };
 } else if (hours >= 11 && hours < 17) {
 	timeOfDay = { greeting: "Good day", emoji: "🌞" };
 } else {
-	timeOfDay = { greeting: "Good evening", emoji: "🌃" };
+	timeOfDay = { greeting: "Good evening", emoji: "🌛" };
 }
 
 const NavBarWelcome = ({ userProps }: { userProps: UserDetails | undefined }) => {

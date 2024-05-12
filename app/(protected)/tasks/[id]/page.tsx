@@ -3,20 +3,20 @@
  * @see https://v0.dev/t/JrUA9HgbhjF
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import TaskHistory from "@/app/(protected)/tasks/TaskHistory";
+import TaskHistory from "@/app/(protected)/tasks/[id]/TaskHistory";
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
 import AvatarAndName from "@/components/AvatarAndName";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Check, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import CommentsSection from "./commentsSection";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -45,6 +45,12 @@ export default async function TaskDetailsPage({ params }: Props) {
 
 	const canCompleteTask = userPermissions?.canCreateTasks || user?.id === task?.assignedToUser?.id;
 
+	// Get all the comments details
+	const comments = await prisma.comment.findMany({
+		where: { taskId: task!.id },
+		select: { user: { select: { firstName: true, lastName: true, department: true } }, comment: true, id: true, time: true },
+	});
+
 	// If the issue is not found, we return a 404 page, included in Next.js
 	if (!task) return notFound();
 
@@ -63,13 +69,17 @@ export default async function TaskDetailsPage({ params }: Props) {
 							</Badge>
 							<div className="flex gap-4">
 								{userPermissions?.canCreateTasks && (
-									<Button asChild size="sm" variant="outline">
-										<Link href={`/tasks/${task.id}/edit`}>Edit</Link>
+									<Button asChild size="sm">
+										<Link href={`/tasks/${task.id}/edit`} className="gap-1">
+											Edit
+											<SquarePen size="18" />
+										</Link>
 									</Button>
 								)}
 								{canCompleteTask && (
-									<Button size="sm" variant="outline">
+									<Button size="sm" className="gap-1">
 										Complete
+										<Check size="18" />
 									</Button>
 								)}
 							</div>
@@ -89,39 +99,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 						</div>
 					</div>
 					<Separator className="my-6" />
-					{/* START Comments section */}
-					<div className="space-y-6">
-						<h2 className="text-lg font-semibold">Comments</h2>
-						<div className="space-y-4">
-							<div className="flex items-start gap-4">
-								<Avatar>
-									<AvatarImage alt="@shadcn" />
-									<AvatarFallback>OD</AvatarFallback>
-								</Avatar>
-								<div className="flex-1">
-									<div className="flex items-center justify-between">
-										<div className="font-medium">Olivia Davis</div>
-										<div className="text-xs text-gray-500 dark:text-gray-400">2 days ago</div>
-									</div>
-									<p className="text-sm text-gray-500 dark:text-gray-400">Great work so far! I have a few suggestions to improve the layout and typography.</p>
-								</div>
-							</div>
-							<div className="flex items-start gap-4">
-								<Avatar>
-									<AvatarImage alt="@shadcn" />
-									<AvatarFallback>JD</AvatarFallback>
-								</Avatar>
-								<div className="flex-1">
-									<div className="flex items-center justify-between">
-										<div className="font-medium">John Doe</div>
-										<div className="text-xs text-gray-500 dark:text-gray-400">3 days ago</div>
-									</div>
-									<p className="text-sm text-gray-500 dark:text-gray-400">Looks good! Let me know if you need any help with the implementation.</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					{/* END Comments section */}
+					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} />
 				</div>
 				<div className="space-y-6">
 					<Card>

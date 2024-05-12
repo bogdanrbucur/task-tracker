@@ -1,6 +1,6 @@
 import { Change } from "@prisma/client";
 import { format } from "date-fns";
-import { CardContent } from "../../../components/ui/card";
+import { CardContent } from "../../../../components/ui/card";
 
 const TaskHistory = ({ changes }: { changes: Change[] }) => {
 	return (

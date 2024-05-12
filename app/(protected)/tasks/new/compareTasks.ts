@@ -1,7 +1,7 @@
-import getUserNameAndDeptById from "@/app/users/getUserById";
+import getUserPropsById from "@/app/users/getUserById";
 import { formatDate } from "@/lib/utilityFunctions";
 import { Task } from "@prisma/client";
-import { Editor } from "./new/submitTask";
+import { Editor } from "./submitTask";
 
 export default async function compareTasks(oldTask: Task, newTask: Task, editingUser: Editor) {
 	const changes: string[] = [];
@@ -9,8 +9,8 @@ export default async function compareTasks(oldTask: Task, newTask: Task, editing
 	const editingUserFullName = `${editingUser.firstName} ${editingUser.lastName}`;
 
 	// Get the assignedToUser object by the ID
-	const assignedToUserOld = await getUserNameAndDeptById(oldTask.assignedToUserId!);
-	const assignedToUserNew = await getUserNameAndDeptById(newTask.assignedToUserId!);
+	const assignedToUserOld = await getUserPropsById(oldTask.assignedToUserId!);
+	const assignedToUserNew = await getUserPropsById(newTask.assignedToUserId!);
 
 	const oldUser = `${assignedToUserOld?.firstName} ${assignedToUserOld?.lastName}`;
 	const newUser = `${assignedToUserNew?.firstName} ${assignedToUserNew?.lastName}`;

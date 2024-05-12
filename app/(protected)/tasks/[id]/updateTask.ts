@@ -1,6 +1,6 @@
 import prisma from "@/prisma/client";
-import compareTasks from "./compareTasks";
-import { Editor, UpdateTask } from "./new/submitTask";
+import compareTasks from "../new/compareTasks";
+import { Editor, UpdateTask } from "../new/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
 
 export async function updateTask(task: UpdateTask, editingUser: Editor) {

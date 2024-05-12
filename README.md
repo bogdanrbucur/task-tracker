@@ -30,7 +30,7 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Add history to the Task model and implement it in the Task view page. Every change should be recorded.
 - [x] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
 - [x] Greeting in upper right corner of the navbar for the user
-- [ ] Implement comments system for tasks
+- [x] Implement comments system for tasks
 - [ ] Implement close task system with pop-up and mandatory comment
 - [ ] User view page
 - [ ] User creation page

@@ -2,7 +2,7 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
 import getUsers from "@/app/users/getUsers";
 import { notFound } from "next/navigation";
-import TaskForm from "../taskForm";
+import TaskForm from "../[id]/taskForm";
 
 const NewTaskPage = async () => {
 	// Check user permissions
