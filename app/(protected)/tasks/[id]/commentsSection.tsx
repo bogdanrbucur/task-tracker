@@ -8,6 +8,8 @@ import { AlertCircle } from "lucide-react";
 import { useRef } from "react";
 import { useFormState } from "react-dom";
 import addComment from "./addComment";
+import CommentSkeleton from "./commentSkeleton";
+import PostCommentButton from "./postCommentButton";
 
 const initialState = {
 	message: null,
@@ -29,52 +31,53 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 	return (
 		<div className="space-y-6">
 			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Comments</h3>
-			<section className="space-y-4">
-				{comments.map((comment) => (
-					<div key={comment.id} className="flex items-start gap-4">
-						<Avatar>
-							<AvatarImage alt="@shadcn" />
-							<AvatarFallback>{comment.user.firstName.slice(0, 1).toUpperCase() + comment.user.lastName?.slice(0, 1).toUpperCase()}</AvatarFallback>
-						</Avatar>
-						<div className="flex-1">
-							<div className="flex items-center justify-between">
-								<div className="font-medium">
-									{comment.user.firstName} {comment.user.lastName}
+			<form
+				ref={ref}
+				className="flex flex-col gap-4"
+				action={(formData) => {
+					formAction(formData);
+					// Reset the form upon submission
+					ref.current?.reset();
+				}}
+			>
+				<section className="space-y-4">
+					{comments.map((comment) => (
+						<div key={comment.id} className="flex items-start gap-4">
+							<Avatar>
+								<AvatarImage alt="@shadcn" />
+								<AvatarFallback>{comment.user.firstName.slice(0, 1).toUpperCase() + comment.user.lastName?.slice(0, 1).toUpperCase()}</AvatarFallback>
+							</Avatar>
+							<div className="flex-1">
+								<div className="flex items-center justify-between">
+									<div className="font-medium">
+										{comment.user.firstName} {comment.user.lastName}
+									</div>
+									<div className="text-xs text-gray-500 dark:text-gray-400">{format(comment.time, "dd MMM yyyy HH:mm")}</div>
 								</div>
-								<div className="text-xs text-gray-500 dark:text-gray-400">{format(comment.time, "dd MMM yyyy HH:mm")}</div>
+								<p className="text-sm text-gray-500 dark:text-gray-400">{comment.comment}</p>
 							</div>
-							<p className="text-sm text-gray-500 dark:text-gray-400">{comment.comment}</p>
 						</div>
+					))}
+					<CommentSkeleton />
+				</section>
+				{userId && (
+					<div className="flex flex-col gap-5">
+						{/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight">Add comment</h4> */}
+						<Textarea name="comment" placeholder="Add a comment..." />
+						<PostCommentButton />
+						{state?.message && (
+							<Alert variant="destructive">
+								<AlertCircle className="h-4 w-4" />
+								<AlertTitle>Failed to add comment</AlertTitle>
+								<AlertDescription>{state?.message}</AlertDescription>
+							</Alert>
+						)}
+						{/* Hidden input fields ensures formData is submitted */}
+						<input type="hidden" name="userId" value={userId} />
+						<input type="hidden" name="taskId" value={taskId} />
 					</div>
-				))}
-			</section>
-			{userId && (
-				<form
-					ref={ref}
-					className="flex flex-col gap-4"
-					action={(formData) => {
-						formAction(formData);
-						// Reset the form upon submission
-						ref.current?.reset();
-					}}
-				>
-					{/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight">Add comment</h4> */}
-					<Textarea name="comment" placeholder="Add a comment..." />
-					<Button type="submit" size="sm" className="w-[130px]">
-						Post Comment
-					</Button>
-					{state?.message && (
-						<Alert variant="destructive">
-							<AlertCircle className="h-4 w-4" />
-							<AlertTitle>Failed to add comment</AlertTitle>
-							<AlertDescription>{state?.message}</AlertDescription>
-						</Alert>
-					)}
-					{/* Hidden input fields ensures formData is submitted */}
-					<input type="hidden" name="userId" value={userId} />
-					<input type="hidden" name="taskId" value={taskId} />
-				</form>
-			)}
+				)}
+			</form>
 		</div>
 	);
 };
