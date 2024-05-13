@@ -28,27 +28,15 @@ const initialState = {
 };
 
 const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; task?: any }) => {
-	const [state, formAction] = useFormState(submitTask, initialState);
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-	const handleSubmit = (event: any) => {
-		event.preventDefault();
-		const formData = new FormData(event.target);
-		formData.append("assignedToUserId", selectedUserId ?? "");
-		formData.append("dueDate", selectedDate?.toISOString() ?? "");
-		formData.append("editingUser", user.id);
-		task && formData.append("taskId", task.id);
-
-		// Invoke the server side function to add new task
-		formAction(formData);
-	};
+	const [formState, formAction] = useFormState(submitTask, initialState);
 
 	return (
 		<Card className="container mx-auto max-w-4xl px-4 md:px-6">
 			<div className="container mx-auto max-w-4xl px-4 py-6">
 				<h1 className="mb-8 text-3xl font-bold">{task ? "Edit Task" : "New Task"}</h1>
-				<form className="space-y-6" onSubmit={handleSubmit}>
+				<form className="space-y-6" action={formAction}>
 					<div className="space-y-2">
 						<label className="text-sm font-medium" htmlFor="title">
 							Title
@@ -68,6 +56,7 @@ const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; t
 							</label>
 							<div>
 								<DatePicker onChange={setSelectedDate} defaultDate={task?.dueDate} />
+								<input type="hidden" name="dueDate" value={selectedDate?.toISOString() ?? ""} />
 							</div>
 						</div>
 						<div className="flex md:justify-end">
@@ -76,14 +65,16 @@ const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; t
 									Assigned To
 								</label>
 								<UsersSelection users={users} onChange={setSelectedUserId} defaultUser={task?.assignedToUser} />
+								{/* Hidden input fields ensures formData is submitted */}
+								<input type="hidden" name="assignedToUserId" value={selectedUserId ?? ""} />
 							</div>
 						</div>
 					</div>
-					{state?.message && (
+					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
 							<AlertTitle>Task could not be created</AlertTitle>
-							<AlertDescription>{state?.message}</AlertDescription>
+							<AlertDescription>{formState?.message}</AlertDescription>
 						</Alert>
 					)}
 					<div className="flex justify-between">
@@ -96,6 +87,8 @@ const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; t
 							<Button type="submit">{task ? "Save Task" : "Create Task"}</Button>
 						</div>
 					</div>
+					{task && <input type="hidden" name="taskId" value={task.id} />}
+					<input type="hidden" name="editingUser" value={user.id} />
 				</form>
 			</div>
 		</Card>

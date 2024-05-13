@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useRef } from "react";
 import { useFormState } from "react-dom";
 import addComment from "./addComment";
 
@@ -22,20 +22,9 @@ type CommentDetails = {
 
 const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId: number; comments: CommentDetails[] }) => {
 	const [state, formAction] = useFormState(addComment, initialState);
-	const [comment, setComment] = useState("");
 
-	const handleSubmit = (event: any) => {
-		event.preventDefault();
-		const formData = new FormData(event.target);
-		formData.append("userId", userId ? userId : "");
-		formData.append("taskId", String(taskId));
-
-		// Invoke the server side function to add new task
-		formAction(formData);
-
-		// Clear the comment field
-		setComment("");
-	};
+	// Form reference to reset the form after submission
+	const ref = useRef<HTMLFormElement>(null);
 
 	return (
 		<div className="space-y-6">
@@ -60,9 +49,17 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 				))}
 			</section>
 			{userId && (
-				<form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+				<form
+					ref={ref}
+					className="flex flex-col gap-4"
+					action={(formData) => {
+						formAction(formData);
+						// Reset the form upon submission
+						ref.current?.reset();
+					}}
+				>
 					{/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight">Add comment</h4> */}
-					<Textarea name="comment" placeholder="Add a comment..." value={comment} onChange={(e) => setComment(e.target.value)} />
+					<Textarea name="comment" placeholder="Add a comment..." />
 					<Button type="submit" size="sm" className="w-[130px]">
 						Post Comment
 					</Button>
@@ -73,6 +70,9 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 							<AlertDescription>{state?.message}</AlertDescription>
 						</Alert>
 					)}
+					{/* Hidden input fields ensures formData is submitted */}
+					<input type="hidden" name="userId" value={userId} />
+					<input type="hidden" name="taskId" value={taskId} />
 				</form>
 			)}
 		</div>
