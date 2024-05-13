@@ -12,15 +12,31 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import submitTask from "../new/submitTask";
+import { Task } from "@prisma/client";
+
+type Department = {
+	id: number;
+	name: string;
+} | null;
+
+type Manager = {
+	id: string;
+	firstName: string;
+	lastName: string | null;
+	position: string;
+	department: Department;
+	email: string;
+} | null;
 
 export type SelectionUser = {
 	id: string;
 	firstName: string;
 	lastName: string | null;
-	department: {
-		id: number;
-		name: string;
-	} | null;
+	position: string;
+	email: string;
+	department: Department;
+	manager: Manager;
+	assignedTasks: Task[] | null;
 };
 
 const initialState = {

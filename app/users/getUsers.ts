@@ -10,7 +10,18 @@ export default async function getUsers() {
 
 	if (!users) {
 		// console.log("Fetching users from database...");
-		users = (await prisma.user.findMany({ select: { id: true, firstName: true, lastName: true, department: true } })) as SelectionUser[];
+		users = (await prisma.user.findMany({
+			select: {
+				id: true,
+				firstName: true,
+				lastName: true,
+				position: true,
+				email: true,
+				department: true,
+				manager: { select: { id: true, firstName: true, lastName: true, position: true, department: true, email: true } },
+				assignedTasks: true,
+			},
+		})) as SelectionUser[];
 		userCache.set("users", users);
 	} else {
 		// console.log("Returning users from cache...");

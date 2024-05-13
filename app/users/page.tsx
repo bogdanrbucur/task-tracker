@@ -1,8 +1,16 @@
+import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
 import { getAuth } from "../_auth/actions/get-auth";
 import { getUserPermissions } from "../_auth/actions/get-permissions";
+import UserTable, { UsersQuery, columnNames } from "./UserTable";
 
-export default async function Home() {
+interface Props {
+	searchParams: UsersQuery;
+}
+
+const statuses = ["1", "2"];
+
+export default async function UsersPage({ searchParams }: Props) {
 	const { user } = await getAuth();
 
 	let userPermissions;
@@ -10,5 +18,31 @@ export default async function Home() {
 
 	if (!userPermissions?.canCreateTasks) return notFound();
 
-	return <h1>List of users...</h1>;
+	const status = searchParams.status && statuses.includes(searchParams.status) ? parseInt(searchParams.status) : undefined;
+	const sortOrder = searchParams.sortOrder;
+	const where = { statusId: status };
+	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
+	const page = searchParams.page ? parseInt(searchParams.page) : 1;
+	const pageSize = 10;
+
+	const users = await prisma.user.findMany({
+		where,
+		orderBy,
+		skip: (page - 1) * pageSize,
+		take: pageSize,
+		select: {
+			id: true,
+			firstName: true,
+			lastName: true,
+			position: true,
+			email: true,
+			department: true,
+			manager: { select: { id: true, firstName: true, lastName: true, position: true, department: true, email: true } },
+			assignedTasks: true,
+		},
+	});
+
+	const userCount = await prisma.user.count({ where });
+
+	return <UserTable searchParams={searchParams} users={users} />;
 }

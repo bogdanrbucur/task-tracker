@@ -4,18 +4,18 @@ import { useFormStatus } from "react-dom";
 
 const PostCommentButton = () => {
 	const { pending } = useFormStatus();
-	return !pending ? (
+	return pending ? (
+		<ButtonLoading />
+	) : (
 		<Button type="submit" size="sm" className="w-[130px]">
 			Post Comment
 		</Button>
-	) : (
-		<ButtonLoading />
 	);
 };
 
 function ButtonLoading() {
 	return (
-		<Button disabled size="sm">
+		<Button disabled size="sm" className="w-[130px]">
 			<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 			Posting...
 		</Button>

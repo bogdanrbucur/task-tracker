@@ -1,0 +1,82 @@
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
+import { default as Link, default as NextLink } from "next/link";
+import { SelectionUser } from "../(protected)/tasks/[id]/taskForm";
+
+type StatusTypes = "1" | "2" | undefined;
+
+export interface UsersQuery {
+	status: StatusTypes;
+	orderBy: keyof SelectionUser;
+	sortOrder: "asc" | "desc";
+	page: string;
+}
+
+interface Props {
+	searchParams: UsersQuery;
+	users: SelectionUser[];
+}
+
+const UserTable = ({ searchParams, users }: Props) => {
+	const sortOrder = searchParams.sortOrder;
+
+	return (
+		<Table>
+			<TableHeader>
+				<TableRow>
+					{columns.map((column) => (
+						<TableHead key={column.label} className={column.className}>
+							{/* to send multiple query parameters, spread existing query parameter object and add new prop */}
+							<NextLink
+								href={{
+									query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
+								}}
+							>
+								{column.label}
+							</NextLink>
+							{column.value === searchParams.orderBy && sortOrder === "asc" ? (
+								<ArrowUpIcon className="inline" />
+							) : column.value === searchParams.orderBy && sortOrder === "desc" ? (
+								<ArrowDownIcon className="inline" />
+							) : null}
+						</TableHead>
+					))}
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{users.map((user) => (
+					<TableRow key={user.id}>
+						<TableCell>
+							{/* Make the title clickable and dynamically build the URL to the issue page */}
+							<Link href={`/users/${user.id}`}>
+								{user.firstName} {user.lastName}
+							</Link>
+							{/* visible on mobile but hidden on medium devices and higher */}
+							<div className="block md:hidden">
+								{user.firstName} {user.lastName}
+							</div>
+						</TableCell>
+						<TableCell className="hidden md:table-cell">{user.position}</TableCell>
+						<TableCell className="hidden md:table-cell">{user.department?.name}</TableCell>
+						<TableCell>
+							{user.manager?.firstName} {user.manager?.lastName}
+						</TableCell>
+						<TableCell className="hidden md:table-cell">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
+					</TableRow>
+				))}
+			</TableBody>
+		</Table>
+	);
+};
+
+export default UserTable;
+
+const columns: { label: string; value: keyof SelectionUser; className?: string }[] = [
+	{ label: "Name", value: "firstName" },
+	{ label: "Position", value: "position", className: "hidden md:table-cell" },
+	{ label: "Department", value: "department", className: "hidden md:table-cell" },
+	{ label: "Manager", value: "manager", className: "hidden md:table-cell" },
+	{ label: "Tasks", value: "assignedTasks", className: "hidden md:table-cell" },
+];
+
+export const columnNames = columns.map((column) => column.value);

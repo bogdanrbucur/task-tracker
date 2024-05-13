@@ -41,7 +41,7 @@ model Change {
   time    DateTime @default(now())
   changes String // Field to store the changes as a string
   userId  String
-  user    User    @relation("ChangeUser", fields: [userId], references: [id])
+  user    User     @relation("ChangeUser", fields: [userId], references: [id])
 }
 
 model Comment {
@@ -55,9 +55,10 @@ model Comment {
 }
 
 model User {
-  id             String      @id
+  id             String      @id @default(cuid())
   firstName      String
   lastName       String
+  position       String
   email          String      @unique
   sessions       Session[]
   canCreateUsers Boolean?    @default(false)
@@ -70,8 +71,11 @@ model User {
   hashedPassword String
   comments       Comment[]   @relation("UserComment")
   changes        Change[]    @relation("ChangeUser")
-  manager        User?       @relation("ManagerToUser", fields: [id], references: [id])
+  managerId      String?
+  manager        User?       @relation("ManagerToUser", fields: [managerId], references: [id])
   subordinates   User[]      @relation("ManagerToUser")
+  statusId       Int
+  status         UserStatus? @relation("UserStatus", fields: [statusId], references: [id])
 }
 
 model Session {
@@ -85,4 +89,10 @@ model Department {
   id    Int    @id @default(autoincrement())
   name  String @unique
   users User[]
+}
+
+model UserStatus {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[] @relation("UserStatus")
 }
