@@ -20,7 +20,7 @@ const Navbar = async () => {
 	}
 
 	return (
-		<nav className="p-3 flex justify-between space-x-3 border-b">
+		<nav className="p-3 flex justify-between space-x-3 border-b container mx-auto px-4 py-2 md:px-6 md:py-4">
 			{/* TODO replace with logo */}
 			<section className="flex space-x-3">
 				<Link href="/" className={buttonVariants({ variant: "ghost" })}>
