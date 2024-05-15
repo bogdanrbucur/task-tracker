@@ -9,7 +9,7 @@ import { useRef } from "react";
 import { useFormState } from "react-dom";
 import addComment from "./addComment";
 import CommentSkeleton from "./commentSkeleton";
-import PostCommentButton from "./postCommentButton";
+import PostCommentButton from "./PostCommentButton";
 
 const initialState = {
 	message: null,
@@ -27,6 +27,8 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 
 	// Form reference to reset the form after submission
 	const ref = useRef<HTMLFormElement>(null);
+
+	console.log(userId)
 
 	return (
 		<div className="space-y-6">

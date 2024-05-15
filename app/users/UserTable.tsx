@@ -46,22 +46,22 @@ const UserTable = ({ searchParams, users }: Props) => {
 			<TableBody>
 				{users.map((user) => (
 					<TableRow key={user.id}>
-						<TableCell>
+						<TableCell className="py-1.5">
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/users/${user.id}`}>
 								{user.firstName} {user.lastName}
 							</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
-							<div className="block md:hidden">
+							{/* <div className="block md:hidden">
 								{user.firstName} {user.lastName}
-							</div>
+							</div> */}
 						</TableCell>
-						<TableCell className="hidden md:table-cell">{user.position}</TableCell>
-						<TableCell className="hidden md:table-cell">{user.department?.name}</TableCell>
-						<TableCell>
+						<TableCell className="hidden md:table-cell py-1.5">{user.position}</TableCell>
+						<TableCell className="hidden md:table-cell py-1.5">{user.department?.name}</TableCell>
+						<TableCell className="py-1.5">
 							{user.manager?.firstName} {user.manager?.lastName}
 						</TableCell>
-						<TableCell className="hidden md:table-cell">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
+						<TableCell className="hidden md:table-cell py-1.5">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
@@ -72,11 +72,11 @@ const UserTable = ({ searchParams, users }: Props) => {
 export default UserTable;
 
 const columns: { label: string; value: keyof SelectionUser; className?: string }[] = [
-	{ label: "Name", value: "firstName" },
-	{ label: "Position", value: "position", className: "hidden md:table-cell" },
-	{ label: "Department", value: "department", className: "hidden md:table-cell" },
-	{ label: "Manager", value: "manager", className: "hidden md:table-cell" },
-	{ label: "Tasks", value: "assignedTasks", className: "hidden md:table-cell" },
+	{ label: "Name", value: "firstName", className: "py-1.5" },
+	{ label: "Position", value: "position", className: "hidden md:table-cell py-1.5" },
+	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5" },
+	{ label: "Manager", value: "manager", className: "hidden md:table-cell py-1.5" },
+	{ label: "Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5" },
 ];
 
 export const columnNames = columns.map((column) => column.value);

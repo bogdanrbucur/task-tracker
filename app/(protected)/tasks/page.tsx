@@ -3,6 +3,7 @@ import prisma from "@/prisma/client";
 import { Status, Task } from "@prisma/client";
 import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
 import TaskTopSection from "./TaskTopSection";
+import { Card } from "@/components/ui/card";
 
 export interface TaskExtended extends Task {
 	assignedTo?: string;
@@ -24,7 +25,7 @@ export default async function TasksPage({ searchParams }: Props) {
 	const where = { statusId: status };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
-	const pageSize = 10;
+	const pageSize = 18;
 
 	const tasks = await prisma.task.findMany({
 		where,
@@ -57,10 +58,12 @@ export default async function TasksPage({ searchParams }: Props) {
 	});
 
 	return (
-		<div className="container mx-auto py-2">
-			<TaskTopSection />
-			<TaskTable tasks={tasksExtended} searchParams={searchParams} />
-			<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
-		</div>
+		<Card className="container mx-auto px-0 py-0 md:px-0 md:py-2">
+			<div className="container mx-auto py-2">
+				<TaskTopSection />
+				<TaskTable tasks={tasksExtended} searchParams={searchParams} />
+				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
+			</div>
+		</Card>
 	);
 }

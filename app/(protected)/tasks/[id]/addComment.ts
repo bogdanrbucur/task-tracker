@@ -8,7 +8,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		taskId: z.string(),
-		userId: z.string().length(15, { message: "User not provided." }),
+		userId: z.string().length(25, { message: "User not provided." }),
 		comment: z.string().min(2, { message: "Comment must be at least 2 characters." }),
 	});
 

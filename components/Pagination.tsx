@@ -35,7 +35,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
 			<Button className="m-1" size="sm" variant="outline" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>
 				<ChevronLeftIcon />
 			</Button>
-			<div className="text-sm content-center m-1">
+			<div className="text-xs content-center m-1">
 				Page {currentPage} of {pageCount}
 			</div>
 			<Button className="m-1" size="sm" variant="outline" disabled={currentPage === pageCount} onClick={() => changePage(currentPage + 1)}>

@@ -19,14 +19,17 @@ export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
 
 export default async function submitTask(prevState: any, formData: FormData) {
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log(rawFormData);
+	// clw5gu59j0000lyyeqmsikv9k
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		id: z.string().nullable(),
 		title: z.string().min(10, { message: "Title must be at least 10 characters." }).max(100, { message: "Title must be at most 100 characters." }),
 		description: z.string().min(20, { message: "Description must be at least 20 characters." }).max(500, { message: "Description must be at most 500 characters." }),
 		dueDate: z.string().datetime({ message: "Due date is required." }),
-		assignedToUserId: z.string().length(15, { message: "Assigned user is required." }),
-		createdByUserId: z.string().length(15),
+		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
+		createdByUserId: z.string().length(25),
 	});
 
 	let newTask: Task | null = null;

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getAuth } from "../_auth/actions/get-auth";
 import { getUserPermissions } from "../_auth/actions/get-permissions";
 import UserTable, { UsersQuery, columnNames } from "./UserTable";
+import { Card } from "@/components/ui/card";
 
 interface Props {
 	searchParams: UsersQuery;
@@ -44,5 +45,11 @@ export default async function UsersPage({ searchParams }: Props) {
 
 	const userCount = await prisma.user.count({ where });
 
-	return <UserTable searchParams={searchParams} users={users} />;
+	return (
+		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+			<div className="container mx-auto py-2">
+				<UserTable searchParams={searchParams} users={users} />
+			</div>
+		</Card>
+	);
 }

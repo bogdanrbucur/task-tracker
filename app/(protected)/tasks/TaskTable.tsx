@@ -5,6 +5,7 @@ import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
 import { TaskExtended } from "./page";
+import { cn } from "@/lib/utils";
 
 type StatusTypes = "1" | "2" | "3" | undefined;
 
@@ -49,18 +50,20 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 			<TableBody>
 				{tasks.map((task) => (
 					<TableRow key={task.id}>
-						<TableCell>
+						<TableCell className="py-1">
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
 							<div className="block md:hidden">{task.status.name}</div>
+							<div className="block md:hidden">Due Date: {formatDate(task.dueDate)}</div>
+							<div className="block md:hidden">Assigned to: {task.assignedTo}</div>
 						</TableCell>
-						<TableCell className="hidden md:table-cell">
+						<TableCell className="hidden md:table-cell py-1">
 							<StatusBadge statusObj={task.status} />
 						</TableCell>
-						<TableCell className="hidden md:table-cell">{formatDate(task.createdAt)}</TableCell>
-						<TableCell className={dueColor(task.dueDate)}>{formatDate(task.dueDate)}</TableCell>
-						<TableCell className="hidden md:table-cell">{task.assignedTo}</TableCell>
+						<TableCell className="hidden md:table-cell py-1">{formatDate(task.createdAt)}</TableCell>
+						<TableCell className={cn(dueColor(task.dueDate), "hidden md:table-cell py-1")}>{formatDate(task.dueDate)}</TableCell>
+						<TableCell className="hidden md:table-cell py-1">{task.assignedTo}</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
@@ -71,11 +74,11 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 export default TaskTable;
 
 const columns: { label: string; value: keyof Task; className?: string }[] = [
-	{ label: "Title", value: "title" },
-	{ label: "Status", value: "statusId", className: "hidden md:table-cell" },
-	{ label: "Created", value: "createdAt", className: "hidden md:table-cell" },
-	{ label: "Due Date", value: "dueDate", className: "hidden md:table-cell" },
-	{ label: "Assigned to", value: "assignedToUserId", className: "hidden md:table-cell" },
+	{ label: "Title", value: "title", className: "py-1" },
+	{ label: "Status", value: "statusId", className: "hidden md:table-cell py-1" },
+	{ label: "Created", value: "createdAt", className: "hidden md:table-cell py-1" },
+	{ label: "Due Date", value: "dueDate", className: "hidden md:table-cell py-1" },
+	{ label: "Assigned to", value: "assignedToUserId", className: "hidden md:table-cell py-1" },
 ];
 
 export const columnNames = columns.map((column) => column.value);
