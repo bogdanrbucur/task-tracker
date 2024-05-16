@@ -6,7 +6,7 @@
 import TaskHistory from "@/app/(protected)/tasks/[id]/TaskHistory";
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
-import AvatarAndName from "@/components/AvatarAndName";
+import { AvatarAndNameLarge } from "@/components/AvatarAndName";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,7 +87,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 						<div className="grid md:grid-cols-2">
 							<div>
 								<div className="mb-2">Assigned to:</div>
-								<AvatarAndName firstName={task.assignedToUser?.firstName} lastName={task.assignedToUser?.lastName} />
+								<AvatarAndNameLarge firstName={task.assignedToUser?.firstName} lastName={task.assignedToUser?.lastName} />
 							</div>
 							<div>
 								<div className="mb-2">Due on:</div>

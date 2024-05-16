@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
 import { SelectionUser } from "../(protected)/tasks/[id]/taskForm";
+import { AvatarAndNameSmall } from "@/components/AvatarAndName";
 
 type StatusTypes = "1" | "2" | undefined;
 
@@ -49,7 +50,7 @@ const UserTable = ({ searchParams, users }: Props) => {
 						<TableCell className="py-1.5">
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/users/${user.id}`}>
-								{user.firstName} {user.lastName}
+								<AvatarAndNameSmall firstName={user.firstName} lastName={user.lastName} />
 							</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
 							{/* <div className="block md:hidden">
@@ -59,7 +60,9 @@ const UserTable = ({ searchParams, users }: Props) => {
 						<TableCell className="hidden md:table-cell py-1.5">{user.position}</TableCell>
 						<TableCell className="hidden md:table-cell py-1.5">{user.department?.name}</TableCell>
 						<TableCell className="py-1.5">
-							{user.manager?.firstName} {user.manager?.lastName}
+							<Link href={`/users/${user.manager?.id}`}>
+								<AvatarAndNameSmall firstName={user.manager?.firstName} lastName={user.manager?.lastName} />
+							</Link>
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1.5">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
 					</TableRow>

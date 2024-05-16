@@ -6,6 +6,7 @@ import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
 import { TaskExtended } from "./page";
 import { cn } from "@/lib/utils";
+import { AvatarAndNameSmall } from "@/components/AvatarAndName";
 
 type StatusTypes = "1" | "2" | "3" | undefined;
 
@@ -50,20 +51,37 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 			<TableBody>
 				{tasks.map((task) => (
 					<TableRow key={task.id}>
-						<TableCell className="py-1">
+						<TableCell className="py-1 space-y-1">
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
-							<div className="block md:hidden">{task.status.name}</div>
-							<div className="block md:hidden">Due Date: {formatDate(task.dueDate)}</div>
-							<div className="block md:hidden">Assigned to: {task.assignedTo}</div>
+							<div className="block md:hidden">
+								<StatusBadge statusObj={task.status} />
+							</div>
+							<div className="flex md:hidden ">
+								Due Date:
+								<div className={dueColor(task.dueDate)}> {formatDate(task.dueDate)}</div>
+							</div>
+							<div className="block md:hidden">
+								{task.assignedToUser && (
+									<Link href={`/users/${task.assignedToUserId}`}>
+										<AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
+									</Link>
+								)}
+							</div>
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1">
 							<StatusBadge statusObj={task.status} />
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task.dueDate), "hidden md:table-cell py-1")}>{formatDate(task.dueDate)}</TableCell>
-						<TableCell className="hidden md:table-cell py-1">{task.assignedTo}</TableCell>
+						<TableCell className="hidden md:table-cell py-1">
+							{task.assignedToUser && (
+								<Link href={`/users/${task.assignedToUserId}`}>
+									<AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
+								</Link>
+							)}
+						</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
