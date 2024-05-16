@@ -20,9 +20,9 @@ const Navbar = async () => {
 	}
 
 	return (
-		<nav className="p-3 flex justify-between space-x-3 border-b container mx-auto px-4 py-2 md:px-6 md:py-4">
+		<nav className="flex justify-between space-x-1 md:space-x-3 container mx-auto px-3 py-2 md:px-3">
 			{/* TODO replace with logo */}
-			<section className="flex space-x-3">
+			<section className="flex space-x-1 md:space-x-3">
 				<Link href="/" className={buttonVariants({ variant: "ghost" })}>
 					<GrTask size="23" />
 				</Link>
@@ -37,11 +37,11 @@ const Navbar = async () => {
 					</Link>
 				)}
 			</section>
-			<div className="flex space-x-3 items-center">
+			<div className="flex space-x-1 md:space-x-3 items-center">
 				<NavBarWelcome userProps={userProps} />
 				{user && (
 					<form action={signOut}>
-						<Button variant="outline" type="submit">
+						<Button variant="outline" type="submit" size="sm">
 							Sign Out
 						</Button>
 					</form>

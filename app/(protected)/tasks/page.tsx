@@ -58,8 +58,8 @@ export default async function TasksPage({ searchParams }: Props) {
 	});
 
 	return (
-		<Card className="container mx-auto px-0 py-0 md:px-0 md:py-2">
-			<div className="container mx-auto py-2">
+		<Card className="container mx-auto px-0 md:px-0">
+			<div className="container py-1">
 				<TaskTopSection />
 				<TaskTable tasks={tasksExtended} searchParams={searchParams} />
 				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />

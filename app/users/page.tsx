@@ -46,8 +46,8 @@ export default async function UsersPage({ searchParams }: Props) {
 	const userCount = await prisma.user.count({ where });
 
 	return (
-		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
-			<div className="container mx-auto py-2">
+		<Card className="container mx-auto px-0 md:px-0">
+			<div className="container mx-auto py-1">
 				<UserTable searchParams={searchParams} users={users} />
 			</div>
 		</Card>

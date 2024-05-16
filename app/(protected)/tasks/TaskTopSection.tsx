@@ -10,7 +10,7 @@ const TaskTopSection = async () => {
 	if (user) userPermissions = await getUserPermissions(user.id);
 
 	return (
-		<div className="flex my-2 justify-between">
+		<div className="flex justify-between py-3">
 			<div></div>
 			{userPermissions?.canCreateTasks && (
 				<Button asChild variant="outline" size="sm">

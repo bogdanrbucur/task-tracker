@@ -66,7 +66,7 @@ const NavBarWelcome = ({ userProps }: { userProps: UserDetails | undefined }) =>
 	//
 	return (
 		<div className="text-sm md:text-base">
-			{timeOfDay.greeting} {userProps.firstName} <span className="hidden md:inline">{timeOfDay.emoji}</span>
+			{timeOfDay.greeting} {userProps.firstName} <span className="">{timeOfDay.emoji}</span>
 		</div>
 	);
 };

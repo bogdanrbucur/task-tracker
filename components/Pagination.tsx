@@ -28,7 +28,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
 	};
 
 	return (
-		<div className="flex justify-center">
+		<div className="flex justify-center my-1">
 			<Button className="m-1" size="sm" variant="outline" disabled={currentPage === 1} onClick={() => changePage(1)}>
 				<DoubleArrowLeftIcon />
 			</Button>
