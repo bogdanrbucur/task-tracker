@@ -56,7 +56,7 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 							<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
 							<div className="block md:hidden">
-								<StatusBadge statusObj={task.status} />
+								<StatusBadge statusObj={task.status} size="xs" />
 							</div>
 							<div className="flex md:hidden ">
 								Due Date:
@@ -71,7 +71,7 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 							</div>
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1">
-							<StatusBadge statusObj={task.status} />
+							<StatusBadge statusObj={task.status} size="xs" />
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task.dueDate), "hidden md:table-cell py-1")}>{formatDate(task.dueDate)}</TableCell>

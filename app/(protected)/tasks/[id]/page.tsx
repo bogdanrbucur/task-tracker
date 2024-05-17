@@ -17,6 +17,7 @@ import { Calendar as CalendarIcon, Check, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentsSection from "./commentsSection";
+import StatusBadge from "@/components/StatusBadge";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -64,9 +65,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 							<p className="text-gray-500 dark:text-gray-400">{task.description}</p>
 						</div>
 						<div className="flex items-center gap-4 justify-between">
-							<Badge className="px-3 py-1 text-sm" variant="secondary">
-								{task.status.name}
-							</Badge>
+							<StatusBadge statusObj={task.status} size="sm" />
 							<div className="flex gap-4">
 								{userPermissions?.canCreateTasks && (
 									<Button asChild size="sm">
