@@ -11,13 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { dueColor, formatDate } from "@/lib/utilityFunctions";
+import { completedColor, dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, Check, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentsSection from "./commentsSection";
 import StatusBadge from "@/components/StatusBadge";
+import { CloseTaskButton } from "./CloseTaskButton";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -52,6 +53,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 		select: { user: { select: { firstName: true, lastName: true, department: true } }, comment: true, id: true, time: true },
 	});
 
+	const isLoginUserManagerOfAssignedUser = user?.id === task?.assignedToUser?.managerId;
+
 	// If the issue is not found, we return a 404 page, included in Next.js
 	if (!task) return notFound();
 
@@ -75,26 +78,45 @@ export default async function TaskDetailsPage({ params }: Props) {
 										</Link>
 									</Button>
 								)}
-								{canCompleteTask && (
+								{canCompleteTask && task.statusId === 1 && (
 									<Button size="sm" className="gap-1">
 										Complete
 										<Check size="18" />
 									</Button>
 								)}
+								{isLoginUserManagerOfAssignedUser && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
 						</div>
-						<div className="grid md:grid-cols-2">
-							<div>
+						<div className="grid grid-cols-2 lg:grid-cols-4">
+							<div id="assignedTo" className="mb-2">
 								<div className="mb-2">Assigned to:</div>
 								<AvatarAndNameLarge firstName={task.assignedToUser?.firstName} lastName={task.assignedToUser?.lastName} />
 							</div>
-							<div>
+							<div id="dueOn" className="mb-2">
 								<div className="mb-2">Due on:</div>
 								<div className="flex items-center">
 									<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
 									<div className={dueColor(task.dueDate)}>{formatDate(task.dueDate)}</div>
 								</div>
 							</div>
+							{task.completedOn && (
+								<div id="completedOn">
+									<div className="mb-2">Completed on:</div>
+									<div className="flex items-center">
+										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+										<div className={completedColor(task.completedOn, task.dueDate)}>{formatDate(task.completedOn)}</div>
+									</div>
+								</div>
+							)}
+							{task.closedOn && (
+								<div id="closedOn">
+									<div className="mb-2">Closed on:</div>
+									<div className="flex items-center">
+										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+										<div>{formatDate(task.closedOn)}</div>
+									</div>
+								</div>
+							)}
 						</div>
 					</div>
 					<Separator className="my-6" />

@@ -10,3 +10,9 @@ export function dueColor(date: Date) {
 	if (differenceInCalendarDays(date, new Date()) <= 10) return "text-orange-600 dark:text-orange-400";
 	return "";
 }
+
+// Return red if completed past due date
+export function completedColor(completedDate: Date, dueDate: Date) {
+	if (dueDate < completedDate) return "text-red-600 dark:text-red-400";
+	return "";
+}

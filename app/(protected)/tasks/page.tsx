@@ -25,7 +25,7 @@ export default async function TasksPage({ searchParams }: Props) {
 	const where = { statusId: status };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
-	const pageSize = 18;
+	const pageSize = 15;
 
 	const tasks = (await prisma.task.findMany({
 		where,

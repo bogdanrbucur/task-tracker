@@ -21,7 +21,7 @@ export type Editor = { firstName: string; lastName: string; id: string };
 export default async function submitTask(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// console.log(rawFormData);
-	// clw5gu59j0000lyyeqmsikv9k
+
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		id: z.string().nullable(),

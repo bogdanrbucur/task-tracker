@@ -28,8 +28,6 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 	// Form reference to reset the form after submission
 	const ref = useRef<HTMLFormElement>(null);
 
-	console.log(userId)
-
 	return (
 		<div className="space-y-6">
 			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Comments</h3>

@@ -25,6 +25,8 @@ model Task {
   changes          Change[]  @relation("Changes") // New relation to Change model
   comments         Comment[] @relation("Comments") // New relation to Comment model
   dueDate          DateTime
+  completedOn      DateTime?
+  closedOn         DateTime?
 }
 
 model Status {
