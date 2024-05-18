@@ -1,15 +1,14 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
 import { useRef } from "react";
 import { useFormState } from "react-dom";
+import PostCommentButton from "./PostCommentButton";
 import addComment from "./addComment";
 import CommentSkeleton from "./commentSkeleton";
-import PostCommentButton from "./PostCommentButton";
 
 const initialState = {
 	message: null,

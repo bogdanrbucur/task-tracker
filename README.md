@@ -33,12 +33,13 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Implement comments system for tasks
 - [x] Implement close task system with pop-up and optional comment
 - [x] Implement Completed On and Closed On fields in the Task model and view page
-- [ ] Review permission system:
+- [x] Revamp permission system:
 - [x] guest: view dashboard;
 - [x] user: view dashboard, all tasks, complete his tasks, view his user and change his password
-- [ ] manager (has active subordinates): create tasks, edit tasks (only for his subordinates and themselves), close his subordinates' tasks, view his subordinates' users, can export tasks to Excel;
-- [ ] admin: can create/edit users.
-- [ ] Implement Complete task system with pop-up and mandatory comment
+- [x] manager (has active subordinates): create tasks, edit tasks (only for his subordinates and themselves), close his subordinates' tasks, view his subordinates' users, can export tasks to Excel;
+- [x] admin: can create/edit users.
+- [x] Implement Complete task system with pop-up and mandatory comment
+- [ ] Nicer alert dialogs
 - [ ] Implement Re-Open task system with pop-up and mandatory comment
 - [ ] User view page
 - [ ] User creation page
