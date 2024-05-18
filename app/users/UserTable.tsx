@@ -1,21 +1,19 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
-import { SelectionUser } from "../(protected)/tasks/[id]/taskForm";
 import { AvatarAndNameSmall } from "@/components/AvatarAndName";
-
-type StatusTypes = "1" | "2" | undefined;
+import { UserExtended } from "./getUserById";
 
 export interface UsersQuery {
-	status: StatusTypes;
-	orderBy: keyof SelectionUser;
+	active: string;
+	orderBy: keyof UserExtended;
 	sortOrder: "asc" | "desc";
 	page: string;
 }
 
 interface Props {
 	searchParams: UsersQuery;
-	users: SelectionUser[];
+	users: UserExtended[];
 }
 
 const UserTable = ({ searchParams, users }: Props) => {
@@ -74,7 +72,7 @@ const UserTable = ({ searchParams, users }: Props) => {
 
 export default UserTable;
 
-const columns: { label: string; value: keyof SelectionUser; className?: string }[] = [
+const columns: { label: string; value: keyof UserExtended; className?: string }[] = [
 	{ label: "Name", value: "firstName", className: "py-1.5" },
 	{ label: "Position", value: "position", className: "hidden md:table-cell py-1.5" },
 	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5" },

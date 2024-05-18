@@ -1,14 +1,14 @@
+import { AvatarAndNameSmall } from "@/components/AvatarAndName";
 import StatusBadge from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
+import { cn } from "@/lib/utils";
 import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
 import { TaskExtended } from "./page";
-import { cn } from "@/lib/utils";
-import { AvatarAndNameSmall } from "@/components/AvatarAndName";
 
-type StatusTypes = "1" | "2" | "3" | undefined;
+type StatusTypes = "1" | "2" | "3" | "4" | undefined;
 
 export interface TasksQuery {
 	status: StatusTypes;
@@ -20,9 +20,10 @@ export interface TasksQuery {
 interface Props {
 	searchParams: TasksQuery;
 	tasks: TaskExtended[];
+	viewableUsers: string[];
 }
 
-const TaskTable = ({ searchParams, tasks }: Props) => {
+const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 	const sortOrder = searchParams.sortOrder;
 
 	return (
@@ -63,10 +64,12 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 								<div className={dueColor(task.dueDate)}> {formatDate(task.dueDate)}</div>
 							</div>
 							<div className="block md:hidden">
-								{task.assignedToUser && (
+								{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
 									<Link href={`/users/${task.assignedToUserId}`}>
 										<AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
 									</Link>
+								) : (
+									task.assignedToUser && <AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
 								)}
 							</div>
 						</TableCell>
@@ -76,10 +79,12 @@ const TaskTable = ({ searchParams, tasks }: Props) => {
 						<TableCell className="hidden md:table-cell py-1">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task.dueDate), "hidden md:table-cell py-1")}>{formatDate(task.dueDate)}</TableCell>
 						<TableCell className="hidden md:table-cell py-1">
-							{task.assignedToUser && (
+							{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
 								<Link href={`/users/${task.assignedToUserId}`}>
 									<AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
 								</Link>
+							) : (
+								task.assignedToUser && <AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
 							)}
 						</TableCell>
 					</TableRow>

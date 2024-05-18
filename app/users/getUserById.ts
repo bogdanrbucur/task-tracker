@@ -1,22 +1,52 @@
 import prisma from "@/prisma/client";
+import { Task } from "@prisma/client";
 import NodeCache from "node-cache";
 
-export type UserDetails = {
+type Department = {
+	id: number;
+	name: string;
+} | null;
+
+type UserRestricted = {
 	id: string;
 	firstName: string;
 	lastName: string;
-	departmentId: number;
-	department: {
-		id: number;
-		name: string;
-	} | null;
+	position: string;
+	department: Department;
+	email: string;
 };
 
-// Cache the users for 60 minutes. Check every 10 min to see if the cache is stale.
-const userCache = new NodeCache({ stdTTL: 60 * 60, checkperiod: 10 * 60 });
+export type UserExtended = {
+	id: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	position: string;
+	department: Department;
+	subordinates: UserRestricted[];
+	assignedTasks: Task[];
+	manager?: UserRestricted | null;
+	active: boolean;
+};
 
-export default async function getUserPropsById(id: string) {
-	let user = userCache.get(id) as UserDetails | undefined;
+export const prismaUserSelection = {
+	id: true,
+	firstName: true,
+	lastName: true,
+	email: true,
+	position: true,
+	department: true,
+	subordinates: { select: { id: true, firstName: true, lastName: true, position: true, department: true, email: true } },
+	assignedTasks: true,
+	manager: { select: { id: true, firstName: true, lastName: true, position: true, department: true, email: true } },
+	active: true,
+};
+
+// Cache the users for 10 minutes. Check every min to see if the cache is stale.
+const userCache = new NodeCache({ stdTTL: 10 * 60, checkperiod: 1 * 60 });
+
+export default async function getUserDetails(id: string) {
+	let user = userCache.get(id) as UserExtended | undefined;
 
 	if (!user) {
 		// console.log(`Fetching user ${id} from database...`);
@@ -24,22 +54,8 @@ export default async function getUserPropsById(id: string) {
 		// Fetch the user from the database by ID
 		user = (await prisma.user.findUnique({
 			where: { id: id },
-			select: { id: true, firstName: true, lastName: true, departmentId: true },
-		})) as UserDetails;
-
-		// If the user has no department, set it to null
-		if (user.departmentId === null) user.department = null;
-		// If the user has a department, fetch the department from the database
-		else {
-			const department = await prisma.department.findUnique({
-				where: { id: user.departmentId! },
-			});
-
-			if (department) user.department = { id: department.id, name: department.name };
-		}
-
-		// TODO get the user manager
-		//
+			select: prismaUserSelection,
+		})) as UserExtended;
 
 		userCache.set(id, user);
 	} else {

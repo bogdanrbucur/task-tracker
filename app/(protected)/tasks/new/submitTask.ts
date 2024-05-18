@@ -1,7 +1,7 @@
 // server function to add new task
 "use server";
 
-import getUserPropsById from "@/app/users/getUserById";
+import getUserDetails from "@/app/users/getUserById";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -46,7 +46,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		});
 
 		// Get the created by user object by the ID
-		const editingUser = await getUserPropsById(data.createdByUserId);
+		const editingUser = await getUserDetails(data.createdByUserId);
 
 		// If a task ID is provided, update the existing task
 		if (data.id) newTask = await updateTask(data as UpdateTask, editingUser!);

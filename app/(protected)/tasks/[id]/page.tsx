@@ -5,20 +5,20 @@
  */
 import TaskHistory from "@/app/(protected)/tasks/[id]/TaskHistory";
 import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
+import { getPermissions } from "@/app/_auth/actions/get-permissions";
 import { AvatarAndNameLarge } from "@/components/AvatarAndName";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { completedColor, dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { Calendar as CalendarIcon, Check, SquarePen } from "lucide-react";
+import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CommentsSection from "./commentsSection";
-import StatusBadge from "@/components/StatusBadge";
 import { CloseTaskButton } from "./CloseTaskButton";
+import { CompleteTaskButton } from "./CompleteTaskButton";
+import CommentsSection from "./commentsSection";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -31,9 +31,9 @@ export default async function TaskDetailsPage({ params }: Props) {
 
 	// Check user permissions
 	const { user } = await getAuth();
-	let userPermissions;
-	if (user) userPermissions = await getUserPermissions(user.id);
+	const userPermissions = await getPermissions(user?.id);
 
+	// Get the task details
 	const task = await prisma.task.findUnique({
 		where: { id: Number(params.id) },
 		include: {
@@ -44,8 +44,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 			comments: true,
 		},
 	});
-
-	const canCompleteTask = userPermissions?.canCreateTasks || user?.id === task?.assignedToUser?.id;
+	// If the task is not found, return a 404 page, included in Next.js
+	if (!task) return notFound();
 
 	// Get all the comments details
 	const comments = await prisma.comment.findMany({
@@ -53,10 +53,10 @@ export default async function TaskDetailsPage({ params }: Props) {
 		select: { user: { select: { firstName: true, lastName: true, department: true } }, comment: true, id: true, time: true },
 	});
 
-	const isLoginUserManagerOfAssignedUser = user?.id === task?.assignedToUser?.managerId;
-
-	// If the issue is not found, we return a 404 page, included in Next.js
-	if (!task) return notFound();
+	// Check if the user has the permission to edit the task = is admin, is manager of the assigned user, or is the assigned user
+	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id || task?.assignedToUser?.id === user?.id;
+	const canCompleteTask = userPermissions?.isAdmin || user?.id === task?.assignedToUser?.id;
+	const canCloseTask = user?.id === task.assignedToUser?.managerId;
 
 	return (
 		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
@@ -70,7 +70,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 						<div className="flex items-center gap-4 justify-between">
 							<StatusBadge statusObj={task.status} size="sm" />
 							<div className="flex gap-4">
-								{userPermissions?.canCreateTasks && (
+								{canEditTask && task.statusId === 1 && (
 									<Button asChild size="sm">
 										<Link href={`/tasks/${task.id}/edit`} className="gap-1">
 											Edit
@@ -78,13 +78,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 										</Link>
 									</Button>
 								)}
-								{canCompleteTask && task.statusId === 1 && (
-									<Button size="sm" className="gap-1">
-										Complete
-										<Check size="18" />
-									</Button>
-								)}
-								{isLoginUserManagerOfAssignedUser && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
+								{canCompleteTask && task.statusId === 1 && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
+								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
 						</div>
 						<div className="grid grid-cols-2 lg:grid-cols-4">

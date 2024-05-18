@@ -14,22 +14,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Check } from "lucide-react";
 import closeTask from "./closeTask";
 
-export async function CloseTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+export async function CompleteTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
 				<Button size="sm" className="gap-1">
-					Close
+					Complete
 					<Check size="18" />
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<form action={closeTask}>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Close the task</AlertDialogTitle>
-						<AlertDialogDescription>You hereby confirm the task is completed and can be closed. You may provide an optional closing comment.</AlertDialogDescription>
+						<AlertDialogTitle>Complete the task</AlertDialogTitle>
+						<AlertDialogDescription>You hereby confirm the task is completed and ready to be reviewed. Please provide a short comment.</AlertDialogDescription>
 					</AlertDialogHeader>
-					<Textarea name="closeComment" draggable="false" className="my-3" placeholder="Optional comment..." />
+					<Textarea name="completeComment" draggable="false" className="my-3" placeholder="Your comment..." />
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction type="submit">Confirm</AlertDialogAction>

@@ -1,28 +1,26 @@
 // Server action to get the given user's permissions
 
-import { cache } from "react";
 import prisma from "@/prisma/client";
+import { cache } from "react";
 
 export interface UserPermissions {
-	canCreateUsers: boolean;
-	canCreateTasks: boolean;
-	canCloseTasks: boolean;
+	isAdmin: boolean;
+	isManager: boolean;
 }
 
-export const getUserPermissions = cache(async (userId: string): Promise<UserPermissions> => {
-	const user = await prisma.user.findUnique({ where: { id: userId } });
-	// Get all the permissions from the UserPermissions interface and build the response object
-	if (!user) {
-		return {
-			canCreateUsers: false,
-			canCreateTasks: false,
-			canCloseTasks: false,
-		};
+export const getPermissions = cache(async (userId: string | undefined): Promise<UserPermissions> => {
+	if (!userId) {
+		return { isAdmin: false, isManager: false };
 	}
 
-	return {
-		canCreateUsers: user?.canCreateUsers ? user?.canCreateUsers : false,
-		canCreateTasks: user?.canCreateTasks ? user?.canCreateTasks : false,
-		canCloseTasks: user?.canCloseTasks ? user?.canCloseTasks : false,
-	};
+	const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true, subordinates: true } });
+	// Get all the permissions from the UserPermissions interface and build the response object
+	if (!user) {
+		return { isAdmin: false, isManager: false };
+	}
+
+	let subordinates = user?.subordinates;
+	subordinates = subordinates.filter((s) => s.active);
+
+	return { isAdmin: user?.isAdmin ? user?.isAdmin : false, isManager: user?.subordinates.length > 0 ? true : false };
 });

@@ -1,6 +1,7 @@
 "use client";
 import { DatePicker } from "@/app/(protected)/tasks/new/DatePicker";
 import { UsersSelection } from "@/app/(protected)/tasks/new/UsersSelection";
+import { UserExtended } from "@/app/users/getUserById";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,38 +13,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import submitTask from "../new/submitTask";
-import { Task } from "@prisma/client";
-
-type Department = {
-	id: number;
-	name: string;
-} | null;
-
-type Manager = {
-	id: string;
-	firstName: string;
-	lastName: string | null;
-	position: string;
-	department: Department;
-	email: string;
-} | null;
-
-export type SelectionUser = {
-	id: string;
-	firstName: string;
-	lastName: string | null;
-	position: string;
-	email: string;
-	department: Department;
-	manager: Manager;
-	assignedTasks: Task[] | null;
-};
 
 const initialState = {
 	message: null,
 };
 
-const taskForm = ({ users, user, task }: { users: SelectionUser[]; user: User; task?: any }) => {
+const taskForm = ({ users, user, task }: { users: UserExtended[]; user: User; task?: any }) => {
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [formState, formAction] = useFormState(submitTask, initialState);

@@ -1,10 +1,9 @@
 // Server action to get the current user and session
 
-import { cookies } from "next/headers";
-import { cache } from "react";
-
 import { lucia } from "@/lib/lucia";
 import type { Session, User } from "lucia";
+import { cookies } from "next/headers";
+import { cache } from "react";
 
 export const getAuth = cache(async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
 	const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;

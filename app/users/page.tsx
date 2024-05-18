@@ -1,27 +1,26 @@
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
 import { getAuth } from "../_auth/actions/get-auth";
-import { getUserPermissions } from "../_auth/actions/get-permissions";
+import { getPermissions } from "../_auth/actions/get-permissions";
 import UserTable, { UsersQuery, columnNames } from "./UserTable";
 import { Card } from "@/components/ui/card";
+import { prismaUserSelection } from "./getUserById";
 
 interface Props {
 	searchParams: UsersQuery;
 }
 
-const statuses = ["1", "2"];
-
 export default async function UsersPage({ searchParams }: Props) {
+	// Check user permissions
 	const { user } = await getAuth();
+	const userPermissions = await getPermissions(user?.id);
 
-	let userPermissions;
-	if (user) userPermissions = await getUserPermissions(user.id);
+	// Only admins can see all users
+	if (!userPermissions?.isAdmin) return notFound();
 
-	if (!userPermissions?.canCreateTasks) return notFound();
-
-	const status = searchParams.status && statuses.includes(searchParams.status) ? parseInt(searchParams.status) : undefined;
+	const active = searchParams.active ? Boolean(searchParams.active) : true;
 	const sortOrder = searchParams.sortOrder;
-	const where = { statusId: status };
+	const where = { active: active };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 10;
@@ -31,16 +30,7 @@ export default async function UsersPage({ searchParams }: Props) {
 		orderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
-		select: {
-			id: true,
-			firstName: true,
-			lastName: true,
-			position: true,
-			email: true,
-			department: true,
-			manager: { select: { id: true, firstName: true, lastName: true, position: true, department: true, email: true } },
-			assignedTasks: true,
-		},
+		select: prismaUserSelection,
 	});
 
 	const userCount = await prisma.user.count({ where });

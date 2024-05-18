@@ -5,14 +5,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
 
-export default async function closeTask(formData: FormData) {
+export default async function completeTask(formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
 	// console.log(rawData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		taskId: z.string(),
-		closeComment: z.string().max(200, { message: "Comment must be at most 200 characters." }),
+		completeComment: z.string().min(4, {message: "Comment must be longer than 4 characters."}).max(200, { message: "Comment must be at most 200 characters." }),
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
@@ -21,35 +21,35 @@ export default async function closeTask(formData: FormData) {
 		// If validation fails, an error will be thrown and caught in the catch block
 		const data = schema.parse({
 			taskId: formData.get("taskId") as string,
-			closeComment: formData.get("closeComment") as string,
+			completeComment: formData.get("completeComment") as string,
 			userId: formData.get("userId") as string,
 		});
 
-		// Get the user the task is assigned to and check that the userId is the manager of the user the task is assigned to
+		// Get the user the task is assigned to and check that the userId is the user the task is assigned to
 		const task = await prisma.task.findUnique({
 			where: { id: Number(data.taskId) },
-			include: { assignedToUser: { select: { managerId: true, manager: { select: { firstName: true, lastName: true, id: true } } } } },
+			include: { assignedToUser: { select: { firstName: true, lastName: true, id: true } } },
 		});
 
-		if (task?.assignedToUser?.managerId !== data.userId) {
-			return { message: "You are not the manager of the user this task is assigned to." };
+		if (task?.assignedToUser?.id !== data.userId) {
+			return { message: "You are not the user this task is assigned to." };
 		}
 
 		// Close the task
-		const closedTask = await prisma.task.update({
+		const completedTask = await prisma.task.update({
 			where: { id: Number(data.taskId) },
 			data: {
-				statusId: 3,
+				statusId: 2,
 				closedOn: new Date(),
 			},
 		});
 
-		const closingComment = `Task closed by ${task.assignedToUser.manager!.firstName} ${task.assignedToUser.manager!.lastName}${
-			data.closeComment ? `: ${data.closeComment}` : "."
+		const completeComment = `Task completed by ${task.assignedToUser.firstName} ${task.assignedToUser.lastName}${
+			data.completeComment ? `: ${data.completeComment}` : "."
 		}`;
 
 		// Add the changes to the task history
-		const newChange = await recordTaskHistory(closedTask, task.assignedToUser.manager!, [closingComment]);
+		const newChange = await recordTaskHistory(completedTask, task.assignedToUser, [completeComment]);
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {

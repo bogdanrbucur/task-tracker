@@ -1,4 +1,4 @@
-import { UserDetails } from "@/app/users/getUserById";
+import { UserExtended } from "@/app/users/getUserById";
 import { time } from "console";
 
 // determine the time of day: morning, noon or evening
@@ -59,7 +59,7 @@ switch (occasion) {
 		break;
 }
 
-const NavBarWelcome = ({ userProps }: { userProps: UserDetails | undefined }) => {
+const NavBarWelcome = ({ userProps }: { userProps: UserExtended | undefined }) => {
 	if (!userProps) return null;
 
 	// TODO click on the user's name to go to their profile

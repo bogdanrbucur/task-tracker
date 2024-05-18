@@ -1,19 +1,26 @@
 import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getUserPermissions } from "@/app/_auth/actions/get-permissions";
+import { getPermissions } from "@/app/_auth/actions/get-permissions";
 import getUsers from "@/app/users/getUsers";
 import { notFound } from "next/navigation";
 import TaskForm from "../[id]/taskForm";
+import getUserDetails from "@/app/users/getUserById";
 
 const NewTaskPage = async () => {
 	// Check user permissions
 	const { user } = await getAuth();
-	let userPermissions;
-	if (user) userPermissions = await getUserPermissions(user.id);
-	if (!userPermissions?.canCreateTasks) return notFound();
+	const userPermissions = await getPermissions(user?.id);
+	const canCreateTask = userPermissions?.isAdmin || userPermissions?.isManager;
+	if (!canCreateTask) return notFound();
 
-	const users = await getUsers();
+	// Get logged in user details and all users
+	const thisUser = await getUserDetails(user?.id!);
+	const allUsers = await getUsers();
 
-	return <TaskForm users={users} user={user!} />;
+	// Filter the users to include only the logged in user and their subordinates, unless they are admin, in which case all users are included
+	const subordinates = thisUser?.subordinates;
+	const filteredUsers = allUsers!.filter((u) => userPermissions.isAdmin || u.id === thisUser?.id || subordinates?.some((s) => s!.id === u.id));
+
+	return <TaskForm users={filteredUsers} user={user!} />;
 };
 
 export default NewTaskPage;

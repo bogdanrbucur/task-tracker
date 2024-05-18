@@ -1,11 +1,11 @@
-import getUserPropsById from "@/app/users/getUserById";
+import getUserDetails from "@/app/users/getUserById";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { Editor } from "../new/submitTask";
 
 export async function recordTaskHistory(task: Task, editingUser: Editor, changes?: string[]) {
 	// Get the assignedToUser object by the ID
-	const assignedToUser = await getUserPropsById(task.assignedToUserId!);
+	const assignedToUser = await getUserDetails(task.assignedToUserId!);
 
 	const editingUserFullName = `${editingUser.firstName} ${editingUser.lastName}`;
 

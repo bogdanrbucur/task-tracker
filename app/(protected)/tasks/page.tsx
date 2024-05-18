@@ -1,9 +1,12 @@
 import Pagination from "@/components/Pagination";
+import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { Status, Task, User } from "@prisma/client";
 import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
 import TaskTopSection from "./TaskTopSection";
-import { Card } from "@/components/ui/card";
+import { getAuth } from "@/app/_auth/actions/get-auth";
+import { notFound } from "next/navigation";
+import getUserDetails from "@/app/users/getUserById";
 
 export interface TaskExtended extends Task {
 	assignedToUser?: User;
@@ -11,13 +14,23 @@ export interface TaskExtended extends Task {
 	status: Status;
 }
 
-const statuses = ["1", "2", "3"];
+const statuses = ["1", "2", "3", "4"];
 
 interface Props {
 	searchParams: TasksQuery;
 }
 
 export default async function TasksPage({ searchParams }: Props) {
+	// Check user permissions
+	const { user } = await getAuth();
+	if (!user) return notFound();
+
+	// Get the users this user can view
+	const userSubordinates = (await getUserDetails(user.id)).subordinates;
+	let viewableUsers: string[] = [];
+	viewableUsers = userSubordinates.map((sub) => sub?.id);
+	viewableUsers.push(user.id);
+
 	// check if searchParams.status is one of the accepted statuses
 	// if not, set it to undefined
 	const status = searchParams.status && statuses.includes(searchParams.status) ? parseInt(searchParams.status) : undefined;
@@ -32,36 +45,17 @@ export default async function TasksPage({ searchParams }: Props) {
 		orderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
+		// TODO is this sending the hashed password to the client?
 		include: { status: true, createdByUser: true, assignedToUser: true },
 	})) as TaskExtended[];
 
 	const taskCount = await prisma.task.count({ where });
 
-	// Get all users and statuses from the database with all properties except hashedPassword
-	const users = await prisma.user.findMany({ select: { id: true, firstName: true, lastName: true } });
-	const dbStatuses = await prisma.status.findMany();
-
-	// Make a new array tasksExtended and replace the userId and statusId with the actual user and status objects
-
-	// TODO need to fix this shit and grab everything from the ORM
-	// const tasksExtended = tasks.map((task) => {
-	// 	const assignedTo = users.find((user) => user.id === task.assignedToUserId);
-	// 	const status = dbStatuses.find((status) => status.id === task.statusId);
-	// 	const creator = users.find((user) => user.id === task.createdByUserId);
-
-	// 	return {
-	// 		...task,
-	// 		assignedTo: assignedTo?.firstName ? assignedTo?.firstName : null + " " + assignedTo?.lastName ? assignedTo?.lastName : null,
-	// 		status,
-	// 		creator: creator?.firstName ? creator?.firstName : null + " " + creator?.lastName ? creator?.lastName : null,
-	// 	} as TaskExtended;
-	// });
-
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
 			<div className="container py-1">
 				<TaskTopSection />
-				<TaskTable tasks={tasks} searchParams={searchParams} />
+				<TaskTable tasks={tasks} searchParams={searchParams} viewableUsers={viewableUsers} />
 				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
 			</div>
 		</Card>
