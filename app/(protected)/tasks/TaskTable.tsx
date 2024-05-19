@@ -1,4 +1,5 @@
-import { AvatarAndNameSmall } from "@/components/AvatarAndName";
+import { UserExtended } from "@/app/users/getUserById";
+import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAndName";
 import StatusBadge from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
@@ -66,10 +67,10 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 							<div className="block md:hidden">
 								{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
 									<Link href={`/users/${task.assignedToUserId}`}>
-										<AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
+										<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 									</Link>
 								) : (
-									task.assignedToUser && <AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
+									task.assignedToUser && <UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 								)}
 							</div>
 						</TableCell>
@@ -81,10 +82,10 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 						<TableCell className="hidden md:table-cell py-1">
 							{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
 								<Link href={`/users/${task.assignedToUserId}`}>
-									<AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
+									<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 								</Link>
 							) : (
-								task.assignedToUser && <AvatarAndNameSmall firstName={task.assignedToUser.firstName} lastName={task.assignedToUser.lastName} />
+								task.assignedToUser && <UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 							)}
 						</TableCell>
 					</TableRow>

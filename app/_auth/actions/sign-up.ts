@@ -15,6 +15,7 @@ const signUp = async (formData: FormData) => {
 		lastName: formData.get("lastName") as string,
 		email: formData.get("email") as string,
 		password: formData.get("password") as string,
+		position: formData.get("position") as string,
 	};
 
 	try {
@@ -28,6 +29,7 @@ const signUp = async (formData: FormData) => {
 				lastName: formDataRaw.lastName,
 				email: formDataRaw.email,
 				hashedPassword,
+				position: formDataRaw.position,
 			},
 		});
 

@@ -1,14 +1,14 @@
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import NodeCache from "node-cache";
-import { isAborted } from "zod";
+import { cache } from "react";
 
 type Department = {
 	id: number;
 	name: string;
 } | null;
 
-type UserRestricted = {
+export type UserRestricted = {
 	id: string;
 	firstName: string;
 	lastName: string;
@@ -31,7 +31,16 @@ export type UserExtended = {
 	isAdmin: boolean;
 };
 
-export const prismaUserSelection = {
+export const prismaRestrictedUserSelection = {
+	id: true,
+	firstName: true,
+	lastName: true,
+	position: true,
+	department: true,
+	email: true,
+};
+
+export const prismaExtendedUserSelection = {
 	id: true,
 	firstName: true,
 	lastName: true,
@@ -46,24 +55,16 @@ export const prismaUserSelection = {
 };
 
 // Cache the users for 10 minutes. Check every min to see if the cache is stale.
-const userCache = new NodeCache({ stdTTL: 10 * 60, checkperiod: 1 * 60 });
+// const userCache = new NodeCache({ stdTTL: 5, checkperiod: 5 });
 
-export default async function getUserDetails(id: string) {
-	let user = userCache.get(id) as UserExtended | undefined;
-
-	if (!user) {
-		// console.log(`Fetching user ${id} from database...`);
-
-		// Fetch the user from the database by ID
-		user = (await prisma.user.findUnique({
-			where: { id: id },
-			select: prismaUserSelection,
-		})) as UserExtended;
-
-		userCache.set(id, user);
-	} else {
-		// console.log(`Returning user ${id} from cache...`);
-	}
+const getUserDetails = cache(async (id: string) => {
+	console.log("User details called for ID: ", id);
+	const user = (await prisma.user.findUnique({
+		where: { id: id },
+		select: prismaExtendedUserSelection,
+	})) as UserExtended;
 
 	return user;
-}
+});
+
+export default getUserDetails;

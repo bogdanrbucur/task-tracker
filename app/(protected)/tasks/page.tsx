@@ -1,15 +1,15 @@
+import { getAuth } from "@/app/_auth/actions/get-auth";
+import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app/users/getUserById";
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { Status, Task, User } from "@prisma/client";
+import { notFound } from "next/navigation";
 import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
 import TaskTopSection from "./TaskTopSection";
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { notFound } from "next/navigation";
-import getUserDetails from "@/app/users/getUserById";
 
 export interface TaskExtended extends Task {
-	assignedToUser?: User;
+	assignedToUser?: UserExtended;
 	createdByUser?: User;
 	status: Status;
 }
@@ -46,8 +46,14 @@ export default async function TasksPage({ searchParams }: Props) {
 		skip: (page - 1) * pageSize,
 		take: pageSize,
 		// TODO is this sending the hashed password to the client?
-		include: { status: true, createdByUser: true, assignedToUser: true },
-	})) as TaskExtended[];
+		include: {
+			status: true,
+			createdByUser: true,
+			assignedToUser: {
+				select: prismaExtendedUserSelection,
+			},
+		},
+	}));
 
 	const taskCount = await prisma.task.count({ where });
 
@@ -55,7 +61,7 @@ export default async function TasksPage({ searchParams }: Props) {
 		<Card className="container mx-auto px-0 md:px-0">
 			<div className="container py-1">
 				<TaskTopSection />
-				<TaskTable tasks={tasks} searchParams={searchParams} viewableUsers={viewableUsers} />
+				<TaskTable tasks={tasks as TaskExtended[]} searchParams={searchParams} viewableUsers={viewableUsers} />
 				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
 			</div>
 		</Card>

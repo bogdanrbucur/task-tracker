@@ -4,7 +4,7 @@ import { getAuth } from "../_auth/actions/get-auth";
 import { getPermissions } from "../_auth/actions/get-permissions";
 import UserTable, { UsersQuery, columnNames } from "./UserTable";
 import { Card } from "@/components/ui/card";
-import { prismaUserSelection } from "./getUserById";
+import { UserExtended, prismaExtendedUserSelection } from "./getUserById";
 
 interface Props {
 	searchParams: UsersQuery;
@@ -30,7 +30,7 @@ export default async function UsersPage({ searchParams }: Props) {
 		orderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
-		select: prismaUserSelection,
+		select: prismaExtendedUserSelection,
 	});
 
 	const userCount = await prisma.user.count({ where });
@@ -38,7 +38,7 @@ export default async function UsersPage({ searchParams }: Props) {
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
 			<div className="container mx-auto py-1">
-				<UserTable searchParams={searchParams} users={users} />
+				<UserTable searchParams={searchParams} users={users as UserExtended[]} />
 			</div>
 		</Card>
 	);

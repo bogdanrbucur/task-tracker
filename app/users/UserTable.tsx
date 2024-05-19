@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
-import { AvatarAndNameSmall } from "@/components/AvatarAndName";
+import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAndName";
 import { UserExtended } from "./getUserById";
 
 export interface UsersQuery {
@@ -48,7 +48,7 @@ const UserTable = ({ searchParams, users }: Props) => {
 						<TableCell className="py-1.5">
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/users/${user.id}`}>
-								<AvatarAndNameSmall firstName={user.firstName} lastName={user.lastName} />
+								<UserAvatarNameSmall user={user} />
 							</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
 							{/* <div className="block md:hidden">
@@ -59,7 +59,7 @@ const UserTable = ({ searchParams, users }: Props) => {
 						<TableCell className="hidden md:table-cell py-1.5">{user.department?.name}</TableCell>
 						<TableCell className="py-1.5">
 							<Link href={`/users/${user.manager?.id}`}>
-								<AvatarAndNameSmall firstName={user.manager?.firstName} lastName={user.manager?.lastName} />
+								<UserAvatarNameSmall user={user} />
 							</Link>
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1.5">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
