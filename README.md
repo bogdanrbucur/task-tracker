@@ -41,9 +41,10 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Implement Complete task system with pop-up and mandatory comment
 - [x] Nicer alert dialogs
 - [x] Implement Re-Open task system with pop-up and mandatory comment
-- [ ] User view page
+- [x] User view page
 - [ ] User creation page
 - [ ] User password change if that user is viewing the page
+- [ ] Dates colors that make sense: due date red if overdue. Completed date red if overdue. In all pages
 - [ ] Make an admin menu with dropdowns for Tasks, Users, Departments, and Statuses
 - [ ] Replace the React Icon logo with an actual generic .png
 - [ ] Add a favicon

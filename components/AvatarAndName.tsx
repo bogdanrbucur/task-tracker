@@ -1,6 +1,7 @@
 "use client";
 import { UserExtended, UserRestricted } from "@/app/users/getUserById";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import Link from "next/link";
 
 export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestricted | null }) => {
 	if (!user) return null;
@@ -8,13 +9,17 @@ export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestri
 
 	return (
 		<div className="flex items-center gap-4">
-			<Avatar>
-				<AvatarImage alt={initials} />
-				<AvatarFallback>{initials}</AvatarFallback>
-			</Avatar>
+			<Link href={`/users/${user.id}`}>
+				<Avatar>
+					<AvatarImage alt={initials} />
+					<AvatarFallback>{initials}</AvatarFallback>
+				</Avatar>
+			</Link>
 			<div>
-				{user.firstName} {user.lastName}
-				<p className="text-xs text-muted-foreground">{user.position}</p>
+				<Link href={`/users/${user.id}`}>
+					{user.firstName} {user.lastName}
+					<p className="text-xs text-muted-foreground">{user.position}</p>
+				</Link>
 			</div>
 		</div>
 	);

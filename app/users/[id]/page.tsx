@@ -76,10 +76,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					</div>
 					{userDetails.manager && (
 						<div>
-							<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Manager</h4>{" "}
-							<Link href={`/users/${userDetails.manager.id}`}>
-								<UserAvatarNameNormal user={userDetails.manager} />
-							</Link>
+							<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Manager</h4> <UserAvatarNameNormal user={userDetails.manager} />
 						</div>
 					)}
 				</div>
@@ -88,9 +85,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Subordinates</h4>
 						<div className="grid grid-cols-2 gap-4">
 							{userDetails.subordinates.map((subordinate) => (
-								<Link href={`/users/${subordinate.id}`} key={subordinate.id}>
-									<UserAvatarNameNormal user={subordinate} />
-								</Link>
+								<UserAvatarNameNormal user={subordinate} />
 							))}
 						</div>
 					</div>
@@ -103,8 +98,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 								<div key={task.id}>
 									<div className="flex items-center justify-between">
 										<Link href={`/tasks/${task.id}`}>
-											<h4 className="font-medium">{task.title}</h4>
-											<p className="text-sm text-gray-500 dark:text-gray-400">Due: {formatDate(task.dueDate)}</p>
+											<h4 className="font-sm">{task.title}</h4>
+											<p className="text-xs text-gray-500 dark:text-gray-400">Due: {formatDate(task.dueDate)}</p>
 										</Link>
 										{/* @ts-ignore */}
 										<StatusBadge statusObj={task.status} size="xs" />

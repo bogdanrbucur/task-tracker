@@ -29,7 +29,12 @@ export function UsersSelection({ users, onChange, defaultUser }: { users: UserEx
 					<SelectLabel>User</SelectLabel>
 					{users.map((user) => (
 						<SelectItem key={user.id} value={user.id}>
-							{user.firstName} {user.lastName} {user.department ? `(${user.department.name})` : ""}
+							<div className="flex gap-2 items-center">
+								<div>
+									{user.firstName} {user.lastName}
+								</div>
+								<div className="text-xs text-gray-500 dark:text-gray-400"> {user.department ? `(${user.department.name})` : ""}</div>
+							</div>
 						</SelectItem>
 					))}
 				</SelectGroup>

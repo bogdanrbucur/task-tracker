@@ -1,5 +1,6 @@
 import { UserExtended } from "@/app/users/getUserById";
 import { time } from "console";
+import Link from "next/link";
 
 // determine the time of day: morning, noon or evening
 const date = new Date();
@@ -66,7 +67,11 @@ const NavBarWelcome = ({ userProps }: { userProps: UserExtended | undefined }) =
 	//
 	return (
 		<div className="text-sm md:text-base">
-			{timeOfDay.greeting} {userProps.firstName} <span className="">{timeOfDay.emoji}</span>
+			{timeOfDay.greeting}{" "}
+			<Link className="hover:text-gray-500" href={`/users/${userProps.id}`}>
+				{userProps.firstName}
+			</Link>{" "}
+			<span className="">{timeOfDay.emoji}</span>
 		</div>
 	);
 };

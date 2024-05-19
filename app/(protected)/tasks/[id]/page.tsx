@@ -67,7 +67,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 					<div className="space-y-4">
 						<div>
 							<h1 className="text-2xl font-bold">{task.title}</h1>
-							<p className="text-gray-500 dark:text-gray-400">{task.description}</p>
+							<p className="text-gray-500 dark:text-gray-400 whitespace-pre-wrap">{task.description}</p>
 						</div>
 						<div className="flex items-center gap-4 justify-between">
 							<StatusBadge statusObj={task.status} size="sm" />

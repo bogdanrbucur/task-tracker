@@ -63,7 +63,9 @@ const UserTable = ({ searchParams, users }: Props) => {
 								</Link>
 							)}
 						</TableCell>
-						<TableCell className="hidden md:table-cell py-1.5">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
+						<TableCell className="hidden md:table-cell py-1.5">
+							{user.assignedTasks ? user.assignedTasks.filter((task) => task.statusId === 1 || task.statusId === 2).length : ""}
+						</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
