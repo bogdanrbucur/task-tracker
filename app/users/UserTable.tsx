@@ -55,12 +55,13 @@ const UserTable = ({ searchParams, users }: Props) => {
 								{user.firstName} {user.lastName}
 							</div> */}
 						</TableCell>
-						<TableCell className="hidden md:table-cell py-1.5">{user.position}</TableCell>
 						<TableCell className="hidden md:table-cell py-1.5">{user.department?.name}</TableCell>
 						<TableCell className="py-1.5">
-							<Link href={`/users/${user.manager?.id}`}>
-								<UserAvatarNameSmall user={user} />
-							</Link>
+							{user.manager && (
+								<Link href={`/users/${user.manager?.id}`}>
+									<UserAvatarNameSmall user={user.manager} />
+								</Link>
+							)}
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1.5">Tasks: {user.assignedTasks ? user.assignedTasks.length : ""}</TableCell>
 					</TableRow>
@@ -74,10 +75,9 @@ export default UserTable;
 
 const columns: { label: string; value: keyof UserExtended; className?: string }[] = [
 	{ label: "Name", value: "firstName", className: "py-1.5" },
-	{ label: "Position", value: "position", className: "hidden md:table-cell py-1.5" },
 	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5" },
 	{ label: "Manager", value: "manager", className: "hidden md:table-cell py-1.5" },
-	{ label: "Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5" },
+	{ label: "Open Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5" },
 ];
 
 export const columnNames = columns.map((column) => column.value);

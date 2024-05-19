@@ -26,10 +26,16 @@ export default async function TasksPage({ searchParams }: Props) {
 	if (!user) return notFound();
 
 	// Get the users this user can view
-	const userSubordinates = (await getUserDetails(user.id)).subordinates;
+	const userDetails = await getUserDetails(user.id);
 	let viewableUsers: string[] = [];
-	viewableUsers = userSubordinates.map((sub) => sub?.id);
-	viewableUsers.push(user.id);
+	if (userDetails.isAdmin) {
+		// Get all users IDs
+		viewableUsers = await prisma.user.findMany({ select: { id: true } }).then((users) => users.map((user) => user.id));
+	} else {
+		// Get the IDs of the user's subordinates and the user's own ID
+		viewableUsers = userDetails.subordinates.map((sub) => sub?.id);
+		viewableUsers.push(user.id);
+	}
 
 	// check if searchParams.status is one of the accepted statuses
 	// if not, set it to undefined
@@ -40,12 +46,11 @@ export default async function TasksPage({ searchParams }: Props) {
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 15;
 
-	const tasks = (await prisma.task.findMany({
+	const tasks = await prisma.task.findMany({
 		where,
 		orderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
-		// TODO is this sending the hashed password to the client?
 		include: {
 			status: true,
 			createdByUser: true,
@@ -53,7 +58,7 @@ export default async function TasksPage({ searchParams }: Props) {
 				select: prismaExtendedUserSelection,
 			},
 		},
-	}));
+	});
 
 	const taskCount = await prisma.task.count({ where });
 

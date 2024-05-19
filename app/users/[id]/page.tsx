@@ -53,17 +53,19 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					<UserAvatarNameLarge user={userDetails} />
 					<div className="flex gap-2">
 						<Button asChild size="sm">
-							<Link href={`/tasks/${userDetails.id}/edit`} className="gap-1">
+							<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
 								Edit
 								<SquarePen size="18" />
 							</Link>
 						</Button>
-						<Button asChild size="sm">
-							<Link href={`/tasks/${userDetails.id}/edit`} className="gap-1">
-								Change Password
-								<KeySquare size="18" />
-							</Link>
-						</Button>
+						{user?.id === userDetails.id && (
+							<Button asChild size="sm">
+								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
+									Change Password
+									<KeySquare size="18" />
+								</Link>
+							</Button>
+						)}
 					</div>
 				</div>
 			</CardHeader>

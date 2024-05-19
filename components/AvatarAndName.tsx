@@ -19,7 +19,7 @@ export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestri
 		</div>
 	);
 };
-export const UserAvatarNameSmall = ({ user }: { user: UserExtended | null }) => {
+export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestricted | null }) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 
