@@ -1,5 +1,6 @@
 "use server";
 
+import getUserDetails from "@/app/users/getUserById";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -12,7 +13,7 @@ export default async function completeTask(prevState: any, formData: FormData) {
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		taskId: z.string(),
-		completeComment: z.string().min(4, {message: "Comment must be longer than 4 characters."}).max(200, { message: "Comment must be at most 200 characters." }),
+		completeComment: z.string().min(4, { message: "Comment must be at least 4 characters." }).max(200, { message: "Comment must be at most 200 characters." }),
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
@@ -31,8 +32,10 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			include: { assignedToUser: { select: { firstName: true, lastName: true, id: true } } },
 		});
 
-		if (task?.assignedToUser?.id !== data.userId) {
-			return { message: "You are not the user this task is assigned to." };
+		// Get the details of the user who is reopening the task
+		const editor = await getUserDetails(data.userId);
+		if (task?.assignedToUser?.id !== data.userId && !editor.isAdmin) {
+			return { message: "You are not authorized to complete this task." };
 		}
 
 		// Close the task
@@ -40,18 +43,14 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			where: { id: Number(data.taskId) },
 			data: {
 				statusId: 2,
-				closedOn: new Date(),
+				completedOn: new Date(),
 			},
 		});
 
-		const completeComment = `Task completed by ${task.assignedToUser.firstName} ${task.assignedToUser.lastName}${
-			data.completeComment ? `: ${data.completeComment}` : "."
-		}`;
+		const completeComment = `Task completed by ${editor.firstName} ${editor.lastName}${data.completeComment ? `: ${data.completeComment}` : "."}`;
 
 		// Add the changes to the task history
-		const newChange = await recordTaskHistory(completedTask, task.assignedToUser, [completeComment]);
-
-		// Redirect to the task page, either for the updated task or the new task
+		const newChange = await recordTaskHistory(completedTask, editor, [completeComment]);
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

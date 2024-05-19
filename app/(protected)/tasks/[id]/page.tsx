@@ -19,6 +19,7 @@ import { notFound } from "next/navigation";
 import { CloseTaskButton } from "./CloseTaskButton";
 import { CompleteTaskButton } from "./CompleteTaskButton";
 import CommentsSection from "./commentsSection";
+import { ReopenTaskButton } from "./ReopenTaskButton";
 
 // This is the type of the props passed to the page component
 interface Props {
@@ -54,9 +55,10 @@ export default async function TaskDetailsPage({ params }: Props) {
 	});
 
 	// Check if the user has the permission to edit the task = is admin, is manager of the assigned user, or is the assigned user
-	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id || task?.assignedToUser?.id === user?.id;
+	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id || (userPermissions.isManager && task?.assignedToUser?.id === user?.id);
 	const canCompleteTask = userPermissions?.isAdmin || user?.id === task?.assignedToUser?.id;
-	const canCloseTask = user?.id === task.assignedToUser?.managerId;
+	const canCloseTask = user?.id === task.assignedToUser?.managerId || userPermissions?.isAdmin;
+	const canReopenTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id;
 
 	return (
 		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
@@ -78,6 +80,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 										</Link>
 									</Button>
 								)}
+								{canReopenTask && (task.statusId === 2 || task.statusId === 3) && <ReopenTaskButton userId={user?.id} taskId={task.id} />}
 								{canCompleteTask && task.statusId === 1 && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
 								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
 							</div>

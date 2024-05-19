@@ -39,8 +39,8 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] manager (has active subordinates): create tasks, edit tasks (only for his subordinates and themselves), close his subordinates' tasks, view his subordinates' users, can export tasks to Excel;
 - [x] admin: can create/edit users.
 - [x] Implement Complete task system with pop-up and mandatory comment
-- [ ] Nicer alert dialogs
-- [ ] Implement Re-Open task system with pop-up and mandatory comment
+- [x] Nicer alert dialogs
+- [x] Implement Re-Open task system with pop-up and mandatory comment
 - [ ] User view page
 - [ ] User creation page
 - [ ] User password change if that user is viewing the page
@@ -50,4 +50,7 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [ ] Scheduled function to check for overdue tasks and set the status to Overdue
 - [ ] Add toast notifications for changes
 - [ ] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
-- [ ] Implement email notifications for overdue tasks and comments
+- [ ] Comments @ mentions
+- [ ] Email notifications for comment @mentions, re-opened tasks, task completion, task assigned
+- [ ] Sonner toast notifications when emails are sent
+- [ ] Email notifications for overdue tasks (10 days)

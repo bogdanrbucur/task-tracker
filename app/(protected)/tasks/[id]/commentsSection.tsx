@@ -62,15 +62,14 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 				{userId && (
 					<div className="flex flex-col gap-5">
 						{/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight">Add comment</h4> */}
-						<Textarea name="comment" placeholder="Add a comment..." />
-						<PostCommentButton />
 						{state?.message && (
 							<Alert variant="destructive">
 								<AlertCircle className="h-4 w-4" />
-								<AlertTitle>Failed to add comment</AlertTitle>
-								<AlertDescription>{state?.message}</AlertDescription>
+								<AlertTitle>{state?.message}</AlertTitle>
 							</Alert>
 						)}
+						<Textarea name="comment" placeholder="Add a comment..." />
+						<PostCommentButton />
 						{/* Hidden input fields ensures formData is submitted */}
 						<input type="hidden" name="userId" value={userId} />
 						<input type="hidden" name="taskId" value={taskId} />

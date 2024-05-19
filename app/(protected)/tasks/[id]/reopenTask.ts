@@ -1,19 +1,19 @@
 "use server";
 
-import getUserDetails from "@/app/users/getUserById";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
+import getUserDetails from "@/app/users/getUserById";
 
-export default async function closeTask(formData: FormData) {
+export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
 	// console.log(rawData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		taskId: z.string(),
-		closeComment: z.string().max(200, { message: "Comment must be at most 200 characters." }),
+		reopenComment: z.string().min(10, { message: "Comment must be at least 10 characters." }).max(200, { message: "Comment must be at most 200 characters." }),
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
@@ -22,7 +22,7 @@ export default async function closeTask(formData: FormData) {
 		// If validation fails, an error will be thrown and caught in the catch block
 		const data = schema.parse({
 			taskId: formData.get("taskId") as string,
-			closeComment: formData.get("closeComment") as string,
+			reopenComment: formData.get("reopenComment") as string,
 			userId: formData.get("userId") as string,
 		});
 
@@ -38,19 +38,20 @@ export default async function closeTask(formData: FormData) {
 			return { message: "You are not authorized to reopen this task." };
 		}
 
-		// Close the task
-		const closedTask = await prisma.task.update({
+		// Reopen the task
+		const reopenedTask = await prisma.task.update({
 			where: { id: Number(data.taskId) },
 			data: {
-				statusId: 3,
-				closedOn: new Date(),
+				statusId: 1,
+				closedOn: null,
+				completedOn: null,
 			},
 		});
 
-		const closingComment = `Task closed by ${editor.firstName} ${editor.lastName}${data.closeComment ? `: ${data.closeComment}` : "."}`;
+		const reopenComment = `Task reopened by ${editor.firstName} ${editor.lastName}${data.reopenComment ? `: ${data.reopenComment}` : "."}`;
 
 		// Add the changes to the task history
-		const newChange = await recordTaskHistory(closedTask, editor, [closingComment]);
+		const newChange = await recordTaskHistory(reopenedTask, editor, [reopenComment]);
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

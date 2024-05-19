@@ -27,6 +27,12 @@ const SignInForm = () => {
 				<CardContent>
 					<form action={formAction} className="flex flex-col gap-y-9">
 						<div className="grid w-full gap-4">
+					{state.message && (
+						<Alert variant="destructive">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>{state?.message}</AlertTitle>
+						</Alert>
+					)}
 							<div className="flex flex-col space-y-1.5">
 								<Label htmlFor="name">Email</Label>
 								<Input name="email" type="email" placeholder="Email" />
@@ -44,13 +50,6 @@ const SignInForm = () => {
 					</form>
 				</CardContent>
 				<CardFooter className="flex justify-between">
-					{state.message && (
-						<Alert variant="destructive">
-							<AlertCircle className="h-4 w-4" />
-							<AlertTitle>Failed to login</AlertTitle>
-							<AlertDescription>{state?.message}</AlertDescription>
-						</Alert>
-					)}
 				</CardFooter>
 			</Card>
 		</div>

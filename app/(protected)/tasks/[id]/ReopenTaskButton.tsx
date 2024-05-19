@@ -12,30 +12,30 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, Check } from "lucide-react";
+import { AlertCircle, DoorOpen } from "lucide-react";
 import { useFormState } from "react-dom";
-import completeTask from "./completeTask";
+import reopenTask from "./reopenTask";
 
 const initialState = {
 	message: null,
 };
 
-export function CompleteTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
-	const [state, formAction] = useFormState(completeTask, initialState);
+export function ReopenTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+	const [state, formAction] = useFormState(reopenTask, initialState);
 
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
 				<Button size="sm" className="gap-1">
-					Complete
-					<Check size="18" />
+					Reopen
+					<DoorOpen size="18" />
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<form action={formAction}>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Complete the task</AlertDialogTitle>
-						<AlertDialogDescription>You hereby confirm the task is completed and ready to be reviewed. Please provide a short comment.</AlertDialogDescription>
+						<AlertDialogTitle>Reopen the task</AlertDialogTitle>
+						<AlertDialogDescription>The task will be reopened and the assigned user informed. Please provide a short comment.</AlertDialogDescription>
 					</AlertDialogHeader>
 					{state?.message && (
 						<Alert variant="destructive" className="mt-2">
@@ -43,7 +43,7 @@ export function CompleteTaskButton({ userId, taskId }: { userId: string | undefi
 							<AlertTitle>{state?.message}</AlertTitle>
 						</Alert>
 					)}
-					<Textarea name="completeComment" draggable="false" className="my-3" placeholder="Your comment..." />
+					<Textarea name="reopenComment" draggable="false" className="my-3" placeholder="Your comment..." />
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<Button type="submit">Confirm</Button>

@@ -18,7 +18,7 @@ const initialState = {
 	message: null,
 };
 
-const taskForm = ({ users, user, task }: { users: UserExtended[]; user: User; task?: any }) => {
+const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; task?: any }) => {
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [formState, formAction] = useFormState(submitTask, initialState);
@@ -86,4 +86,4 @@ const taskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	);
 };
 
-export default taskForm;
+export default TaskForm;
