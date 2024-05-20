@@ -85,7 +85,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Subordinates</h4>
 						<div className="grid grid-cols-2 gap-4">
 							{userDetails.subordinates.map((subordinate) => (
-								<UserAvatarNameNormal user={subordinate} />
+								<UserAvatarNameNormal user={subordinate} key={subordinate.id} />
 							))}
 						</div>
 					</div>
