@@ -25,7 +25,7 @@ export function DatePicker({ defaultDate, onChange }: { defaultDate?: Date; onCh
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
-				<Button variant={"outline"} className={cn("w-[250px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
+				<Button variant={"outline"} className={cn("max-w-prose justify-start text-left font-normal", !date && "text-muted-foreground")}>
 					<CalendarIcon className="mr-2 h-4 w-4" />
 					{date ? format(date, "dd MMM yyyy") : <span>Pick a date</span>}
 				</Button>

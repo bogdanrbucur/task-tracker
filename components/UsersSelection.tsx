@@ -2,13 +2,13 @@
 import { UserExtended } from "@/app/users/getUserById";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import React from "react";
+import { useEffect, useState } from "react";
 
 export function UsersSelection({ users, onChange, defaultUser }: { users: UserExtended[]; onChange: (value: string | null) => void; defaultUser?: UserExtended }) {
-	const [user, setUser] = React.useState<string | null>(defaultUser?.id ?? null);
+	const [user, setUser] = useState<string | null>(defaultUser?.id ?? null);
 
 	// Set the default date as the return from the compoennt, if it is provided
-	React.useEffect(() => {
+	useEffect(() => {
 		if (defaultUser) handleOnChange(defaultUser.id);
 	}, [defaultUser]);
 
@@ -21,12 +21,12 @@ export function UsersSelection({ users, onChange, defaultUser }: { users: UserEx
 
 	return (
 		<Select onValueChange={handleOnChange}>
-			<SelectTrigger className={cn("w-[250px]", !user && "text-muted-foreground")}>
+			<SelectTrigger className={cn("max-w-prose", !user && "text-muted-foreground")}>
 				<SelectValue placeholder={!user ? "Select a user" : defaultUserDisplay} />
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
-					<SelectLabel>User</SelectLabel>
+					{/* <SelectLabel>User</SelectLabel> */}
 					{users.map((user) => (
 						<SelectItem key={user.id} value={user.id}>
 							<div className="flex gap-2 items-center">

@@ -1,11 +1,12 @@
 "use client";
 import { DatePicker } from "@/app/(protected)/tasks/new/DatePicker";
-import { UsersSelection } from "@/app/(protected)/tasks/new/UsersSelection";
 import { UserExtended } from "@/app/users/getUserById";
+import { UsersSelection } from "@/components/UsersSelection";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
@@ -29,32 +30,26 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 				<h1 className="mb-8 text-3xl font-bold">{task ? "Edit Task" : "New Task"}</h1>
 				<form className="space-y-6" action={formAction}>
 					<div className="space-y-2">
-						<label className="text-sm font-medium" htmlFor="title">
-							Title
-						</label>
+						<Label htmlFor="title">Title</Label>
 						<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} />
 					</div>
 					<div className="space-y-2">
-						<label className="text-sm font-medium" htmlFor="description">
-							Description
-						</label>
+						<Label htmlFor="description">Description</Label>
 						<Textarea name="description" rows={8} placeholder="Enter task description" defaultValue={task ? task.description : undefined} />
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-						<div className="space-y-2">
-							<label className="text-sm font-medium" htmlFor="dueDate">
-								Due Date
-							</label>
-							<div>
+						<div className="flex md:justify-start">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label htmlFor="dueDate">Due Date</Label>
 								<DatePicker onChange={setSelectedDate} defaultDate={task?.dueDate} />
 								<input type="hidden" name="dueDate" value={selectedDate?.toISOString() ?? ""} />
 							</div>
 						</div>
 						<div className="flex md:justify-end">
-							<div className="flex flex-col space-y-3">
-								<label className="text-sm font-medium text-left" htmlFor="assignedUser">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label className="text-left" htmlFor="assignedUser">
 									Assigned To
-								</label>
+								</Label>
 								<UsersSelection users={users} onChange={setSelectedUserId} defaultUser={task?.assignedToUser} />
 								{/* Hidden input fields ensures formData is submitted */}
 								<input type="hidden" name="assignedToUserId" value={selectedUserId ?? ""} />

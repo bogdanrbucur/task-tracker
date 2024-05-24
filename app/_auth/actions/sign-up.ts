@@ -9,7 +9,7 @@ import { Argon2id } from "oslo/password";
 import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
 
-const signUp = async (formData: FormData) => {
+const signUp = async (prevState: any, formData: FormData) => {
 	const formDataRaw = {
 		firstName: formData.get("firstName") as string,
 		lastName: formData.get("lastName") as string,

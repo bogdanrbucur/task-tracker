@@ -2,8 +2,10 @@
 
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getPermissions } from "@/app/_auth/actions/get-permissions";
-import { SignUpForm } from "@/app/_auth/components/SignUpForm";
+import UserForm from "@/app/users/[id]/UserForm";
 import { notFound } from "next/navigation";
+import getUsers from "../getUsers";
+import prisma from "@/prisma/client";
 
 const SignUpPage = async () => {
 	// Check user permissions
@@ -13,12 +15,10 @@ const SignUpPage = async () => {
 	// Only admins can create users
 	if (!userPermissions?.isAdmin) return notFound();
 
-	return (
-		<>
-			<h2>Sign Up Page</h2>
-			<SignUpForm />
-		</>
-	);
+	const users = await getUsers();
+	const departments = await prisma.department.findMany();
+
+	return <UserForm users={users} departments={departments} />;
 };
 
 export default SignUpPage;
