@@ -61,6 +61,16 @@ export default function UserForm({ user, users, departments }: Props) {
 							<UsersSelection users={users} onChange={setSelectedUserId} />
 						</div>
 					</div>
+					<div className="grid grid-cols-2 gap-4">
+						<div className="space-y-2">
+							<Label htmlFor="password">Password</Label>
+							<Input id="password" placeholder="Password" required />
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="confirmPassword">Confirm Password</Label>
+							<Input id="confirmPassword" placeholder="Confirm Password" required />
+						</div>
+					</div>
 					<div className="space-y-2 max-w-md">
 						<Label htmlFor="avatar">Avatar</Label>
 						<div className="flex items-center gap-4">
