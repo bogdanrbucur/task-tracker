@@ -49,22 +49,22 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="email">Email</Label>
-						<Input name="email" placeholder="example@email.com" required type="email" />
+						<Input name="email" placeholder="example@email.com" defaultValue={user ? user.email : undefined} required type="email" />
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="position">Position</Label>
-						<Input name="position" placeholder="Technical Assistant" required />
+						<Input name="position" placeholder="Technical Assistant" defaultValue={user ? user.position : undefined} required />
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="departmentId">Department</Label>
 							<DepartmentSelection departments={departments} onChange={setDepartmentId} />
-							<input type="hidden" name="departmentId" value={departmentId ?? ""} />
+							<input type="hidden" name="departmentId" defaultValue={user ? user.department?.name : undefined} value={departmentId ?? ""} />
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="managerId">Manager</Label>
 							<UsersSelection users={users} onChange={setManagerId} />
-							<input type="hidden" name="managerId" value={managerId ?? ""} />
+							<input type="hidden" name="managerId" defaultValue={user ? `${user.manager?.firstName} ${user.manager?.lastName}` : undefined} value={managerId ?? ""} />
 						</div>
 					</div>
 					<div className="grid grid-cols-2 gap-4">
@@ -89,7 +89,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 							</div>
 						</div>
 						<div className="flex items-center space-x-2">
-							<Checkbox name="isAdmin" />
+							<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} />
 							<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
 								Admin user
 							</label>
@@ -109,6 +109,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 							</Button>
 						</div>
 						<input type="hidden" name="editor" value={editor} />
+						<input type="hidden" name="id" value={user ? user.id : undefined} />
 						<div className="flex justify-center md:justify-end">
 							<Button type="submit">{user ? "Save User" : "Create User"}</Button>
 						</div>

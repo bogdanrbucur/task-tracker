@@ -5,6 +5,7 @@ import { getPermissions } from "../_auth/actions/get-permissions";
 import UserTable, { UsersQuery, columnNames } from "./UserTable";
 import { Card } from "@/components/ui/card";
 import { UserExtended, prismaExtendedUserSelection } from "./getUserById";
+import UsersTopSection from "./UsersTopSection";
 
 interface Props {
 	searchParams: UsersQuery;
@@ -38,6 +39,7 @@ export default async function UsersPage({ searchParams }: Props) {
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
 			<div className="container mx-auto py-1">
+				<UsersTopSection />
 				<UserTable searchParams={searchParams} users={users as UserExtended[]} />
 			</div>
 		</Card>

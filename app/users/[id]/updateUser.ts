@@ -7,14 +7,15 @@ import { Argon2id } from "oslo/password";
 import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
 import { UserExtended } from "@/app/users/getUserById";
-import { NewUser } from "@/app/users/new/submitUser";
+import { NewUser, UpdateUser } from "@/app/users/new/submitUser";
 
-export default async function createUser(data: NewUser, editingUser: UserExtended) {
+export default async function updateUser(data: UpdateUser, editingUser: UserExtended) {
 	try {
 		// TODO implement salt
 		const hashedPassword = await new Argon2id().hash(data.password);
 
-		const newUser = await prisma.user.create({
+		const updatedUser = await prisma.user.update({
+			where: { id: data.id },
 			data: {
 				firstName: data.firstName,
 				lastName: data.lastName,
@@ -27,11 +28,13 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 			},
 		});
 
+		if (!updatedUser) throw new Error("Failed to update user.");
+
 		// const session = await lucia.createSession(newUser.id, {});
 		// const sessionCookie = lucia.createSessionCookie(session.id);
 
 		// cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-		return newUser;
+		return updatedUser;
 	} catch (error) {
 		console.log(error);
 		// TODO: add error feedback yourself

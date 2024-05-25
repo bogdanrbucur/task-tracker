@@ -8,6 +8,7 @@ import { z } from "zod";
 import { createTask } from "../../(protected)/tasks/new/createTask";
 import { updateTask } from "../../(protected)/tasks/[id]/updateTask";
 import createUser from "@/app/_auth/actions/createUser";
+import updateUser from "../[id]/updateUser";
 
 export type NewUser = {
 	firstName: string;
@@ -61,10 +62,10 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		const editingUser = await getUserDetails(data.editor);
 
 		// If a user ID is provided, update the existing user
-		// if (data.id) newUser = await updateTask(data as UpdateUser, editingUser!);
+		if (data.id) newUser = await updateUser(data as UpdateUser, editingUser!);
 		// If no user ID is provided, create a new user
-		newUser = await createUser(data, editingUser);
-		console.log(newUser);
+		else newUser = await createUser(data, editingUser);
+		// console.log(newUser);
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {
