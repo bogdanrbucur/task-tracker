@@ -13,12 +13,12 @@ const SignUpPage = async () => {
 	const userPermissions = await getPermissions(user?.id);
 
 	// Only admins can create users
-	if (!userPermissions?.isAdmin) return notFound();
+	if (!user || !userPermissions?.isAdmin) return notFound();
 
 	const users = await getUsers();
 	const departments = await prisma.department.findMany();
 
-	return <UserForm users={users} departments={departments} />;
+	return <UserForm users={users} departments={departments} editor={user.id} />;
 };
 
 export default SignUpPage;

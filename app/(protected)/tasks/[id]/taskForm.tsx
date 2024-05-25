@@ -28,10 +28,10 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 		<Card className="container mx-auto max-w-4xl px-4 md:px-6">
 			<div className="container mx-auto max-w-4xl px-4 py-6">
 				<h1 className="mb-8 text-3xl font-bold">{task ? "Edit Task" : "New Task"}</h1>
-				<form className="space-y-6" action={formAction}>
+				<form className="space-y-4 md:space-y-6" action={formAction}>
 					<div className="space-y-2">
 						<Label htmlFor="title">Title</Label>
-						<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} />
+						<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} required/>
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="description">Description</Label>

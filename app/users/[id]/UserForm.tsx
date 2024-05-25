@@ -9,10 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Department } from "@prisma/client";
 import { useState } from "react";
 import { useFormState } from "react-dom";
-import { signUp } from "../../_auth/actions/sign-up";
 import { UserExtended } from "../getUserById";
+import Link from "next/link";
+import submitUser from "../new/submitUser";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
+	editor: string;
 	user?: UserExtended;
 	users: UserExtended[];
 	departments: Department[];
@@ -22,70 +27,93 @@ const initialState = {
 	message: null,
 };
 
-export default function UserForm({ user, users, departments }: Props) {
-	const [formState, formAction] = useFormState(signUp, initialState);
-	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-	const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
+export default function UserForm({ editor, user, users, departments }: Props) {
+	const [formState, formAction] = useFormState(submitUser, initialState);
+	const [managerId, setManagerId] = useState<string | null>(null);
+	const [departmentId, setDepartmentId] = useState<number | null>(null);
 
 	return (
 		<Card className="container w-full max-w-2xl">
 			<div className="container mx-auto px-4 py-6">
-				{/* <div className="mx-auto space-y-6"> */}
 				<h1 className="mb-8 text-3xl font-bold">{user ? "Edit User" : "New User"}</h1>
-				<div className="space-y-4">
+				<form className="space-y-4 md:space-y-6" action={formAction}>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
-							<Label htmlFor="first-name">First Name</Label>
-							<Input id="first-name" placeholder="John" required />
+							<Label htmlFor="firstName">First Name</Label>
+							<Input name="firstName" placeholder="John" defaultValue={user ? user.firstName : undefined} required />
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="last-name">Last Name</Label>
-							<Input id="last-name" placeholder="Doe" required />
+							<Label htmlFor="lastName">Last Name</Label>
+							<Input name="lastName" placeholder="Doe" defaultValue={user ? user.lastName : undefined} required />
 						</div>
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="email">Email</Label>
-						<Input id="email" placeholder="example@acme.com" required type="email" />
+						<Input name="email" placeholder="example@email.com" required type="email" />
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="position">Position</Label>
-						<Input id="position" placeholder="Software Engineer" required />
+						<Input name="position" placeholder="Technical Assistant" required />
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
-							<Label htmlFor="department">Department</Label>
-							<DepartmentSelection departments={departments} onChange={setSelectedDepartmentId} />
+							<Label htmlFor="departmentId">Department</Label>
+							<DepartmentSelection departments={departments} onChange={setDepartmentId} />
+							<input type="hidden" name="departmentId" value={departmentId ?? ""} />
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="manager">Manager</Label>
-							<UsersSelection users={users} onChange={setSelectedUserId} />
+							<Label htmlFor="managerId">Manager</Label>
+							<UsersSelection users={users} onChange={setManagerId} />
+							<input type="hidden" name="managerId" value={managerId ?? ""} />
 						</div>
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="password">Password</Label>
-							<Input id="password" placeholder="Password" required />
+							<Input name="password" placeholder="Password" type="password" required />
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="confirmPassword">Confirm Password</Label>
-							<Input id="confirmPassword" placeholder="Confirm Password" required />
+							<Input name="confirmPassword" placeholder="Confirm Password" type="password" required />
 						</div>
 					</div>
-					<div className="space-y-2 max-w-md">
-						<Label htmlFor="avatar">Avatar</Label>
-						<div className="flex items-center gap-4">
-							<Avatar className="h-12 w-12">
-								<AvatarImage alt="Avatar" src="/placeholder-avatar.jpg" />
-								<AvatarFallback>JD</AvatarFallback>
-							</Avatar>
-							<Input id="avatar" type="file" />
+					<div className="space-y-2 max-w-md grid grid-cols-2 gap-4">
+						<div>
+							<Label htmlFor="avatar">Avatar</Label>
+							<div className="flex items-center gap-4">
+								<Avatar className="h-12 w-12">
+									<AvatarImage alt="Avatar" src="/placeholder-avatar.jpg" />
+									<AvatarFallback>JD</AvatarFallback>
+								</Avatar>
+								<Input id="avatar" type="file" />
+							</div>
+						</div>
+						<div className="flex items-center space-x-2">
+							<Checkbox name="isAdmin" />
+							<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+								Admin user
+							</label>
 						</div>
 					</div>
-					<Button className="w-full" type="submit">
-						Sign Up
-					</Button>
-				</div>
-				{/* </div> */}
+					{formState?.message && (
+						<Alert variant="destructive">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>User could not be created</AlertTitle>
+							<AlertDescription>{formState?.message}</AlertDescription>
+						</Alert>
+					)}
+					<div className="flex justify-between">
+						<div className="flex justify-center md:justify-end">
+							<Button asChild>
+								<Link href={`/users/${user?.id ? user.id : ""}`}>Cancel</Link>
+							</Button>
+						</div>
+						<input type="hidden" name="editor" value={editor} />
+						<div className="flex justify-center md:justify-end">
+							<Button type="submit">{user ? "Save User" : "Create User"}</Button>
+						</div>
+					</div>
+				</form>
 			</div>
 		</Card>
 	);
