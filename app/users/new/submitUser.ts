@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createTask } from "../../(protected)/tasks/new/createTask";
 import { updateTask } from "../../(protected)/tasks/[id]/updateTask";
-import createUser from "@/app/_auth/actions/createUser";
+import createUser from "@/app/users/createUser";
 import updateUser from "../[id]/updateUser";
 
 export type NewUser = {
@@ -17,9 +17,17 @@ export type NewUser = {
 	position: string;
 	departmentId: string;
 	managerId: string | null;
-	password: string;
+	password: string | null;
 	isAdmin?: string | null;
 };
+
+interface File {
+	size: number;
+	type: string;
+	name: string;
+	lastModified: number;
+}
+
 export type UpdateUser = NewUser & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
 
@@ -37,8 +45,10 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		departmentId: z.string().max(3, { message: "Invalid department." }),
 		managerId: z.string().nullable(),
 		editor: z.string().length(25, { message: "Invalid editor." }),
-		password: z.string().min(6, { message: "Password must be at least 6 characters long." }),
+		password: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
+		confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
 		isAdmin: z.string().nullable(),
+		// avatar: z.object<z.ZodRawShape>(shape: z.ZodRawShape).nullable(),
 	});
 
 	let newUser: User | null = null;
@@ -55,8 +65,14 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			managerId: formData.get("managerId") as string,
 			editor: formData.get("editor") as string,
 			password: formData.get("password") as string,
+			confirmPassword: formData.get("confirmPassword") as string,
 			isAdmin: formData.get("isAdmin"),
+			// avatar: formData.get("avatar") as string,
 		});
+
+		if (data.password !== data.confirmPassword) {
+			return { message: "Passwords do not match." };
+		}
 
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.editor);

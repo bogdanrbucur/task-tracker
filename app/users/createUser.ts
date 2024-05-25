@@ -12,7 +12,7 @@ import { NewUser } from "@/app/users/new/submitUser";
 export default async function createUser(data: NewUser, editingUser: UserExtended) {
 	try {
 		// TODO implement salt
-		const hashedPassword = await new Argon2id().hash(data.password);
+		const hashedPassword = await new Argon2id().hash(data.password!);
 
 		const newUser = await prisma.user.create({
 			data: {

@@ -12,7 +12,7 @@ import { NewUser, UpdateUser } from "@/app/users/new/submitUser";
 export default async function updateUser(data: UpdateUser, editingUser: UserExtended) {
 	try {
 		// TODO implement salt
-		const hashedPassword = await new Argon2id().hash(data.password);
+		// const hashedPassword = await new Argon2id().hash(data.password);
 
 		const updatedUser = await prisma.user.update({
 			where: { id: data.id },
@@ -20,7 +20,7 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 				firstName: data.firstName,
 				lastName: data.lastName,
 				email: data.email,
-				hashedPassword,
+				// hashedPassword,
 				position: data.position,
 				departmentId: data.departmentId ? Number(data.departmentId) : null,
 				managerId: data.managerId ? data.managerId : null,

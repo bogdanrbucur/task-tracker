@@ -12,7 +12,7 @@ const UsersTopSection = async () => {
 		<div className="flex justify-between py-3">
 			<div></div>
 			{userPermissions?.isAdmin && (
-				<Button asChild variant="outline" size="sm">
+				<Button asChild size="sm">
 					<Link href="/users/new">New User</Link>
 				</Button>
 			)}

@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { KeySquare, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import getUserDetails from "../getUserById";
+import ChangePasswordButton from "./ChangePasswordButton";
 
 export const revalidate = 10;
 
@@ -24,8 +25,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 	// Check user permissions
 	const { user } = await getAuth();
+	if (!user) return notFound();
+
 	const userPermissions = await getPermissions(user?.id);
-	if (!userPermissions.isAdmin) return notFound();
+	if (!userPermissions.isAdmin && params.id !== user?.id) return notFound();
 
 	// Get the user details
 	const userDetails = await getUserDetails(params.id);
@@ -58,14 +61,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 								<SquarePen size="18" />
 							</Link>
 						</Button>
-						{user?.id === userDetails.id && (
-							<Button asChild size="sm">
-								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
-									Change Password
-									<KeySquare size="18" />
-								</Link>
-							</Button>
-						)}
+						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
 					</div>
 				</div>
 			</CardHeader>

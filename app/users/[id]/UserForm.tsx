@@ -58,26 +58,29 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="departmentId">Department</Label>
-							<DepartmentSelection departments={departments} onChange={setDepartmentId} defaultDept={user?.department ? user?.department : undefined}/>
-							<input type="hidden" name="departmentId" defaultValue={user ? user.department?.name : undefined} value={departmentId ?? ""} />
+							<DepartmentSelection departments={departments} onChange={setDepartmentId} defaultDept={user?.department ? user?.department : undefined} />
+							<input type="hidden" name="departmentId" value={departmentId ?? ""} />
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="managerId">Manager</Label>
 							<UsersSelection users={users} onChange={setManagerId} defaultUser={user?.manager ? user.manager : undefined} />
-							<input type="hidden" name="managerId" defaultValue={user ? `${user.manager?.firstName} ${user.manager?.lastName}` : undefined} value={managerId ?? ""} />
+							<input type="hidden" name="managerId" value={managerId ?? ""} />
 						</div>
 					</div>
-					<div className="grid grid-cols-2 gap-4">
-						<div className="space-y-2">
-							<Label htmlFor="password">Password</Label>
-							<Input name="password" placeholder="Password" type="password" required />
+					{/* Only show the password fields when creating new users */}
+					{!user && (
+						<div className="grid grid-cols-2 gap-4">
+							<div className="space-y-2">
+								<Label htmlFor="password">Password</Label>
+								<Input name="password" placeholder="Password" type="password" required />
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="confirmPassword">Confirm Password</Label>
+								<Input name="confirmPassword" placeholder="Confirm Password" type="password" required />
+							</div>
 						</div>
-						<div className="space-y-2">
-							<Label htmlFor="confirmPassword">Confirm Password</Label>
-							<Input name="confirmPassword" placeholder="Confirm Password" type="password" required />
-						</div>
-					</div>
-					<div className="space-y-2 max-w-md grid grid-cols-2 gap-4">
+					)}
+					<div className="space-y-2 flex justify-between">
 						<div>
 							<Label htmlFor="avatar">Avatar</Label>
 							<div className="flex items-center gap-4">
@@ -85,15 +88,23 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 									<AvatarImage alt="Avatar" src="/placeholder-avatar.jpg" />
 									<AvatarFallback>JD</AvatarFallback>
 								</Avatar>
-								<Input id="avatar" type="file" />
+								<Input name="avatar" type="file" />
 							</div>
 						</div>
-						<div className="flex items-center space-x-2">
-							<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} />
-							<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-								Admin user
-							</label>
-						</div>
+						{/* Do not allow admins to un-make themselves admins */}
+						{editor !== user?.id && (
+							<div>
+								<div className="flex items-center space-x-2 justify-start pl-3">
+									<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} />
+									<div>
+										<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+											Admin user
+										</label>
+									</div>
+								</div>
+								<p className="text-xs text-muted-foreground pl-3">User will have full control over tasks and users.</p>
+							</div>
+						)}
 					</div>
 					{formState?.message && (
 						<Alert variant="destructive">

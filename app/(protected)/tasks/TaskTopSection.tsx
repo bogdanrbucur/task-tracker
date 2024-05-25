@@ -13,7 +13,7 @@ const TaskTopSection = async () => {
 		<div className="flex justify-between py-3">
 			<div></div>
 			{canCreateTask && (
-				<Button asChild variant="outline" size="sm">
+				<Button asChild size="sm">
 					<Link href="/tasks/new">New Task</Link>
 				</Button>
 			)}
