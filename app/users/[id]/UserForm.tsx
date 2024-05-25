@@ -58,12 +58,12 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="departmentId">Department</Label>
-							<DepartmentSelection departments={departments} onChange={setDepartmentId} />
+							<DepartmentSelection departments={departments} onChange={setDepartmentId} defaultDept={user?.department ? user?.department : undefined}/>
 							<input type="hidden" name="departmentId" defaultValue={user ? user.department?.name : undefined} value={departmentId ?? ""} />
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="managerId">Manager</Label>
-							<UsersSelection users={users} onChange={setManagerId} />
+							<UsersSelection users={users} onChange={setManagerId} defaultUser={user?.manager ? user.manager : undefined} />
 							<input type="hidden" name="managerId" defaultValue={user ? `${user.manager?.firstName} ${user.manager?.lastName}` : undefined} value={managerId ?? ""} />
 						</div>
 					</div>

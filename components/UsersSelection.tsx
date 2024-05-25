@@ -1,10 +1,10 @@
 "use client";
-import { UserExtended } from "@/app/users/getUserById";
+import { UserExtended, UserRestricted } from "@/app/users/getUserById";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-export function UsersSelection({ users, onChange, defaultUser }: { users: UserExtended[]; onChange: (value: string | null) => void; defaultUser?: UserExtended }) {
+export function UsersSelection({ users, onChange, defaultUser }: { users: UserExtended[]; onChange: (value: string | null) => void; defaultUser?: UserRestricted }) {
 	const [user, setUser] = useState<string | null>(defaultUser?.id ?? null);
 
 	// Set the default date as the return from the compoennt, if it is provided
