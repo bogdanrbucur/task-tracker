@@ -21,12 +21,21 @@ export type NewUser = {
 	isAdmin?: string | null;
 };
 
-interface File {
-	size: number;
-	type: string;
-	name: string;
-	lastModified: number;
-}
+// interface File {
+// 	size: number;
+// 	type: string;
+// 	name: string;
+// 	lastModified: number;
+// }
+
+const File = z.object({
+	size: z.number(),
+	type: z.string(),
+	name: z.string(),
+	lastModified: z.number(),
+});
+
+type File = z.infer<typeof File>;
 
 export type UpdateUser = NewUser & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
@@ -42,13 +51,13 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		lastName: z.string().min(2, { message: "Last name must be at least 2 characters long." }).max(30, { message: "Last name must be at most 30 characters long." }),
 		email: z.string().email({ message: "Invalid email address." }),
 		position: z.string().min(3, { message: "Position must be at least 2 characters long." }),
-		departmentId: z.string().max(3, { message: "Invalid department." }),
+		departmentId: z.string({ message: "Invalid department." }).max(3, { message: "Invalid department." }).min(1, { message: "Invalid department." }),
 		managerId: z.string().nullable(),
 		editor: z.string().length(25, { message: "Invalid editor." }),
 		password: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
 		confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
 		isAdmin: z.string().nullable(),
-		// avatar: z.object<z.ZodRawShape>(shape: z.ZodRawShape).nullable(),
+		avatar: File.nullable(),
 	});
 
 	let newUser: User | null = null;
@@ -67,7 +76,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			password: formData.get("password") as string,
 			confirmPassword: formData.get("confirmPassword") as string,
 			isAdmin: formData.get("isAdmin"),
-			// avatar: formData.get("avatar") as string,
+			avatar: formData.get("avatar") as File | null,
 		});
 
 		if (data.password !== data.confirmPassword) {

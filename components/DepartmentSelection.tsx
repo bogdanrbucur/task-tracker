@@ -8,9 +8,10 @@ interface Props {
 	departments: Department[];
 	onChange: (value: number | null) => void;
 	defaultDept?: Department;
+	disabled?: boolean;
 }
 
-export function DepartmentSelection({ departments, onChange, defaultDept }: Props) {
+export function DepartmentSelection({ departments, onChange, defaultDept, disabled }: Props) {
 	const [dept, setDept] = useState<number | null>(defaultDept?.id ?? null);
 
 	// Set the default date as the return from the compoennt, if it is provided
@@ -26,7 +27,7 @@ export function DepartmentSelection({ departments, onChange, defaultDept }: Prop
 	const defaultDeptDisplay = defaultDept ? defaultDept.name : null;
 
 	return (
-		<Select onValueChange={e => handleOnChange(Number(e))}>
+		<Select onValueChange={(e) => handleOnChange(Number(e))} disabled={disabled}>
 			<SelectTrigger className={cn("max-w-prose", !dept && "text-muted-foreground")}>
 				<SelectValue placeholder={!dept ? "Select a department" : defaultDeptDisplay} />
 			</SelectTrigger>

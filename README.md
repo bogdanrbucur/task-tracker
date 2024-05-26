@@ -45,9 +45,8 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] User creation page
 - [x] User password change if that user is viewing the page
 - [x] User password change pop-up
-- [ ] If saving new user as admin, pop-up to confirm the action
-- [ ] Restrict normal users from editing department, manager, and role
-- [ ] Avatar saved locally and displayed in the user view page
+- [x] Restrict normal users from editing department, manager, email and position
+- [ ] Avatar saved as BLOB and displayed in the user view page
 - [ ] Dates colors that make sense: due date red if overdue. Completed date red if overdue. In all pages
 - [ ] Make an admin menu with dropdowns for Tasks, Users, Departments, and Statuses
 - [ ] Replace the React Icon logo with an actual generic .png
@@ -59,3 +58,4 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [ ] Email notifications for comment @mentions, re-opened tasks, task completion, task assigned
 - [ ] Sonner toast notifications when emails are sent
 - [ ] Email notifications for overdue tasks (10 days)
+- [ ] If saving new user as admin, pop-up to confirm the action

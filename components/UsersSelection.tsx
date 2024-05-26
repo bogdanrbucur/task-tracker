@@ -4,7 +4,14 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-export function UsersSelection({ users, onChange, defaultUser }: { users: UserExtended[]; onChange: (value: string | null) => void; defaultUser?: UserRestricted }) {
+interface Props {
+	users: UserExtended[];
+	onChange: (value: string | null) => void;
+	defaultUser?: UserRestricted;
+	disabled?: boolean;
+}
+
+export function UsersSelection({ users, onChange, defaultUser, disabled }: Props) {
 	const [user, setUser] = useState<string | null>(defaultUser?.id ?? null);
 
 	// Set the default date as the return from the compoennt, if it is provided
@@ -20,7 +27,7 @@ export function UsersSelection({ users, onChange, defaultUser }: { users: UserEx
 	const defaultUserDisplay = defaultUser ? `${defaultUser.firstName} ${defaultUser.lastName} ${defaultUser.department ? `(${defaultUser.department.name})` : ""}` : null;
 
 	return (
-		<Select onValueChange={handleOnChange}>
+		<Select onValueChange={handleOnChange} disabled={disabled}>
 			<SelectTrigger className={cn("max-w-prose", !user && "text-muted-foreground")}>
 				<SelectValue placeholder={!user ? "Select a user" : defaultUserDisplay} />
 			</SelectTrigger>

@@ -67,17 +67,17 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 			</CardHeader>
 			<CardContent className="grid gap-6">
 				<div className="grid grid-cols-2 gap-4">
-					<div>
+					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department</h4> <p>{userDetails.department?.name}</p>
 					</div>
 					{userDetails.manager && (
-						<div>
+						<div className="space-y-1">
 							<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Manager</h4> <UserAvatarNameNormal user={userDetails.manager} />
 						</div>
 					)}
 				</div>
 				{userDetails.subordinates.length > 0 && (
-					<div>
+					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Subordinates</h4>
 						<div className="grid grid-cols-2 gap-4">
 							{userDetails.subordinates.map((subordinate) => (
@@ -87,7 +87,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					</div>
 				)}
 				{userDetails.assignedTasks.length > 0 && (
-					<div>
+					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Open Tasks</h4>
 						<div className="grid gap-4">
 							{userDetails.assignedTasks.map((task) => (

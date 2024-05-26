@@ -1,20 +1,20 @@
 "use client";
 import { DepartmentSelection } from "@/components/DepartmentSelection";
 import { UsersSelection } from "@/components/UsersSelection";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Department } from "@prisma/client";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { UserExtended } from "../getUserById";
-import Link from "next/link";
 import submitUser from "../new/submitUser";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
 	editor: string;
@@ -31,6 +31,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const [formState, formAction] = useFormState(submitUser, initialState);
 	const [managerId, setManagerId] = useState<string | null>(null);
 	const [departmentId, setDepartmentId] = useState<number | null>(null);
+	const editingSelf = editor === user?.id;
 
 	return (
 		<Card className="container w-full max-w-2xl">
@@ -49,21 +50,26 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="email">Email</Label>
-						<Input name="email" placeholder="example@email.com" defaultValue={user ? user.email : undefined} required type="email" />
+						<Input name="email" placeholder="example@email.com" defaultValue={user ? user.email : undefined} required type="email" disabled={editingSelf} />
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="position">Position</Label>
-						<Input name="position" placeholder="Technical Assistant" defaultValue={user ? user.position : undefined} required />
+						<Input name="position" placeholder="Technical Assistant" defaultValue={user ? user.position : undefined} required disabled={editingSelf} />
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="departmentId">Department</Label>
-							<DepartmentSelection departments={departments} onChange={setDepartmentId} defaultDept={user?.department ? user?.department : undefined} />
+							<DepartmentSelection
+								departments={departments}
+								onChange={setDepartmentId}
+								defaultDept={user?.department ? user?.department : undefined}
+								disabled={editingSelf}
+							/>
 							<input type="hidden" name="departmentId" value={departmentId ?? ""} />
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="managerId">Manager</Label>
-							<UsersSelection users={users} onChange={setManagerId} defaultUser={user?.manager ? user.manager : undefined} />
+							<UsersSelection users={users} onChange={setManagerId} defaultUser={user?.manager ? user.manager : undefined} disabled={editingSelf} />
 							<input type="hidden" name="managerId" value={managerId ?? ""} />
 						</div>
 					</div>
@@ -109,7 +115,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
-							<AlertTitle>User could not be created</AlertTitle>
+							<AlertTitle>Changes not saved</AlertTitle>
 							<AlertDescription>{formState?.message}</AlertDescription>
 						</Alert>
 					)}
