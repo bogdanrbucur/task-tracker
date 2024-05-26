@@ -1,17 +1,16 @@
 "use client";
 import { UserExtended, UserRestricted } from "@/app/users/getUserById";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestricted | null }) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
-
 	return (
 		<div className="flex items-center gap-4">
 			<Link href={`/users/${user.id}`}>
 				<Avatar>
-					<AvatarImage alt={initials} />
+					<AvatarImage alt={initials} src={user.avatar ? user.avatar.path : undefined} />
 					<AvatarFallback>{initials}</AvatarFallback>
 				</Avatar>
 			</Link>
@@ -27,11 +26,10 @@ export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestri
 export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestricted | null }) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
-
 	return (
 		<div className="flex items-center gap-2">
 			<Avatar>
-				<AvatarImage alt={initials} className="w-[20px] h-[20px]" />
+				<AvatarImage src={user.avatar ? user.avatar.path : undefined} alt={initials} />
 				<AvatarFallback>{initials}</AvatarFallback>
 			</Avatar>
 			<small className="text-sm font-medium leading-none">
@@ -44,11 +42,10 @@ export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestric
 export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
-
 	return (
 		<div className="flex items-center gap-4">
 			<Avatar>
-				<AvatarImage alt="User Avatar" src="/placeholder-user.jpg" />
+				<AvatarImage src={user.avatar ? user.avatar.path : undefined} alt={initials} />
 				<AvatarFallback>{initials}</AvatarFallback>
 			</Avatar>
 			<div>

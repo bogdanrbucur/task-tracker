@@ -8,6 +8,7 @@ import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
 import { UserExtended } from "@/app/users/getUserById";
 import { NewUser, UpdateUser } from "@/app/users/new/submitUser";
+import fs from "fs-extra";
 
 export default async function updateUser(data: UpdateUser, editingUser: UserExtended) {
 	try {
@@ -27,6 +28,32 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 				isAdmin: data.isAdmin ? true : false,
 			},
 		});
+		// First check if the user has an avatar
+		const currentAvatar = await prisma.avatar.findFirst({
+			where: {
+				userId: data.id,
+			},
+		});
+
+		// Delete the current avatar if a new one was uploaded
+		if (currentAvatar) {
+			// Delete the database entry
+			await prisma.avatar.delete({
+				where: {
+					userId: currentAvatar.userId,
+				},
+			});
+		}
+
+		// Update the avatar if a new one was uploaded
+		if (data.avatarPath) {
+			const newAvatar = await prisma.avatar.create({
+				data: {
+					userId: data.id,
+					path: data.avatarPath,
+				},
+			});
+		}
 
 		if (!updatedUser) throw new Error("Failed to update user.");
 

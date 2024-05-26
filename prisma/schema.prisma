@@ -75,6 +75,14 @@ model User {
   manager        User?       @relation("ManagerToUser", fields: [managerId], references: [id])
   subordinates   User[]      @relation("ManagerToUser")
   active         Boolean     @default(true)
+  avatar         Avatar?
+}
+
+model Avatar {
+  id     Int    @id @default(autoincrement())
+  path   String
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Session {

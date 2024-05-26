@@ -9,6 +9,7 @@ import { createTask } from "../../(protected)/tasks/new/createTask";
 import { updateTask } from "../../(protected)/tasks/[id]/updateTask";
 import createUser from "@/app/users/createUser";
 import updateUser from "../[id]/updateUser";
+import fs from "fs-extra";
 
 export type NewUser = {
 	firstName: string;
@@ -19,6 +20,8 @@ export type NewUser = {
 	managerId: string | null;
 	password: string | null;
 	isAdmin?: string | null;
+	avatar: Avatar | null;
+	avatarPath?: string | null;
 };
 
 // interface File {
@@ -28,14 +31,14 @@ export type NewUser = {
 // 	lastModified: number;
 // }
 
-const File = z.object({
+const Avatar = z.object({
 	size: z.number(),
 	type: z.string(),
 	name: z.string(),
 	lastModified: z.number(),
 });
 
-type File = z.infer<typeof File>;
+type Avatar = z.infer<typeof Avatar>;
 
 export type UpdateUser = NewUser & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
@@ -57,7 +60,8 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		password: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
 		confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
 		isAdmin: z.string().nullable(),
-		avatar: File.nullable(),
+		avatar: Avatar.nullable(),
+		avatarPath: z.string().optional(),
 	});
 
 	let newUser: User | null = null;
@@ -77,10 +81,31 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			confirmPassword: formData.get("confirmPassword") as string,
 			isAdmin: formData.get("isAdmin"),
 			avatar: formData.get("avatar") as File | null,
+			// avatarBuffer: undefined as Buffer | undefined,
 		});
 
 		if (data.password !== data.confirmPassword) {
 			return { message: "Passwords do not match." };
+		}
+
+		// Check the size of the avatar and reject if it's too large
+		if (data.avatar && data.avatar.size > 1048576) {
+			return { message: "Avatar file is too large. Maximum size is 1 MB." };
+		}
+
+		// TODO Upload the avatar file to Azure Blob Storage
+		if (data.avatar) {
+			const avatar = formData.get("avatar") as File;
+			const extension = avatar.name.split(".").pop();
+			const path = `/avatars/${data.id}.${extension}`;
+			data.avatarPath = path;
+			try {
+				const arrayBuffer = await avatar.arrayBuffer();
+				await fs.writeFile(`./public${path}`, Buffer.from(arrayBuffer));
+				console.log(`Avatar saved to ./public${path}`);
+			} catch (error) {
+				console.log(error);
+			}
 		}
 
 		// Get the created by user object by the ID

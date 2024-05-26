@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useFormState } from "react-dom";
 import { UserExtended } from "../getUserById";
 import submitUser from "../new/submitUser";
+import ImagePicker from "./ImagePicker";
 
 interface Props {
 	editor: string;
@@ -91,7 +92,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 							<Label htmlFor="avatar">Avatar</Label>
 							<div className="flex items-center gap-4">
 								<Avatar className="h-12 w-12">
-									<AvatarImage alt="Avatar" src="/placeholder-avatar.jpg" />
+									<AvatarImage alt="Avatar" />
 									<AvatarFallback>JD</AvatarFallback>
 								</Avatar>
 								<Input name="avatar" type="file" />

@@ -51,6 +51,7 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [ ] Make an admin menu with dropdowns for Tasks, Users, Departments, and Statuses
 - [ ] Replace the React Icon logo with an actual generic .png
 - [ ] Add a favicon
+- [ ] Provision to deactivate users. Delete the avatar blob from the database when deactivating a user
 - [ ] Scheduled function to check for overdue tasks and set the status to Overdue
 - [ ] Add toast notifications for changes
 - [ ] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
