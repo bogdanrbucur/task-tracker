@@ -93,16 +93,29 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			return { message: "Avatar file is too large. Maximum size is 1 MB." };
 		}
 
-		// TODO Upload the avatar file to Azure Blob Storage
+		// Save the avatar locally
 		if (data.avatar) {
 			const avatar = formData.get("avatar") as File;
 			const extension = avatar.name.split(".").pop();
-			const path = `/avatars/${data.id}.${extension}`;
-			data.avatarPath = path;
+			const fileName = `${data.id}.${extension}`;
+			data.avatarPath = fileName;
 			try {
+				// First delete the existing avatar if it exists
+				// search for any file in the avatars folder that matches the id
+				const avatars = await fs.readdir("./avatars");
+				const oldAvatar = avatars.find((file) => file.includes(String(data.id)));
+				if (oldAvatar) await fs.remove(`./avatars/${oldAvatar}`);
+
+				// TODO Crop the image to a square
+				//...
+
+				// TODO Compress the image
+				//...
+
+				// Save the new avatar
 				const arrayBuffer = await avatar.arrayBuffer();
-				await fs.writeFile(`./public${path}`, Buffer.from(arrayBuffer));
-				console.log(`Avatar saved to ./public${path}`);
+				await fs.writeFile(`./avatars/${fileName}`, Buffer.from(arrayBuffer));
+				console.log(`Avatar saved to ./avatars/${fileName}`);
 			} catch (error) {
 				console.log(error);
 			}
