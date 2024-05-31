@@ -1,4 +1,5 @@
 import { differenceInCalendarDays, format, isPast, isToday } from "date-fns";
+import Jimp from "jimp";
 
 export function formatDate(date: Date) {
 	return format(date, "dd MMM yyyy");
@@ -17,4 +18,18 @@ export function completedColor(completedDate: Date, dueDate: Date) {
 	return "";
 }
 
-// Determine if the given 
+export async function resizeAndSaveImage(avatarBuffer: Buffer, filePath: string) {
+	const image = await Jimp.read(avatarBuffer);
+	// Get the smallest dimension and crop the image to that dimension
+	const width = image.getWidth();
+	const height = image.getHeight();
+	const minDimension = Math.min(width, height);
+	const x = (width - minDimension) / 2;
+	const y = (height - minDimension) / 2;
+	await image.crop(x, y, minDimension, minDimension);
+	await image.resize(256, 256);
+	await image.quality(90);
+	await image.grayscale();
+	// await image.rotate(90);
+	await image.writeAsync(filePath);
+}

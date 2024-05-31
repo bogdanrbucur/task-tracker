@@ -10,6 +10,9 @@ import { updateTask } from "../../(protected)/tasks/[id]/updateTask";
 import createUser from "@/app/users/createUser";
 import updateUser from "../[id]/updateUser";
 import fs from "fs-extra";
+import Jimp from "jimp";
+import { revalidatePath } from "next/cache";
+import { resizeAndSaveImage } from "@/lib/utilityFunctions";
 
 export type NewUser = {
 	firstName: string;
@@ -89,15 +92,17 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		}
 
 		// Check the size of the avatar and reject if it's too large
-		if (data.avatar && data.avatar.size > 1048576) {
-			return { message: "Avatar file is too large. Maximum size is 1 MB." };
+		if (data.avatar && data.avatar.size > 4194304) {
+			return { message: "Avatar file is too large. Maximum size is 4 MB." };
 		}
 
 		// Save the avatar locally
 		if (data.avatar) {
 			const avatar = formData.get("avatar") as File;
-			const extension = avatar.name.split(".").pop();
-			const fileName = `${data.id}.${extension}`;
+			const arrayBuffer = await avatar.arrayBuffer();
+			const avatarBuffer = Buffer.from(arrayBuffer);
+			// const extension = avatar.name.split(".").pop();
+			const fileName = `${data.id}.jpg`;
 			data.avatarPath = fileName;
 			try {
 				// First delete the existing avatar if it exists
@@ -106,15 +111,9 @@ export default async function submitUser(prevState: any, formData: FormData) {
 				const oldAvatar = avatars.find((file) => file.includes(String(data.id)));
 				if (oldAvatar) await fs.remove(`./avatars/${oldAvatar}`);
 
-				// TODO Crop the image to a square
-				//...
+				// Resize and save the avatar
+				await resizeAndSaveImage(avatarBuffer, `./avatars/${fileName}`);
 
-				// TODO Compress the image
-				//...
-
-				// Save the new avatar
-				const arrayBuffer = await avatar.arrayBuffer();
-				await fs.writeFile(`./avatars/${fileName}`, Buffer.from(arrayBuffer));
 				console.log(`Avatar saved to ./avatars/${fileName}`);
 			} catch (error) {
 				console.log(error);
@@ -142,5 +141,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
+	revalidatePath(`/users/${formData.get("id")}`);
 	redirect(newUser ? `/users/${String(newUser.id)}` : `/users/${formData.get("id")}`);
 }

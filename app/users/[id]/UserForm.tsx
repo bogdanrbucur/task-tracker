@@ -95,7 +95,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 									<AvatarImage alt="Avatar" />
 									<AvatarFallback>JD</AvatarFallback>
 								</Avatar>
-								<Input name="avatar" type="file" />
+								<Input name="avatar" type="file" accept="image/*" />
 							</div>
 						</div>
 						{/* Do not allow admins to un-make themselves admins */}
