@@ -51,8 +51,8 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 
 	return (
 		<div className="flex items-center gap-4">
-			<Avatar>
-				<AvatarImage src={avatar} alt={initials} />
+			<Avatar style={{ width: "6rem", height: "6rem" }}>
+				<AvatarImage src={avatar} alt={initials} sizes="2xl" />
 				<AvatarFallback>{initials}</AvatarFallback>
 			</Avatar>
 			<div>
