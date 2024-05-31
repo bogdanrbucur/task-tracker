@@ -1,8 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import fs from "fs-extra";
-import { notFound, redirect } from "next/navigation";
-
-export const revalidate = 10;
+import { notFound } from "next/navigation";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
 	// search for any file in the avatars folder that matches the id

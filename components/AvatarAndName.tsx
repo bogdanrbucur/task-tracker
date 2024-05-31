@@ -3,6 +3,9 @@ import { UserExtended, UserRestricted } from "@/app/users/getUserById";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestricted | null }) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
@@ -53,7 +56,7 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 		<div className="flex items-center gap-4">
 			<Avatar style={{ width: "6rem", height: "6rem" }}>
 				<AvatarImage src={avatar} alt={initials} sizes="2xl" />
-				<AvatarFallback>{initials}</AvatarFallback>
+				<AvatarFallback className="text-4xl">{initials}</AvatarFallback>
 			</Avatar>
 			<div>
 				<h1 className="text-2xl font-bold">

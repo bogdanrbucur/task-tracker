@@ -1,18 +1,15 @@
 // server function to add new task
 "use server";
 
+import createUser from "@/app/users/createUser";
 import getUserDetails from "@/app/users/getUserById";
-import { Task, User } from "@prisma/client";
+import { resizeAndSaveImage } from "@/lib/utilityFunctions";
+import { User } from "@prisma/client";
+import fs from "fs-extra";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createTask } from "../../(protected)/tasks/new/createTask";
-import { updateTask } from "../../(protected)/tasks/[id]/updateTask";
-import createUser from "@/app/users/createUser";
 import updateUser from "../[id]/updateUser";
-import fs from "fs-extra";
-import Jimp from "jimp";
-import { revalidatePath } from "next/cache";
-import { resizeAndSaveImage } from "@/lib/utilityFunctions";
 
 export type NewUser = {
 	firstName: string;
@@ -26,13 +23,6 @@ export type NewUser = {
 	avatar: Avatar | null;
 	avatarPath?: string | null;
 };
-
-// interface File {
-// 	size: number;
-// 	type: string;
-// 	name: string;
-// 	lastModified: number;
-// }
 
 const Avatar = z.object({
 	size: z.number(),
@@ -97,7 +87,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		}
 
 		// Save the avatar locally
-		if (data.avatar) {
+		if (data.avatar && data.avatar?.size > 0) {
 			const avatar = formData.get("avatar") as File;
 			const arrayBuffer = await avatar.arrayBuffer();
 			const avatarBuffer = Buffer.from(arrayBuffer);
@@ -141,6 +131,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
-	revalidatePath(`/users/${formData.get("id")}`);
+	revalidatePath(`/users${formData.get("id") ? `/${formData.get("id")}` : ""}`);
 	redirect(newUser ? `/users/${String(newUser.id)}` : `/users/${formData.get("id")}`);
 }
