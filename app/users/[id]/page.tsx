@@ -9,13 +9,14 @@ import { UserAvatarNameLarge, UserAvatarNameNormal } from "@/components/AvatarAn
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { formatDate } from "@/lib/utilityFunctions";
+import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import getUserDetails from "../getUserById";
 import ChangePasswordButton from "./ChangePasswordButton";
+import { cn } from "@/lib/utils";
 
 export const revalidate = 5;
 
@@ -95,7 +96,9 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 									<div className="flex items-center justify-between">
 										<Link href={`/tasks/${task.id}`}>
 											<h4 className="font-sm">{task.title}</h4>
-											<p className="text-xs text-gray-500 dark:text-gray-400">Due: {formatDate(task.dueDate)}</p>
+											<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
+												Due: <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
+											</div>
 										</Link>
 										{/* @ts-ignore */}
 										<StatusBadge statusObj={task.status} size="xs" />

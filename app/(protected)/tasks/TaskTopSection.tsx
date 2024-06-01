@@ -2,6 +2,8 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getPermissions } from "@/app/_auth/actions/get-permissions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import TaskStatusFilter from "./TaskStatusFilter";
+
 
 const TaskTopSection = async () => {
 	const { user } = await getAuth();
@@ -11,7 +13,9 @@ const TaskTopSection = async () => {
 
 	return (
 		<div className="flex justify-between py-3">
-			<div></div>
+			<div>
+				<TaskStatusFilter />
+			</div>
 			{canCreateTask && (
 				<Button asChild size="sm">
 					<Link href="/tasks/new">New Task</Link>

@@ -14,8 +14,6 @@ export interface TaskExtended extends Task {
 	status: Status;
 }
 
-const statuses = ["1", "2", "3", "4"];
-
 interface Props {
 	searchParams: TasksQuery;
 }
@@ -37,11 +35,10 @@ export default async function TasksPage({ searchParams }: Props) {
 		viewableUsers.push(user.id);
 	}
 
-	// check if searchParams.status is one of the accepted statuses
-	// if not, set it to undefined
-	const status = searchParams.status && statuses.includes(searchParams.status) ? parseInt(searchParams.status) : undefined;
+	// Split the status string into an array of numbers, as multiple statuses can be selected
+	const statuses = searchParams.status ? searchParams.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
 	const sortOrder = searchParams.sortOrder;
-	const where = { statusId: status };
+	const where = { statusId: { in: statuses } };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 15;

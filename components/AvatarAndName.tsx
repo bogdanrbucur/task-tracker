@@ -2,6 +2,7 @@
 import { UserExtended, UserRestricted } from "@/app/users/getUserById";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { CommentUser } from "@/app/(protected)/tasks/[id]/commentsSection";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -55,7 +56,7 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 	return (
 		<div className="flex items-center gap-4">
 			<Avatar style={{ width: "6rem", height: "6rem" }}>
-				<AvatarImage src={avatar} alt={initials} sizes="2xl" />
+				<AvatarImage src={avatar} alt={initials} />
 				<AvatarFallback className="text-4xl">{initials}</AvatarFallback>
 			</Avatar>
 			<div>
@@ -65,5 +66,18 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 				<p className="text-muted-foreground">{user.position}</p>
 			</div>
 		</div>
+	);
+};
+export const UserAvatarNameComment = ({ user }: { user: CommentUser | null }) => {
+	if (!user) return null;
+	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
+	// Get the avatar file from the server
+	const avatar = user.avatar ? `/avatars/${user.id}` : undefined;
+
+	return (
+		<Avatar>
+			<AvatarImage src={avatar} alt={initials} />
+			<AvatarFallback>{initials}</AvatarFallback>
+		</Avatar>
 	);
 };

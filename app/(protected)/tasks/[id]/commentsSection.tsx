@@ -1,6 +1,5 @@
 "use client";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
@@ -9,16 +8,26 @@ import { useFormState } from "react-dom";
 import PostCommentButton from "./PostCommentButton";
 import addComment from "./addComment";
 import CommentSkeleton from "./commentSkeleton";
+import { UserAvatarNameComment } from "@/components/AvatarAndName";
+import { Avatar } from "@prisma/client";
 
 const initialState = {
 	message: null,
+};
+
+export type CommentUser = {
+	id: string;
+	firstName: string;
+	lastName: string;
+	department: { name: string; id: number } | null;
+	avatar: Avatar | null;
 };
 
 type CommentDetails = {
 	comment: string;
 	id: number;
 	time: Date;
-	user: { firstName: string; lastName: string; department: { name: string; id: number } | null };
+	user: CommentUser;
 };
 
 const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId: number; comments: CommentDetails[] }) => {
@@ -42,10 +51,7 @@ const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId
 				<section className="space-y-4">
 					{comments.map((comment) => (
 						<div key={comment.id} className="flex items-start gap-4">
-							<Avatar>
-								<AvatarImage alt="@shadcn" />
-								<AvatarFallback>{comment.user.firstName.slice(0, 1).toUpperCase() + comment.user.lastName?.slice(0, 1).toUpperCase()}</AvatarFallback>
-							</Avatar>
+							<UserAvatarNameComment user={comment.user} />
 							<div className="flex-1">
 								<div className="flex items-center justify-between">
 									<div className="font-medium">

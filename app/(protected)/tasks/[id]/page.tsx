@@ -51,7 +51,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 	// Get all the comments details
 	const comments = await prisma.comment.findMany({
 		where: { taskId: task!.id },
-		select: { user: { select: { firstName: true, lastName: true, department: true } }, comment: true, id: true, time: true },
+		select: { user: { select: { id: true, firstName: true, lastName: true, department: true, avatar: true } }, comment: true, id: true, time: true },
 	});
 
 	// Check if the user has the permission to edit the task = is admin, is manager of the assigned user, or is the assigned user
@@ -94,7 +94,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 								<div className="mb-2">Due on:</div>
 								<div className="flex items-center">
 									<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
-									<div className={dueColor(task.dueDate)}>{formatDate(task.dueDate)}</div>
+									<div className={dueColor(task)}>{formatDate(task.dueDate)}</div>
 								</div>
 							</div>
 							{task.completedOn && (
@@ -102,7 +102,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 									<div className="mb-2">Completed on:</div>
 									<div className="flex items-center">
 										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
-										<div className={completedColor(task.completedOn, task.dueDate)}>{formatDate(task.completedOn)}</div>
+										<div className={completedColor(task)}>{formatDate(task.completedOn)}</div>
 									</div>
 								</div>
 							)}

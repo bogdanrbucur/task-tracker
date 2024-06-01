@@ -1,8 +1,8 @@
 import { UserExtended } from "@/app/users/getUserById";
-import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAndName";
+import { UserAvatarNameSmall } from "@/components/AvatarAndName";
 import StatusBadge from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { dueColor, formatDate } from "@/lib/utilityFunctions";
+import { completedColor, dueColor, formatDate } from "@/lib/utilityFunctions";
 import { cn } from "@/lib/utils";
 import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
@@ -53,16 +53,16 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 			<TableBody>
 				{tasks.map((task) => (
 					<TableRow key={task.id}>
-						<TableCell className="py-1 space-y-1">
+						<TableCell className="py-1 space-y-2">
 							{/* Make the title clickable and dynamically build the URL to the issue page */}
 							<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 							{/* visible on mobile but hidden on medium devices and higher */}
+							<div className="flex gap-x-1 md:hidden ">
+								Due Date:
+								<div className={dueColor(task)}> {formatDate(task.dueDate)}</div>
+							</div>
 							<div className="block md:hidden">
 								<StatusBadge statusObj={task.status} size="xs" />
-							</div>
-							<div className="flex md:hidden ">
-								Due Date:
-								<div className={dueColor(task.dueDate)}> {formatDate(task.dueDate)}</div>
 							</div>
 							<div className="block md:hidden">
 								{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
@@ -78,7 +78,12 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 							<StatusBadge statusObj={task.status} size="xs" />
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1">{formatDate(task.createdAt)}</TableCell>
-						<TableCell className={cn(dueColor(task.dueDate), "hidden md:table-cell py-1")}>{formatDate(task.dueDate)}</TableCell>
+						<TableCell className={cn(dueColor(task), "hidden md:table-cell py-1")}>{formatDate(task.dueDate)}</TableCell>
+						{task.completedOn ? (
+							<TableCell className={cn(completedColor(task), "hidden md:table-cell py-1")}>{formatDate(task.completedOn!)}</TableCell>
+						) : (
+							<TableCell></TableCell>
+						)}
 						<TableCell className="hidden md:table-cell py-1">
 							{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
 								<Link href={`/users/${task.assignedToUserId}`}>
@@ -102,6 +107,7 @@ const columns: { label: string; value: keyof Task; className?: string }[] = [
 	{ label: "Status", value: "statusId", className: "hidden md:table-cell py-1" },
 	{ label: "Created", value: "createdAt", className: "hidden md:table-cell py-1" },
 	{ label: "Due Date", value: "dueDate", className: "hidden md:table-cell py-1" },
+	{ label: "Completed", value: "completedOn", className: "hidden md:table-cell py-1" },
 	{ label: "Assigned to", value: "assignedToUserId", className: "hidden md:table-cell py-1" },
 ];
 
