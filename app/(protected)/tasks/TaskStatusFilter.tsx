@@ -69,9 +69,10 @@ export default function TaskStatusFilter() {
 		// Add the selected statuses to the URL
 		if (selectedStatuses !== "") params.append("status", selectedStatuses);
 
-		// Add the existing orderBy and sortOrder to the URL
+		// Add the existing searchPramas to the URL
 		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 		if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
+		if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
 
 		const query = selectedStatuses !== "" ? "?" + params.toString() : "";
 		router.push(`/tasks${query}`);

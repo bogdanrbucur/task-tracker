@@ -66,7 +66,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					<div className="flex justify-between">
 						<div className="flex justify-center md:justify-end">
 							<Button asChild>
-								<Link href={`/tasks/${task?.id ? task.id : ""}`}>Cancel</Link>
+								<Link href={`/tasks/${task?.id ? task.id : "?status=1%2C2"}`}>Cancel</Link>
 							</Button>
 						</div>
 						<div className="flex justify-center md:justify-end">

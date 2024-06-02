@@ -16,6 +16,7 @@ export interface TasksQuery {
 	orderBy: keyof Task;
 	sortOrder: "asc" | "desc";
 	page: string;
+	user: string;
 }
 
 interface Props {

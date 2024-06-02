@@ -28,7 +28,7 @@ const Navbar = async () => {
 					<GrTask size="23" />
 				</Link>
 				{user && (
-					<Link href="/tasks" className={buttonVariants({ variant: "ghost" })}>
+					<Link href="/tasks?status=1%2C2" className={buttonVariants({ variant: "ghost" })}>
 						Tasks
 					</Link>
 				)}

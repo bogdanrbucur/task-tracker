@@ -3,7 +3,7 @@ import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
-import { Status, Task, User } from "@prisma/client";
+import { Prisma, Status, Task, User } from "@prisma/client";
 import { notFound } from "next/navigation";
 import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
 import TaskTopSection from "./TaskTopSection";
@@ -37,8 +37,18 @@ export default async function TasksPage({ searchParams }: Props) {
 
 	// Split the status string into an array of numbers, as multiple statuses can be selected
 	const statuses = searchParams.status ? searchParams.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
+	const taskUser = searchParams.user ? searchParams.user : undefined;
 	const sortOrder = searchParams.sortOrder;
-	const where = { statusId: { in: statuses } };
+	let where: Prisma.TaskWhereInput | undefined = undefined;
+	if (statuses || taskUser) {
+		where = {
+			AND: [
+				statuses ? { statusId: { in: statuses } } : undefined,
+				taskUser ? { assignedToUserId: taskUser } : undefined,
+			].filter(Boolean) as Prisma.TaskWhereInput[],
+		};
+	}
+	// const where = { statusId: { in: statuses } };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 15;
