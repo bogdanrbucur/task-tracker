@@ -30,7 +30,9 @@ const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 
 	// Filter the users to include only the logged in user and their subordinates, unless they are admin, in which case all users are included
 	const subordinates = thisUser?.subordinates;
-	const filteredUsers = allUsers!.filter((u) => userPermissions.isAdmin || u.id === thisUser?.id || subordinates?.some((s) => s!.id === u.id));
+	let filteredUsers = allUsers!.filter((u) => userPermissions.isAdmin || u.id === thisUser?.id || subordinates?.some((s) => s!.id === u.id));
+	// Filter out inactive users
+	filteredUsers = filteredUsers.filter((u) => u.active);
 
 	return <TaskForm user={user!} users={filteredUsers} task={task} />;
 };

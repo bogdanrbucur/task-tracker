@@ -22,7 +22,9 @@ const EditUserPage = async ({ params }: { params: { id: string } }) => {
 	if (!canEditUser) return notFound();
 
 	// Get logged in user details and all users
-	const allUsers = await getUsers();
+	let allUsers = await getUsers();
+	// Filter out inactive users
+	allUsers = allUsers.filter((u) => u.active);
 	const departments = await prisma.department.findMany();
 
 	return <UserForm editor={user!.id} user={selectedUser} users={allUsers} departments={departments} />;

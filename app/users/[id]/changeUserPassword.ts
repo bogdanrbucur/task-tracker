@@ -64,7 +64,6 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 			return { message: (error as any).message };
 		}
 	}
-	// redirect(`/users/${formData.get("id")}`);
 	// refresh the page
 	revalidatePath(`/users/${formData.get("id")}`);
 }

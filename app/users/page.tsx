@@ -19,9 +19,9 @@ export default async function UsersPage({ searchParams }: Props) {
 	// Only admins can see all users
 	if (!userPermissions?.isAdmin) return notFound();
 
-	const active = searchParams.active ? Boolean(searchParams.active) : true;
+	const active = searchParams.active === "false" ? false : searchParams.active === "true" ? true : undefined;
 	const sortOrder = searchParams.sortOrder;
-	const where = { active: active };
+	const where = { active };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 10;

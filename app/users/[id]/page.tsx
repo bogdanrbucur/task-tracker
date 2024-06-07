@@ -10,13 +10,14 @@ import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
+import { cn } from "@/lib/utils";
 import prisma from "@/prisma/client";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import getUserDetails from "../getUserById";
 import ChangePasswordButton from "./ChangePasswordButton";
-import { cn } from "@/lib/utils";
+import ToggleUserButton from "./ToggleUserButton";
 
 export const revalidate = 5;
 
@@ -47,8 +48,11 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 		return 0;
 	});
 
+	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.active);
 	// Filter out the tasks with statusId 3 (closed) or 4 (cancelled)
 	userDetails.assignedTasks = userDetails.assignedTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
+	const tasksNumber = userDetails.assignedTasks.length;
+	const subordinatedNumber = activeSubordinates.length;
 
 	return (
 		<Card className="container w-full max-w-5xl">
@@ -63,6 +67,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 							</Link>
 						</Button>
 						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
+						{/* Only admins can deactivate users but cannot deactivate themselves */}
+						{userPermissions.isAdmin && user.id !== userDetails.id && (
+							<ToggleUserButton userId={userDetails.id} active={userDetails.active} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
+						)}
 					</div>
 				</div>
 			</CardHeader>
@@ -77,11 +85,11 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						</div>
 					)}
 				</div>
-				{userDetails.subordinates.length > 0 && (
+				{activeSubordinates.length > 0 && (
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Subordinates</h4>
 						<div className="grid grid-cols-2 gap-4">
-							{userDetails.subordinates.map((subordinate) => (
+							{activeSubordinates.map((subordinate) => (
 								<UserAvatarNameNormal user={subordinate} key={subordinate.id} />
 							))}
 						</div>

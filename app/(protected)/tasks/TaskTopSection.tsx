@@ -11,7 +11,9 @@ const TaskTopSection = async () => {
 
 	const userPermissions = await getPermissions(user?.id);
 	const canCreateTask = userPermissions?.isAdmin || userPermissions?.isManager;
-	const allUsers = await getUsers();
+	let allUsers = await getUsers();
+	// Filter out inactive users
+	allUsers = allUsers.filter((u) => u.active);
 
 	return (
 		<div className="flex justify-between py-3">
