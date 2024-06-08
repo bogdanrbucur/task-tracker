@@ -41,6 +41,11 @@ export function UserSearchFilter() {
 				// Focus the search filter
 				inputRef.current?.focus();
 			}
+
+			if (e.key === "Escape") {
+				// Unfocus the search filter
+				inputRef.current?.blur();
+			}
 		};
 		document.addEventListener("keydown", down);
 		return () => document.removeEventListener("keydown", down);
@@ -58,9 +63,7 @@ export function UserSearchFilter() {
 				className="h-9 pl-9 pr-4 rounded-md borderbg-transparent "
 				onChange={(e) => setSearch(e.target.value)}
 			/>
-			{!search && (
-				<kbd className="absolute right-2 top-1.5 px-2 py-1 rounded border bg-muted font-mono text-[10px] font-medium text-muted-foreground opacity-100">CTRL+K</kbd>
-			)}{" "}
+			{!search && <kbd className="absolute right-2 top-1.5 px-2 rounded border bg-muted font-mono text-[14px] font-medium text-muted-foreground opacity-100">CTRL+K</kbd>}{" "}
 		</div>
 	);
 }
