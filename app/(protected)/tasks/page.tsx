@@ -39,16 +39,40 @@ export default async function TasksPage({ searchParams }: Props) {
 	const statuses = searchParams.status ? searchParams.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
 	const taskUser = searchParams.user ? searchParams.user : undefined;
 	const sortOrder = searchParams.sortOrder;
+	let searchTermsQuery = searchParams.search ? searchParams.search : undefined;
+	let searchTerms: string[] | undefined | string = undefined;
+	// If there are search terms, remove any leading/trailing whitespace and split the terms into an array
+	if (searchTermsQuery) {
+		searchTermsQuery = searchTermsQuery.trim();
+		searchTerms = searchTermsQuery.split(" ");
+	}
+
 	let where: Prisma.TaskWhereInput | undefined = undefined;
-	if (statuses || taskUser) {
+	// If there's no search terminology, just filter by status and user
+	if ((statuses || taskUser) && !searchTerms) {
+		where = {
+			AND: [statuses ? { statusId: { in: statuses } } : undefined, taskUser ? { assignedToUserId: taskUser } : undefined].filter(Boolean) as Prisma.TaskWhereInput[],
+		};
+		// If there's a search term, search in title, description, assignedToUser, and status
+	} else if (searchTerms) {
 		where = {
 			AND: [
-				statuses ? { statusId: { in: statuses } } : undefined,
-				taskUser ? { assignedToUserId: taskUser } : undefined,
+				{
+					// for each search term, search in title, description, assignedToUser, and status
+					AND: searchTerms.map((term) => ({
+						OR: [
+							{ title: { contains: term } },
+							{ description: { contains: term } },
+							{ assignedToUser: { OR: [{ firstName: { contains: term } }, { lastName: { contains: term } }] } },
+							{ status: { name: { contains: term } } },
+						],
+					})),
+				},
+				// statuses ? { statusId: { in: statuses } } : undefined,
+				// taskUser ? { assignedToUserId: taskUser } : undefined,
 			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
 	}
-	// const where = { statusId: { in: statuses } };
 	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;

@@ -9,7 +9,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function ComboboxDemo({ users }: { users: UserExtended[] }) {
+export function TaskUserFilter({ users }: { users: UserExtended[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [open, setOpen] = useState(false);
@@ -22,6 +22,7 @@ export function ComboboxDemo({ users }: { users: UserExtended[] }) {
 		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 		if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
 		if (searchParams.get("status")) params.append("status", searchParams.get("status")!);
+		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
 
 		// Add the selected user to the URL
 		if (userId !== "") params.append("user", userId);

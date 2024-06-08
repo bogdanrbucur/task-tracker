@@ -25,10 +25,25 @@ export default function TaskStatusFilter() {
 	const [showCancelled, setshowCancelled] = useState<Checked>(false);
 
 	const statuses: any[] = [
-		{ label: "In Progress", value: 1, state: showInProgress, setter: setshowInProgress },
-		{ label: "Completed", value: 2, state: showCompleted, setter: setshowCompleted },
+		{
+			label: "In Progress",
+			value: 1,
+			state: showInProgress,
+			setter: setshowInProgress,
+		},
+		{
+			label: "Completed",
+			value: 2,
+			state: showCompleted,
+			setter: setshowCompleted,
+		},
 		{ label: "Closed", value: 3, state: showClosed, setter: setshowClosed },
-		{ label: "Cancelled", value: 4, state: showCancelled, setter: setshowCancelled },
+		{
+			label: "Cancelled",
+			value: 4,
+			state: showCancelled,
+			setter: setshowCancelled,
+		},
 	];
 
 	//
@@ -73,6 +88,7 @@ export default function TaskStatusFilter() {
 		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 		if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
 		if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
+		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
 
 		const query = selectedStatuses !== "" ? "?" + params.toString() : "";
 		router.push(`/tasks${query}`);

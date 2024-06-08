@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import TaskStatusFilter from "./TaskStatusFilter";
 import getUsers from "@/app/users/getUsers";
-import { ComboboxDemo } from "./TaskUserFilter";
+import { TaskUserFilter } from "./TaskUserFilter";
+import { TaskSearchFilter } from "./TaskSearchFilter";
 
 const TaskTopSection = async () => {
 	const { user } = await getAuth();
@@ -19,7 +20,8 @@ const TaskTopSection = async () => {
 		<div className="flex justify-between py-3">
 			<div className="flex space-x-3">
 				<TaskStatusFilter />
-				<ComboboxDemo users={allUsers} />
+				<TaskUserFilter users={allUsers} />
+				<TaskSearchFilter />
 			</div>
 			{canCreateTask && (
 				<Button asChild size="sm">

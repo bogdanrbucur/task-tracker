@@ -5,15 +5,15 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import { redirect } from "next/navigation";
 
 export default async function ProtectedWrapper({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	const { user } = await getAuth();
+  const { user } = await getAuth();
 
-	if (!user) {
-		redirect("/sign-in");
-	}
+  if (!user) {
+    redirect("/sign-in");
+  }
 
-	return <>{children}</>;
+  return <>{children}</>;
 }
