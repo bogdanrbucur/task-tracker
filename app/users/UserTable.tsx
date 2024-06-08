@@ -9,6 +9,7 @@ export interface UsersQuery {
 	orderBy: keyof UserExtended;
 	sortOrder: "asc" | "desc";
 	page: string;
+	search: string;
 }
 
 interface Props {
