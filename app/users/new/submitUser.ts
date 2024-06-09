@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import updateUser from "../[id]/updateUser";
+import { testEmail } from "@/app/email/send";
 
 export type NewUser = {
 	firstName: string;

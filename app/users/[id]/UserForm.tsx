@@ -15,7 +15,6 @@ import { useState } from "react";
 import { useFormState } from "react-dom";
 import { UserExtended } from "../getUserById";
 import submitUser from "../new/submitUser";
-import ImagePicker from "./ImagePicker";
 
 interface Props {
 	editor: string;
