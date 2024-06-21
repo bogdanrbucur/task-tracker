@@ -50,16 +50,16 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Dates colors that make sense: due date red if overdue. Completed date red if overdue. In all pages
 - [x] Comment users with avatars
 - [x] Provision to deactivate users. Delete the avatar file from local storage when deactivating a user
-- [ ] Tasks and Users table filters
-- [ ] Make an admin menu with dropdowns for Tasks, Users, Departments, and Statuses
-- [ ] Replace the React Icon logo with an actual generic .png
-- [ ] Add a favicon
-- [ ] Scheduled function to check for overdue tasks and set the status to Overdue
-- [ ] Add toast notifications for changes
+- [x] Tasks and Users table filters
+- [x] Replace the React Icon logo with an actual generic .png
+- [ ] Make a Department admin page
+- [ ] Make an admin menu with dropdowns for Users and Departments
+- [ ] Scheduled function to check for overdue tasks and send due soon and overdue emails
+- [ ] Add Sonner toast notifications for changes
 - [ ] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
 - [ ] Comments @ mentions
 - [ ] Email notifications for comment @mentions, re-opened tasks, task completion, task assigned
 - [ ] Sonner toast notifications when emails are sent
-- [ ] Email notifications for overdue tasks and due soon (10 days)
 - [ ] If saving new user as admin, pop-up to confirm the action
 - [ ] User name red if the user is inactive
+- [ ] Add a favicon
