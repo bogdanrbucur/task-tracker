@@ -1,11 +1,11 @@
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getPermissions } from "@/app/_auth/actions/get-permissions";
+import getUsers from "@/app/users/getUsers";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import TaskStatusFilter from "./TaskStatusFilter";
-import getUsers from "@/app/users/getUsers";
-import { TaskUserFilter } from "./TaskUserFilter";
 import { TaskSearchFilter } from "./TaskSearchFilter";
+import TaskStatusFilter from "./TaskStatusFilter";
+import { TaskUserFilter } from "./TaskUserFilter";
 
 const TaskTopSection = async () => {
 	const { user } = await getAuth();
@@ -25,7 +25,9 @@ const TaskTopSection = async () => {
 			</div>
 			{canCreateTask && (
 				<Button asChild size="sm">
-					<Link href="/tasks/new">New Task</Link>
+					<Link href="/tasks/new" className="space-x-5">
+						New Task
+					</Link>
 				</Button>
 			)}
 		</div>
