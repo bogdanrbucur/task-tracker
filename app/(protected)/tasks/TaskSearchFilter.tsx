@@ -54,17 +54,17 @@ export function TaskSearchFilter() {
 
 	return (
 		<div className="relative">
-			<div className="absolute top-2 left-2 z-10 text-gray-400 dark:text-gray-500">
-				<SearchIcon className="h-5 w-5" />
+			<div className="absolute top-2 left-2 z-5 text-gray-400 dark:text-gray-500">
+				<SearchIcon className="hidden md:block h-5 w-5" />
 			</div>
 			<Input
 				ref={inputRef}
 				type="text"
 				placeholder={search ? "" : "Search..."}
-				className="h-9 pl-9 pr-4 rounded-md borderbg-transparent "
+				className="h-9 md:pl-9 pr-4 rounded-md borderbg-transparent "
 				onChange={(e) => setSearch(e.target.value)}
 			/>
-			{!search && <kbd className="absolute right-2 top-1.5 px-2 rounded border bg-muted font-mono text-[14px] font-medium text-muted-foreground opacity-100">CTRL+K</kbd>}{" "}
+			{!search && <kbd className="hidden md:block absolute right-2 top-1.5 px-2 rounded border bg-muted font-mono text-[14px] font-medium text-muted-foreground opacity-100">CTRL+K</kbd>}{" "}
 		</div>
 	);
 }

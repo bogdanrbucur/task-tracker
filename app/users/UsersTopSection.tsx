@@ -11,7 +11,7 @@ const UsersTopSection = async () => {
 	const userPermissions = await getPermissions(user?.id);
 
 	return (
-		<div className="flex justify-between py-3">
+		<div className="flex justify-between py-1 md:py-3 gap-x-3">
 			<div className="flex gap-x-3">
 				<UserStatusFilter />
 				<UserSearchFilter />

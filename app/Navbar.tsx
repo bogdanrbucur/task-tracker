@@ -8,6 +8,7 @@ import { getPermissions } from "./_auth/actions/get-permissions";
 import { signOut } from "./_auth/actions/sign-out";
 import getUserDetails from "./users/getUserById";
 import Image from "next/image";
+import { AdminMenu } from "./AdminMenu";
 
 const Navbar = async () => {
 	// Check user permissions
@@ -31,11 +32,7 @@ const Navbar = async () => {
 						Tasks
 					</Link>
 				)}
-				{userPermissions?.isAdmin && (
-					<Link href="/users" className={buttonVariants({ variant: "ghost" })}>
-						Users
-					</Link>
-				)}
+				{userPermissions?.isAdmin && <AdminMenu />}
 			</section>
 			<div className="flex items-center space-x-1 md:space-x-3">
 				<NavBarWelcome userProps={userProps} />

@@ -17,19 +17,21 @@ const TaskTopSection = async () => {
 	allUsers = allUsers.filter((u) => u.active);
 
 	return (
-		<div className="flex justify-between py-3">
-			<div className="flex space-x-3">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 py-1 md:py-3 ">
+			<div className="flex space-x-3 justify-between md:justify-start">
 				<TaskStatusFilter />
 				<TaskUserFilter users={allUsers} />
+				{canCreateTask && (
+					<Button asChild size="sm">
+						<Link href="/tasks/new" className="space-x-5">
+							New Task
+						</Link>
+					</Button>
+				)}
+			</div>
+			<div className="flex space-x-3 justify-between md:justify-end">
 				<TaskSearchFilter />
 			</div>
-			{canCreateTask && (
-				<Button asChild size="sm">
-					<Link href="/tasks/new" className="space-x-5">
-						New Task
-					</Link>
-				</Button>
-			)}
 		</div>
 	);
 };
