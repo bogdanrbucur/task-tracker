@@ -21,6 +21,9 @@ const TaskTopSection = async () => {
 			<div className="flex space-x-3 justify-between md:justify-start">
 				<TaskStatusFilter />
 				<TaskUserFilter users={allUsers} />
+			</div>
+			<div className="flex space-x-3 justify-between md:justify-end">
+				<TaskSearchFilter />
 				{canCreateTask && (
 					<Button asChild size="sm">
 						<Link href="/tasks/new" className="space-x-5">
@@ -28,9 +31,6 @@ const TaskTopSection = async () => {
 						</Link>
 					</Button>
 				)}
-			</div>
-			<div className="flex space-x-3 justify-between md:justify-end">
-				<TaskSearchFilter />
 			</div>
 		</div>
 	);

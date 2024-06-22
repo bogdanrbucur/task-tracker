@@ -14,13 +14,15 @@ const UsersTopSection = async () => {
 		<div className="flex justify-between py-1 md:py-3 gap-x-3">
 			<div className="flex gap-x-3">
 				<UserStatusFilter />
-				<UserSearchFilter />
 			</div>
-			{userPermissions?.isAdmin && (
-				<Button asChild size="sm">
-					<Link href="/users/new">New User</Link>
-				</Button>
-			)}
+			<div className="flex gap-x-3">
+				<UserSearchFilter />
+				{userPermissions?.isAdmin && (
+					<Button asChild size="sm">
+						<Link href="/users/new">New User</Link>
+					</Button>
+				)}
+			</div>
 		</div>
 	);
 };
