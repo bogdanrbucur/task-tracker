@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
 import getUserDetails from "@/app/users/getUserById";
+import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 
 export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -47,6 +48,9 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 				completedOn: null,
 			},
 		});
+
+		// Check if the task is overdue
+		await checkIfTaskOverdue(reopenedTask.id);
 
 		const reopenComment = `Task reopened by ${editor.firstName} ${editor.lastName}${data.reopenComment ? `: ${data.reopenComment}` : "."}`;
 

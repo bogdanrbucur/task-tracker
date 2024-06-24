@@ -1,3 +1,4 @@
+import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { differenceInCalendarDays, format, isPast, isToday } from "date-fns";
 import sharp from "sharp";
@@ -21,4 +22,42 @@ export function completedColor(task: Task) {
 
 export async function resizeAndSaveImage(avatarBuffer: Buffer, filePath: string) {
 	sharp(avatarBuffer).resize(256, 256).withMetadata().toFile(filePath);
+}
+
+// Check all In progress tasks for overdue status and change to Overdue if past due
+export async function checkForOverdueTasks() {
+	const tasks = await prisma.task.findMany({
+		where: {
+			AND: [{ statusId: 1 }, { dueDate: { lt: new Date() } }, { completedOn: null }],
+		},
+	});
+	// Change status to overdue (5) if task is past due
+	tasks.forEach(async (task) => {
+		await prisma.task.update({
+			where: { id: task.id },
+			data: { statusId: 5 },
+		});
+	});
+}
+
+export async function checkIfTaskOverdue(taskId: number) {
+	const task = await prisma.task.findUnique({
+		where: { id: taskId },
+	});
+	if (task?.statusId === 1 && isPast(task.dueDate)) {
+		console.log(`Task ${taskId} is overdue.`);
+
+		// TODO send notification to assigned user
+		//
+		await prisma.task.update({
+			where: { id: taskId },
+			data: { statusId: 5 },
+		});
+	} else if (task?.statusId === 5 && !isPast(task.dueDate)) {
+		console.log(`Task ${taskId} is no longer overdue.`);
+		await prisma.task.update({
+			where: { id: taskId },
+			data: { statusId: 1 },
+		});
+	}
 }

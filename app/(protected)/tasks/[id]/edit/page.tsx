@@ -6,7 +6,7 @@ import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
 import TaskForm from "../TaskForm";
 
-const EditIssuePage = async ({ params }: { params: { id: string } }) => {
+const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Check user permissions
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
@@ -17,8 +17,8 @@ const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 		include: { assignedToUser: true },
 	});
 
-	// If the task is not found OR task is not In Progress, return a 404 page, included in Next.js
-	if (!task || task.statusId !== 1) return notFound();
+	// If the task is not found OR task is not In Progress or Overdue, return a 404 page, included in Next.js
+	if (!task || (task.statusId !== 1 && task.statusId !== 5)) return notFound();
 
 	// Check if the user has the permission to edit the task = is admin, is manager of the assigned user, or is the assigned user
 	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id || task?.assignedToUser?.id === user?.id;
@@ -37,4 +37,4 @@ const EditIssuePage = async ({ params }: { params: { id: string } }) => {
 	return <TaskForm user={user!} users={filteredUsers} task={task} />;
 };
 
-export default EditIssuePage;
+export default EditTaskpage;

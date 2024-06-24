@@ -2,6 +2,7 @@ import prisma from "@/prisma/client";
 import compareTasks from "../new/compareTasks";
 import { Editor, UpdateTask } from "../new/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
+import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 
 export async function updateTask(task: UpdateTask, editingUser: Editor) {
 	// Get the old task for comparison
@@ -21,6 +22,9 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 	});
 
 	if (!updatedTask) throw new Error("Task update failed");
+
+	// Check if the task is now overdue and update its status
+	await checkIfTaskOverdue(updatedTask.id);
 
 	console.log(`Task ${task.id} updated successfully`);
 

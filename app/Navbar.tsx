@@ -28,7 +28,7 @@ const Navbar = async () => {
 					<Image src="/logo.png" alt="logo" width="100" height="50" />
 				</Link>
 				{user && (
-					<Link href="/tasks?status=1%2C2" className={buttonVariants({ variant: "ghost" })}>
+					<Link href="/tasks?status=1%2C5%2C2" className={buttonVariants({ variant: "ghost" })}>
 						Tasks
 					</Link>
 				)}

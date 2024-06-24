@@ -2,6 +2,7 @@ import prisma from "@/prisma/client";
 import { Editor, NewTask } from "./submitTask";
 import { recordTaskHistory } from "../[id]/recordTaskHistory";
 import { testEmail } from "@/app/email/email";
+import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 
 // Create a new task in the database
 export async function createTask(task: NewTask, editingUser: Editor) {
@@ -17,6 +18,9 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 	});
 
 	if (!newTask) throw new Error("Task creation failed");
+
+	// Check if the task is overdue
+	await checkIfTaskOverdue(newTask.id);
 
 	console.log(`Task ${newTask.id} created successfully`);
 

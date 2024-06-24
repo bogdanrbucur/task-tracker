@@ -19,6 +19,10 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 
 [Follow instructions](https://www.robinwieruch.de/next-authentication/).
 
+## Scheduled daily tasks
+
+Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
+
 ## TODO
 
 - [x] Allow dashboard viewing without login but nothing else
@@ -54,9 +58,9 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 - [x] Replace the React Icon logo with an actual generic .png
 - [x] Make a Department admin page
 - [x] Make an admin menu with dropdowns for Users and Departments
-- [ ] Overdue flag for each task
-- [ ] Overdue status badge
-- [ ] Overdue status filter for tasks
+- [x] Overdue flag for each task
+- [x] Overdue status filter for tasks
+- [x] Overdue checking when editing a task
 - [ ] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
 - [ ] Email notifications for comment @mentions, re-opened tasks, task completion, task assigned
 - [ ] Scheduled function to check for overdue tasks and send due soon and overdue emails

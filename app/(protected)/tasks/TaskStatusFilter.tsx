@@ -23,6 +23,7 @@ export default function TaskStatusFilter() {
 	const [showCompleted, setshowCompleted] = useState<Checked>(true);
 	const [showClosed, setshowClosed] = useState<Checked>(false);
 	const [showCancelled, setshowCancelled] = useState<Checked>(false);
+	const [showOverdue, setShowOverdue] = useState<Checked>(true);
 
 	const statuses: any[] = [
 		{
@@ -30,6 +31,12 @@ export default function TaskStatusFilter() {
 			value: 1,
 			state: showInProgress,
 			setter: setshowInProgress,
+		},
+		{
+			label: "Overdue",
+			value: 5,
+			state: showOverdue,
+			setter: setShowOverdue,
 		},
 		{
 			label: "Completed",
@@ -58,21 +65,23 @@ export default function TaskStatusFilter() {
 	useEffect(() => {
 		const params = new URLSearchParams();
 
-		// If all 4 statuses are selected, set the showall state to true
-		if (showInProgress && showCompleted && showClosed && showCancelled) {
+		// If all 5 statuses are selected, set the showall state to true
+		if (showInProgress && showCompleted && showClosed && showCancelled && showOverdue) {
 			setshowall(true);
 			setshowInProgress(true);
 			setshowCompleted(true);
 			setshowClosed(true);
 			setshowCancelled(true);
+			setShowOverdue(true);
 		} else setshowall(false);
 
-		if (!showInProgress && !showCompleted && !showClosed && !showCancelled) {
+		if (!showInProgress && !showCompleted && !showClosed && !showCancelled && !showOverdue) {
 			setshowall(true);
 			setshowInProgress(true);
 			setshowCompleted(true);
 			setshowClosed(true);
 			setshowCancelled(true);
+			setShowOverdue(true);
 		}
 
 		// Get the selected statuses
@@ -92,7 +101,7 @@ export default function TaskStatusFilter() {
 
 		const query = selectedStatuses !== "" ? "?" + params.toString() : "";
 		router.push(`/tasks${query}`);
-	}, [showInProgress, showCompleted, showClosed, showCancelled]);
+	}, [showInProgress, showCompleted, showClosed, showCancelled, showOverdue]);
 
 	return (
 		<DropdownMenu>

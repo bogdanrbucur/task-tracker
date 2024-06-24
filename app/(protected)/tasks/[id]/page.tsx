@@ -72,7 +72,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 						<div className="flex items-center gap-4 justify-between">
 							<StatusBadge statusObj={task.status} size="sm" />
 							<div className="flex gap-4">
-								{canEditTask && task.statusId === 1 && (
+								{canEditTask && (task.statusId === 1 || task.statusId === 5) && (
 									<Button asChild size="sm">
 										<Link href={`/tasks/${task.id}/edit`} className="gap-1">
 											Edit
@@ -81,7 +81,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 									</Button>
 								)}
 								{canReopenTask && (task.statusId === 2 || task.statusId === 3) && <ReopenTaskButton userId={user?.id} taskId={task.id} />}
-								{canCompleteTask && task.statusId === 1 && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
+								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
 								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
 						</div>
