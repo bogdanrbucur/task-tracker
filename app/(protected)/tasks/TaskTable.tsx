@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
+import MobileTaskTabelCell from "./MobileTaskTabelCell";
 import { TaskExtended } from "./page";
 
 type StatusTypes = "1" | "2" | "3" | "4" | undefined;
@@ -59,34 +60,14 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 			<TableBody>
 				{tasks.map((task) => (
 					<TableRow key={task.id}>
-						<TableCell className="space-y-2 py-1">
-							{/* Make the title clickable and dynamically build the URL to the issue page */}
-							<Link href={`/tasks/${task.id}`}>{task.title}</Link>
-							{/* visible on mobile but hidden on medium devices and higher */}
-							<div className="flex gap-x-1 md:hidden">
-								Due Date:
-								<div className={dueColor(task)}> {formatDate(task.dueDate)}</div>
-							</div>
-							<div className="block md:hidden">
-								<StatusBadge statusObj={task.status} size="xs" />
-							</div>
-							<div className="block md:hidden">
-								{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
-									<Link href={`/users/${task.assignedToUserId}`}>
-										<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
-									</Link>
-								) : (
-									task.assignedToUser && <UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
-								)}
-							</div>
-						</TableCell>
+						<MobileTaskTabelCell task={task} viewableUsers={viewableUsers} />
 						<TableCell className="hidden py-1 md:table-cell">
 							<StatusBadge statusObj={task.status} size="xs" />
 						</TableCell>
 						<TableCell className="hidden py-1 md:table-cell">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.dueDate)}</TableCell>
 						{task.completedOn ? (
-							<TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn!)}</TableCell>
+							<TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn)}</TableCell>
 						) : (
 							<TableCell></TableCell>
 						)}

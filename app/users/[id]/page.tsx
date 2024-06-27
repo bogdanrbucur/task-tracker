@@ -6,11 +6,9 @@
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getPermissions } from "@/app/_auth/actions/get-permissions";
 import { UserAvatarNameLarge, UserAvatarNameNormal } from "@/components/AvatarAndName";
-import StatusBadge from "@/components/StatusBadge";
+import SingleUserTasks from "@/components/SingleUserTasks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { dueColor, formatDate } from "@/lib/utilityFunctions";
-import { cn } from "@/lib/utils";
 import prisma from "@/prisma/client";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
@@ -98,22 +96,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 				{userDetails.assignedTasks.length > 0 && (
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Open Tasks</h4>
-						<div className="grid gap-4">
-							{userDetails.assignedTasks.map((task) => (
-								<div key={task.id}>
-									<div className="flex items-center justify-between">
-										<Link href={`/tasks/${task.id}`}>
-											<h4 className="font-sm">{task.title}</h4>
-											<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
-												Due: <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
-											</div>
-										</Link>
-										{/* @ts-ignore */}
-										<StatusBadge statusObj={task.status} size="xs" />
-									</div>
-								</div>
-							))}
-						</div>
+						<SingleUserTasks tasks={userDetails.assignedTasks} />
 					</div>
 				)}
 			</CardContent>
