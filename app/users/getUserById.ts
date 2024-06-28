@@ -1,6 +1,5 @@
 import prisma from "@/prisma/client";
 import { Avatar, Task } from "@prisma/client";
-import NodeCache from "node-cache";
 import { cache } from "react";
 
 type Department = {

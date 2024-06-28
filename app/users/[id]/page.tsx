@@ -53,7 +53,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	const subordinatedNumber = activeSubordinates.length;
 
 	return (
-		<Card className="container w-full max-w-5xl">
+		<Card className="container w-full max-w-5xl p-0 md:px-7">
 			<CardHeader>
 				<div className="flex items-center justify-between gap-4">
 					<UserAvatarNameLarge user={userDetails} />
