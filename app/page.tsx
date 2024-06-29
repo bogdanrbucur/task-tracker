@@ -4,7 +4,7 @@ import { TaskExtended } from "./(protected)/tasks/page";
 import MyTasks from "./MyTasks";
 import TeamTasks from "./TeamTasks";
 import { getAuth } from "./_auth/actions/get-auth";
-import getUserDetails, { prismaExtendedUserSelection } from "./users/getUserById";
+import getUserDetails, { getSubordinatesTasks } from "./users/getUserById";
 
 export default async function Home() {
 	// Check user permissions
@@ -40,29 +40,7 @@ export default async function Home() {
 
 	let teamTasks;
 	if (hasSubordinates) {
-		const subordinates = await prisma.user.findMany({
-			where: {
-				managerId: user.id,
-			},
-		});
-		const subordinatesIds = subordinates.map((subordinate) => subordinate.id);
-		teamTasks = await prisma.task.findMany({
-			where: {
-				assignedToUserId: {
-					in: subordinatesIds,
-				},
-				statusId: {
-					notIn: [3, 4],
-				},
-			},
-			include: {
-				status: true,
-				createdByUser: true,
-				assignedToUser: {
-					select: prismaExtendedUserSelection,
-				},
-			},
-		});
+		teamTasks = await getSubordinatesTasks(user.id);
 
 		// Sorth the tasks first by Completed (statusId 2) and then by Due Date
 		teamTasks.sort((a, b) => {

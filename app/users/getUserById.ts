@@ -73,3 +73,33 @@ const getUserDetails = cache(async (id: string) => {
 });
 
 export default getUserDetails;
+
+export async function getSubordinatesTasks(userId: string) {
+	const subordinates = await prisma.user.findMany({
+		where: {
+			managerId: userId,
+			active: true,
+		},
+	});
+
+	const subordinatesIds = subordinates.map((subordinate) => subordinate.id);
+	const teamTasks = await prisma.task.findMany({
+		where: {
+			assignedToUserId: {
+				in: subordinatesIds,
+			},
+			statusId: {
+				notIn: [3, 4],
+			},
+		},
+		include: {
+			status: true,
+			createdByUser: true,
+			assignedToUser: {
+				select: prismaExtendedUserSelection,
+			},
+		},
+	});
+
+	return teamTasks;
+}
