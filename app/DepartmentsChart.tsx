@@ -1,23 +1,43 @@
 "use client";
+import { Department } from "@prisma/client";
 import React, { useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip } from "recharts";
+import { TaskExtended } from "./(protected)/tasks/page";
 
-const data = [
-	{ name: "Gro", value: 400 },
-	{ name: "Group B", value: 300 },
-	{ name: "Group C", value: 300 },
-	{ name: "Group Dfsdfsdwww", value: 200 },
-];
+// const data = [
+// 	{ name: "Gro", value: 400 },
+// 	{ name: "Group B", value: 300 },
+// 	{ name: "Group C", value: 300 },
+// 	{ name: "Group Dfsdfsdwww", value: 200 },
+// ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 const RADIAN = Math.PI / 180;
 
-export default function DepartmentsChart() {
+export default function DepartmentsChart({ data }: { data: { name: string; inprogress: number; completed: number; overdue: number; value: number }[] }) {
 	const [inPieActiveIndex, setInPieActiveIndex] = useState<number | undefined>(undefined);
 
 	function onInPieHover(_: any, index: number | undefined) {
 		setInPieActiveIndex(index);
 	}
+
+	// @ts-ignore
+	const inPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+		const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+		const x = cx + radius * Math.cos(-midAngle * RADIAN);
+		const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+		return (
+			<>
+				<text x={x} y={y} fill="white" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">
+					{`${data[index].name}`}
+				</text>
+				<text x={x} y={y} fill="white" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">
+					{`${(percent * 100).toFixed(0)}%`}
+				</text>
+			</>
+		);
+	};
 
 	return (
 		<div id="my-tasks" className="hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
@@ -54,27 +74,9 @@ export default function DepartmentsChart() {
 	);
 }
 
-// @ts-ignore
-const inPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-	const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-	const x = cx + radius * Math.cos(-midAngle * RADIAN);
-	const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-	return (
-		<>
-			<text x={x} y={y} fill="white" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">
-				{`${data[index].name}`}
-			</text>
-			<text x={x} y={y} fill="white" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">
-				{`${(percent * 100).toFixed(0)}%`}
-			</text>
-		</>
-	);
-};
-
 const inPieHover = (props: any) => {
 	const RADIAN = Math.PI / 180;
-	const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+	const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, inprogress } = props;
 	const sin = Math.sin(-RADIAN * midAngle);
 	const cos = Math.cos(-RADIAN * midAngle);
 	const sx = cx + (outerRadius + 10) * cos;
@@ -94,9 +96,9 @@ const inPieHover = (props: any) => {
 			<Sector cx={cx} cy={cy} startAngle={startAngle} endAngle={endAngle} innerRadius={outerRadius + 6} outerRadius={outerRadius + 10} fill={fill} />
 			<path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
 			<circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-			<text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`PV ${value}`}</text>
+			<text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${value}: ${inprogress} in progress`}</text>
 			<text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-				{`(Rate ${(percent * 100).toFixed(2)}%)`}
+				{`${(percent * 100).toFixed(0)}%`}
 			</text>
 		</g>
 	);

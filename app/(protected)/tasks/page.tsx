@@ -12,6 +12,7 @@ export interface TaskExtended extends Task {
 	assignedToUser?: UserExtended;
 	createdByUser?: User;
 	status: Status;
+	department?: string;
 }
 
 interface Props {
