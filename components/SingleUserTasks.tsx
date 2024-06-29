@@ -12,7 +12,7 @@ function SingleUserTasks({ tasks }: { tasks: Task[] }) {
 				<div key={task.id}>
 					<div className="flex items-center justify-between">
 						<Link href={`/tasks/${task.id}`}>
-							<h4 className="font-sm">{task.title}</h4>
+							<h4 className="text-sm md:text-base">{task.title}</h4>
 							<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
 								Due on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
 							</div>

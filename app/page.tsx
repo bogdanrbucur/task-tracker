@@ -36,7 +36,7 @@ export default async function Home() {
 	if (activeSubordinates.length > 0) hasSubordinates = true;
 
 	// !DEBUG
-	hasSubordinates = true;
+	// hasSubordinates = true;
 
 	let teamTasks;
 	if (hasSubordinates) {
@@ -82,13 +82,15 @@ export default async function Home() {
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Departments</h4>
 					</CardHeader>
 				</Card>
-				{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
+				<div className="row-span-2 flex flex-col h-full ">
+					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
+					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
+				</div>
 				<Card id="status-chart" className="hidden md:block">
 					<CardHeader>
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Status</h4>
 					</CardHeader>
 				</Card>
-				{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 			</div>
 		</Card>
 	);
