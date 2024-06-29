@@ -66,11 +66,7 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 						</TableCell>
 						<TableCell className="hidden py-1 md:table-cell">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.dueDate)}</TableCell>
-						{task.completedOn ? (
-							<TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn)}</TableCell>
-						) : (
-							<TableCell></TableCell>
-						)}
+						{task.completedOn ? <TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn)}</TableCell> : null}
 						<TableCell className="hidden py-1 md:table-cell">
 							{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
 								<Link href={`/users/${task.assignedToUserId}`}>

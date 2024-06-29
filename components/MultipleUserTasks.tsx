@@ -1,9 +1,8 @@
+import { TaskExtended } from "@/app/(protected)/tasks/page";
+import { UserExtended } from "@/app/users/getUserById";
 import StatusBadge from "@/components/StatusBadge";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import { cn } from "@/lib/utils";
-
-import { TaskExtended } from "@/app/(protected)/tasks/page";
-import { UserExtended } from "@/app/users/getUserById";
 import Link from "next/link";
 import { UserAvatarNameSmall } from "./AvatarAndName";
 
@@ -13,22 +12,26 @@ function MultipleUserTasks({ tasks }: { tasks: TaskExtended[] }) {
 			{tasks.map((task) => (
 				<div key={task.id}>
 					<div className="flex items-center justify-between">
-						<Link href={`/tasks/${task.id}`}>
+						<Link href={`/tasks/${task.id}`} className="space-y-1 w-5/6">
 							<h4 className="text-sm md:text-base">{task.title}</h4>
-							<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
-								Due on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
-							</div>
-							{task.completedOn && (
-								<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
-									Completed on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.completedOn)}</div>
+							<div className="grid grid-cols-2">
+								<Link href={`/users/${task.assignedToUserId}`}>
+									<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
+								</Link>
+								<div id="dates">
+									<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
+										Due on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
+									</div>
+									{task.completedOn && (
+										<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
+											Completed on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.completedOn)}</div>
+										</div>
+									)}
 								</div>
-							)}
+							</div>
 						</Link>
 						<StatusBadge statusObj={task.status} size="xs" />
 					</div>
-					<Link href={`/users/${task.assignedToUserId}`}>
-						<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
-					</Link>
 				</div>
 			))}
 		</div>
