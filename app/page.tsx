@@ -5,6 +5,7 @@ import MyTasks from "./MyTasks";
 import TeamTasks from "./TeamTasks";
 import { getAuth } from "./_auth/actions/get-auth";
 import getUserDetails, { getSubordinatesTasks } from "./users/getUserById";
+import DepartmentsChart from "./DepartmentsChart";
 
 export default async function Home() {
 	// Check user permissions
@@ -55,11 +56,7 @@ export default async function Home() {
 	return (
 		<Card className="container mx-auto p-0">
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
-				<Card id="departments-chart" className="hidden md:block">
-					<CardHeader>
-						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Departments</h4>
-					</CardHeader>
-				</Card>
+				<DepartmentsChart />
 				<div className="row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}

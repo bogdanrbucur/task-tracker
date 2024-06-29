@@ -7,7 +7,7 @@ import Link from "next/link";
 
 function SingleUserTasks({ tasks }: { tasks: Task[] }) {
 	return (
-		<div className="grid pr-2 gap-2 md:gap-3">
+		<div className="grid pr-2 gap-2">
 			{tasks.map((task) => (
 				<div key={task.id}>
 					<div className="flex items-center justify-between">

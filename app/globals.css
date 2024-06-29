@@ -57,3 +57,11 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+.recharts-wrapper > svg > g {
+	outline: none !important;
+}
+
+.recharts-pie * {
+	outline: none !important;
+}

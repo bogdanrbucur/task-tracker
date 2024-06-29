@@ -8,14 +8,16 @@ import { UserAvatarNameSmall } from "./AvatarAndName";
 
 function MultipleUserTasks({ tasks }: { tasks: TaskExtended[] }) {
 	return (
-		<div className="grid pr-2 gap-2 md:gap-3">
+		<div className="grid pr-2 gap-2">
 			{tasks.map((task) => (
 				<div key={task.id}>
 					<div className="flex items-center justify-between">
-						<Link href={`/tasks/${task.id}`} className="space-y-1 w-5/6">
-							<h4 className="text-sm md:text-base">{task.title}</h4>
+						<div className="space-y-1 w-5/6">
+							<Link href={`/tasks/${task.id}`}>
+								<h4 className="text-sm md:text-base">{task.title}</h4>
+							</Link>
 							<div className="grid grid-cols-2">
-								<Link href={`/users/${task.assignedToUserId}`}>
+								<Link href={`/users/${task.assignedToUserId}`} className="w-fit">
 									<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 								</Link>
 								<div id="dates">
@@ -29,7 +31,7 @@ function MultipleUserTasks({ tasks }: { tasks: TaskExtended[] }) {
 									)}
 								</div>
 							</div>
-						</Link>
+						</div>
 						<StatusBadge statusObj={task.status} size="xs" />
 					</div>
 				</div>
