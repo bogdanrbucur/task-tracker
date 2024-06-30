@@ -6,8 +6,8 @@ import MyTasks from "./MyTasks";
 import StatusChart from "./StatusChart";
 import TeamTasks from "./TeamTasks";
 import { getAuth } from "./_auth/actions/get-auth";
-import departmentTasks from "./deptTasksChartData";
-import statusTasks from "./statusTasksChartData";
+import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
+import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
 import getUserDetails, { prismaExtendedUserSelection } from "./users/getUserById";
 
 export type StatusColors = {
@@ -24,8 +24,21 @@ export default async function Home() {
 	let userDetails = undefined;
 	let hasSubordinates = false;
 
-	// TODO show the charts...
-	if (!user) return <p>Guest user</p>;
+	const allTasks = (await prisma.task.findMany({
+		include: {
+			status: true,
+			createdByUser: true,
+			assignedToUser: {
+				select: prismaExtendedUserSelection,
+			},
+		},
+	})) as TaskExtended[];
+	const activeTasks = allTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
+	const deptTasksChartData = departmentTasks(activeTasks);
+	const statusTasksChartData = statusTasks(activeTasks);
+
+	// TODO fix guest mobile view...
+	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	userDetails = await getUserDetails(user.id);
 
 	// Get the status for each task
@@ -46,20 +59,6 @@ export default async function Home() {
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.active);
 	if (activeSubordinates.length > 0) hasSubordinates = true;
 
-	// !DEBUG
-	// hasSubordinates = true;
-
-	const allTasks = (await prisma.task.findMany({
-		include: {
-			status: true,
-			createdByUser: true,
-			assignedToUser: {
-				select: prismaExtendedUserSelection,
-			},
-		},
-	})) as TaskExtended[];
-	const activeTasks = allTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
-
 	// TODO move this crap to a function
 	let teamTasks;
 	if (hasSubordinates) {
@@ -77,9 +76,6 @@ export default async function Home() {
 		});
 	}
 
-	const deptTasksChartData = departmentTasks(activeTasks);
-	const statusTasksChartData = statusTasks(activeTasks);
-
 	return (
 		<Card className="container mx-auto p-0">
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
@@ -88,7 +84,18 @@ export default async function Home() {
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>
-				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors}/>
+				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors} />
+			</div>
+		</Card>
+	);
+}
+
+function GuestView({ statusTasksChartData, deptTasksChartData }: { statusTasksChartData: StatusTasksChartData[]; deptTasksChartData: DeptTaskChartData[] }) {
+	return (
+		<Card className="container mx-auto p-0">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "44vh", maxHeight: "44vh" }}>
+				<StatusChart data={statusTasksChartData} colors={statusColors} />
+				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors} />
 			</div>
 		</Card>
 	);

@@ -61,7 +61,7 @@ export default function DepartmentsChart({ data, statusColors }: Props) {
 	};
 
 	return (
-		<div id="my-tasks" className="fade-in hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
+		<div id="dept-chart" className="fade-in hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
 			<div className="p-0">
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department distribution</h4>
 			</div>
