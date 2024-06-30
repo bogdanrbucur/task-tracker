@@ -2,16 +2,67 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector } from "recharts";
+import { DeptTaskChartData } from "./deptTasksChartData";
+import { StatusColors } from "./page";
+import useDarkMode from "@/lib/isDarkMode";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-export default function DepartmentsChart({ data }: { data: { name: string; inprogress: number; completed: number; overdue: number; value: number; slug: string }[] }) {
+interface Props {
+	data: DeptTaskChartData[];
+	statusColors: StatusColors;
+}
+
+export default function DepartmentsChart({ data, statusColors }: Props) {
 	const router = useRouter();
 	const [inPieActiveIndex, setInPieActiveIndex] = useState<number | undefined>(undefined);
+
+	const isDarkMode = useDarkMode();
+	console.log(isDarkMode);
 
 	function onInPieHover(_: any, index: number | undefined) {
 		setInPieActiveIndex(index);
 	}
+
+	// Do stuff on hover
+	const inPieHover = (props: any) => {
+		const RADIAN = Math.PI / 180;
+		const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, inprogress, overdue, completed } = props;
+		const sin = Math.sin(-RADIAN * midAngle);
+		const cos = Math.cos(-RADIAN * midAngle);
+		const sx = cx + (outerRadius + 10) * cos;
+		const sy = cy + (outerRadius + 10) * sin;
+		const mx = cx + (outerRadius + 30) * cos;
+		const my = cy + (outerRadius + 30) * sin;
+		const ex = mx + (cos >= 0 ? 1 : -1) * 25;
+		const ey = my;
+		const textAnchor = cos >= 0 ? "start" : "end";
+
+		return (
+			<g>
+				<text x={cx} y={cy} dy={-10} textAnchor="middle" fill={fill}>
+					{payload.name}
+				</text>
+				<text x={cx} y={cy} dy={10} textAnchor="middle" fill={fill}>
+					{`${value} (${(percent * 100).toFixed(0)}%)`}
+				</text>
+				<Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
+				<Sector cx={cx} cy={cy} startAngle={startAngle} endAngle={endAngle} innerRadius={outerRadius + 6} outerRadius={outerRadius + 10} fill={fill} />
+				<path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
+				<circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+				<text
+					className="text-sm"
+					fill={statusColors.inprogress}
+					x={ex + (cos >= 0 ? 1 : -1) * 12}
+					y={ey}
+					dy={-10}
+					textAnchor={textAnchor}
+				>{`${inprogress} In Progress`}</text>
+				<text className="text-sm" fill={statusColors.overdue} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={5} textAnchor={textAnchor}>{`${overdue} Overdue`}</text>
+				<text className="text-sm" fill={statusColors.completed} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={20} textAnchor={textAnchor}>{`${completed} Completed`}</text>
+			</g>
+		);
+	};
 
 	return (
 		<div id="my-tasks" className="fade-in hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
@@ -35,7 +86,7 @@ export default function DepartmentsChart({ data }: { data: { name: string; inpro
 						onMouseEnter={onInPieHover}
 						onMouseLeave={() => setInPieActiveIndex(undefined)}
 						onClick={() => {
-							router.push(data[inPieActiveIndex!].slug);
+							router.push(data[inPieActiveIndex!].url);
 						}}
 						style={{ outline: "none" }}
 					>
@@ -49,38 +100,6 @@ export default function DepartmentsChart({ data }: { data: { name: string; inpro
 		</div>
 	);
 }
-
-const inPieHover = (props: any) => {
-	const RADIAN = Math.PI / 180;
-	const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, inprogress, overdue, completed } = props;
-	const sin = Math.sin(-RADIAN * midAngle);
-	const cos = Math.cos(-RADIAN * midAngle);
-	const sx = cx + (outerRadius + 10) * cos;
-	const sy = cy + (outerRadius + 10) * sin;
-	const mx = cx + (outerRadius + 30) * cos;
-	const my = cy + (outerRadius + 30) * sin;
-	const ex = mx + (cos >= 0 ? 1 : -1) * 25;
-	const ey = my;
-	const textAnchor = cos >= 0 ? "start" : "end";
-
-	return (
-		<g>
-			<text x={cx} y={cy} dy={-10} textAnchor="middle" fill={fill}>
-				{payload.name}
-			</text>
-			<text x={cx} y={cy} dy={10} textAnchor="middle" fill={fill}>
-				{`${value} (${(percent * 100).toFixed(0)}%)`}
-			</text>
-			<Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
-			<Sector cx={cx} cy={cy} startAngle={startAngle} endAngle={endAngle} innerRadius={outerRadius + 6} outerRadius={outerRadius + 10} fill={fill} />
-			<path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
-			<circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-			<text className="text-sm" fill="#3b82f6" x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={-10} textAnchor={textAnchor}>{`${inprogress} In Progress`}</text>
-			<text className="text-sm" fill="#ef4444" x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={5} textAnchor={textAnchor}>{`${overdue} Overdue`}</text>
-			<text className="text-sm" fill="#22c55e" x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={20} textAnchor={textAnchor}>{`${completed} Completed`}</text>
-		</g>
-	);
-};
 
 const customLegend = (value: string, entry: any) => {
 	const { color } = entry;

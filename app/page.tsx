@@ -1,17 +1,27 @@
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { TaskExtended } from "./(protected)/tasks/page";
 import DepartmentsChart from "./DepartmentsChart";
 import MyTasks from "./MyTasks";
+import StatusChart from "./StatusChart";
 import TeamTasks from "./TeamTasks";
 import { getAuth } from "./_auth/actions/get-auth";
+import departmentTasks from "./deptTasksChartData";
+import statusTasks from "./statusTasksChartData";
 import getUserDetails, { prismaExtendedUserSelection } from "./users/getUserById";
+
+export type StatusColors = {
+	inprogress: string;
+	completed: string;
+	overdue: string;
+};
+const statusColors: StatusColors = { inprogress: "#3b82f6", completed: "#16a34a", overdue: "#dc2626" };
 
 export default async function Home() {
 	// Check user permissions
 	const { user } = await getAuth();
 
-	let userDetails = null;
+	let userDetails = undefined;
 	let hasSubordinates = false;
 
 	// TODO show the charts...
@@ -50,6 +60,7 @@ export default async function Home() {
 	})) as TaskExtended[];
 	const activeTasks = allTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
 
+	// TODO move this crap to a function
 	let teamTasks;
 	if (hasSubordinates) {
 		const subordinatesIds = activeSubordinates.map((subordinate) => subordinate.id);
@@ -66,50 +77,18 @@ export default async function Home() {
 		});
 	}
 
-	// assign the department to each task
-	activeTasks.map((task) => {
-		task.department = task.assignedToUser?.department || undefined;
-	});
-	const deptTasksObj: { [key: string]: { inprogress: number; overdue: number; completed: number; slug: string } } = {};
-	activeTasks.forEach((task) => {
-		if (!task.department) return;
-		if (deptTasksObj[task.department.name]) {
-			if (task.statusId === 1) deptTasksObj[task.department.name].inprogress++;
-			if (task.statusId === 2) deptTasksObj[task.department.name].completed++;
-			if (task.statusId === 5) deptTasksObj[task.department.name].overdue++;
-		} else {
-			deptTasksObj[task.department.name] = { inprogress: 0, overdue: 0, completed: 0, slug: `/tasks?dept=${task.department.id}&status=1%2C5%2C2` };
-			if (task.statusId === 1) deptTasksObj[task.department.name].inprogress++;
-			if (task.statusId === 2) deptTasksObj[task.department.name].completed++;
-			if (task.statusId === 5) deptTasksObj[task.department.name].overdue++;
-		}
-	});
-
-	const deptTasksArr: { name: string; inprogress: number; completed: number; overdue: number; value: number; slug: string }[] = [];
-	Object.keys(deptTasksObj).forEach((key) => {
-		deptTasksArr.push({
-			name: key,
-			inprogress: deptTasksObj[key].inprogress,
-			overdue: deptTasksObj[key].overdue,
-			completed: deptTasksObj[key].completed,
-			slug: deptTasksObj[key].slug,
-			value: deptTasksObj[key].inprogress + deptTasksObj[key].overdue + deptTasksObj[key].completed,
-		});
-	});
+	const deptTasksChartData = departmentTasks(activeTasks);
+	const statusTasksChartData = statusTasks(activeTasks);
 
 	return (
 		<Card className="container mx-auto p-0">
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
-				<DepartmentsChart data={deptTasksArr} />
+				<StatusChart data={statusTasksChartData} colors={statusColors} />
 				<div className="fade-in enter- row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>
-				<Card id="status-chart" className="hidden md:block">
-					<CardHeader>
-						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Status</h4>
-					</CardHeader>
-				</Card>
+				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors}/>
 			</div>
 		</Card>
 	);
