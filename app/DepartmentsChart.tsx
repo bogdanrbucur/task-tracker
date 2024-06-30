@@ -23,7 +23,7 @@ export default function DepartmentsChart({ data }: { data: { name: string; inpro
 					<Pie
 						data={data}
 						cx="50%"
-						cy="50%"
+						cy="55%"
 						labelLine={false}
 						// label={inPieLabel}
 						innerRadius={75}
