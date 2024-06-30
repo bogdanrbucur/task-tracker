@@ -16,7 +16,7 @@ export default function DepartmentsChart({ data }: { data: { name: string; inpro
 	return (
 		<div id="my-tasks" className="fade-in hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
 			<div className="p-0">
-				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Departments</h4>
+				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department distribution</h4>
 			</div>
 			<ResponsiveContainer width="100%" height="90%">
 				<PieChart width={600} height={400}>
