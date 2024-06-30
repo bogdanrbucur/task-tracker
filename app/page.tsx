@@ -68,33 +68,22 @@ export default async function Home() {
 
 	// assign the department to each task
 	activeTasks.map((task) => {
-		task.department = task.assignedToUser?.department?.name;
+		task.department = task.assignedToUser?.department || undefined;
 	});
 	const deptTasksObj: { [key: string]: { inprogress: number; overdue: number; completed: number; slug: string } } = {};
 	activeTasks.forEach((task) => {
 		if (!task.department) return;
-		if (deptTasksObj[task.department]) {
-			if (task.statusId === 1) deptTasksObj[task.department].inprogress++;
-			if (task.statusId === 2) deptTasksObj[task.department].completed++;
-			if (task.statusId === 5) deptTasksObj[task.department].overdue++;
+		if (deptTasksObj[task.department.name]) {
+			if (task.statusId === 1) deptTasksObj[task.department.name].inprogress++;
+			if (task.statusId === 2) deptTasksObj[task.department.name].completed++;
+			if (task.statusId === 5) deptTasksObj[task.department.name].overdue++;
 		} else {
-			deptTasksObj[task.department] = { inprogress: 0, overdue: 0, completed: 0, slug: "" };
-			if (task.statusId === 1) {
-				deptTasksObj[task.department].inprogress++;
-				deptTasksObj[task.department].slug = "/tasks?status=1";
-			}
-			if (task.statusId === 2) {
-				deptTasksObj[task.department].completed++;
-				deptTasksObj[task.department].slug = "/tasks?status=2";
-			}
-			if (task.statusId === 5) {
-				deptTasksObj[task.department].overdue++;
-				deptTasksObj[task.department].slug = "/tasks?status=5";
-			}
+			deptTasksObj[task.department.name] = { inprogress: 0, overdue: 0, completed: 0, slug: `/tasks?dept=${task.department.id}&status=1%2C5%2C2` };
+			if (task.statusId === 1) deptTasksObj[task.department.name].inprogress++;
+			if (task.statusId === 2) deptTasksObj[task.department.name].completed++;
+			if (task.statusId === 5) deptTasksObj[task.department.name].overdue++;
 		}
 	});
-
-	// TODO filter tasks by department
 
 	const deptTasksArr: { name: string; inprogress: number; completed: number; overdue: number; value: number; slug: string }[] = [];
 	Object.keys(deptTasksObj).forEach((key) => {

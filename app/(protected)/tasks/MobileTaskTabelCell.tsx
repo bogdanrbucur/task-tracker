@@ -13,7 +13,7 @@ const MobileTaskTabelCell = ({ task, viewableUsers }: { task: TaskExtended; view
 			{/* Make the title clickable and dynamically build the URL to the issue page */}
 			<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 			{/* visible on mobile but hidden on medium devices and higher */}
-			<div className="flex md:hidden items-center justify-between">
+			<div className="flex md:hidden items-center justify-between pr-0">
 				<div className="grid grid-cols-2 w-5/6">
 					<div className="spacep-y-1">
 						{task.assignedToUser && viewableUsers?.includes(task.assignedToUser.id) ? (

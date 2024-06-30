@@ -28,7 +28,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	if (!user) return notFound();
 
 	const userPermissions = await getPermissions(user?.id);
-	if (!userPermissions.isAdmin && params.id !== user?.id) return notFound();
+	// if (!userPermissions.isAdmin && params.id !== user?.id) return notFound();
 
 	// Get the user details
 	const userDetails = await getUserDetails(params.id);

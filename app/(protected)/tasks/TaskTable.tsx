@@ -8,18 +8,7 @@ import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
 import MobileTaskTabelCell from "./MobileTaskTabelCell";
-import { TaskExtended } from "./page";
-
-type StatusTypes = "1" | "2" | "3" | "4" | undefined;
-
-export interface TasksQuery {
-	status: StatusTypes;
-	orderBy: keyof Task;
-	sortOrder: "asc" | "desc";
-	page: string;
-	user: string;
-	search: string;
-}
+import { TaskExtended, TasksQuery } from "./page";
 
 interface Props {
 	searchParams: TasksQuery;
@@ -66,9 +55,13 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 						</TableCell>
 						<TableCell className="hidden py-1 md:table-cell">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.dueDate)}</TableCell>
-						{task.completedOn ? <TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn)}</TableCell> : null}
+						{task.completedOn ? (
+							<TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn)}</TableCell>
+						) : (
+							<TableCell className={"hidden py-1 md:table-cell"}></TableCell>
+						)}
 						<TableCell className="hidden py-1 md:table-cell">
-							{task.assignedToUser && viewableUsers.includes(task.assignedToUser.id) ? (
+							{task.assignedToUser ? (
 								<Link href={`/users/${task.assignedToUserId}`}>
 									<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 								</Link>

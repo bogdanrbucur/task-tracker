@@ -21,6 +21,7 @@ export function TaskUserFilter({ users }: { users: UserExtended[] }) {
 		// Add the existing searchPramas to the URL
 		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 		if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
+		if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
 		if (searchParams.get("status")) params.append("status", searchParams.get("status")!);
 		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
 

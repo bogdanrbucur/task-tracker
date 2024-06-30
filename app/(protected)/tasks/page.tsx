@@ -3,16 +3,28 @@ import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
-import { Prisma, Status, Task, User } from "@prisma/client";
+import { Department, Prisma, Status, Task, User } from "@prisma/client";
 import { notFound } from "next/navigation";
-import TaskTable, { TasksQuery, columnNames } from "./TaskTable";
+import TaskTable, { columnNames } from "./TaskTable";
 import TaskTopSection from "./TaskTopSection";
 
 export interface TaskExtended extends Task {
 	assignedToUser?: UserExtended;
 	createdByUser?: User;
 	status: Status;
-	department?: string;
+	department?: Department;
+}
+
+type StatusTypes = "1" | "2" | "3" | "4" | "5" | undefined;
+
+export interface TasksQuery {
+	status: StatusTypes;
+	orderBy: keyof Task;
+	sortOrder: "asc" | "desc";
+	page: string;
+	user: string;
+	search: string;
+	dept: string;
 }
 
 interface Props {
@@ -39,6 +51,7 @@ export default async function TasksPage({ searchParams }: Props) {
 	// Split the status string into an array of numbers, as multiple statuses can be selected
 	const statuses = searchParams.status ? searchParams.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
 	const taskUser = searchParams.user ? searchParams.user : undefined;
+	const department = searchParams.dept ? searchParams.dept : undefined;
 	const sortOrder = searchParams.sortOrder;
 	let searchTermsQuery = searchParams.search ? searchParams.search : undefined;
 	let searchTerms: string[] | undefined | string = undefined;
@@ -50,9 +63,13 @@ export default async function TasksPage({ searchParams }: Props) {
 
 	let where: Prisma.TaskWhereInput | undefined = undefined;
 	// If there's no search terminology, just filter by status and user
-	if ((statuses || taskUser) && !searchTerms) {
+	if ((statuses || taskUser || department) && !searchTerms) {
 		where = {
-			AND: [statuses ? { statusId: { in: statuses } } : undefined, taskUser ? { assignedToUserId: taskUser } : undefined].filter(Boolean) as Prisma.TaskWhereInput[],
+			AND: [
+				statuses ? { statusId: { in: statuses } } : undefined,
+				taskUser ? { assignedToUserId: taskUser } : undefined,
+				department ? { assignedToUser: { department: { id: Number(department) } } } : undefined,
+			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
 		// If there's a search term, search in title, description, assignedToUser, and status
 	} else if (searchTerms) {
@@ -87,7 +104,7 @@ export default async function TasksPage({ searchParams }: Props) {
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;
 
-	const tasks = await prisma.task.findMany({
+	let tasks = await prisma.task.findMany({
 		where,
 		orderBy,
 		skip: (page - 1) * pageSize,
@@ -100,6 +117,13 @@ export default async function TasksPage({ searchParams }: Props) {
 			},
 		},
 	});
+
+	// Since Department is not a field in the Task table, need to filter by department after querying
+	// if (department) {
+	// 	tasks = tasks.filter((task) => task.assignedToUser?.department?.id === Number(department));
+
+	// 	//
+	// }
 
 	const taskCount = await prisma.task.count({ where });
 
