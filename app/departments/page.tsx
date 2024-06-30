@@ -34,7 +34,7 @@ export default async function DepartmentsPage({ searchParams }: Props) {
 
 	return (
 		<Card className="container mx-auto px-0 md:px-0 max-w-2xl">
-			<div className="container mx-auto py-1">
+			<div className="fade-in container mx-auto py-1">
 				<DepartmentsTopSection />
 				<DepartmentsTable searchParams={searchParams} departments={departments} />
 			</div>

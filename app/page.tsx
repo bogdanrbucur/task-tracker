@@ -101,7 +101,7 @@ export default async function Home() {
 		<Card className="container mx-auto p-0">
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
 				<DepartmentsChart data={deptTasksArr} />
-				<div className="row-span-2 flex flex-col h-full ">
+				<div className="fade-in enter- row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>

@@ -39,7 +39,7 @@ export default function ChangePasswordButton({ userId }: { userId: string }) {
 					<KeySquare size="18" />
 				</Button>
 			</AlertDialogTrigger>
-			<AlertDialogContent>
+			<AlertDialogContent className="fade-in">
 				<form action={formAction} className="space-y-3">
 					<AlertDialogHeader>
 						<AlertDialogTitle>Change password</AlertDialogTitle>

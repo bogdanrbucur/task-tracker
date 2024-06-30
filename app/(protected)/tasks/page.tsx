@@ -129,7 +129,7 @@ export default async function TasksPage({ searchParams }: Props) {
 
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
-			<div className="container p-2 md:px-7">
+			<div className="fade-in container p-2 md:px-7">
 				<TaskTopSection />
 				<TaskTable tasks={tasks as TaskExtended[]} searchParams={searchParams} viewableUsers={viewableUsers} />
 				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />

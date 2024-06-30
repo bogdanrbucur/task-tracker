@@ -64,7 +64,7 @@ export default async function UsersPage({ searchParams }: Props) {
 
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
-			<div className="container mx-auto py-1">
+			<div className="fade-in container mx-auto py-1">
 				<UsersTopSection />
 				<UserTable searchParams={searchParams} users={users as UserExtended[]} />
 			</div>

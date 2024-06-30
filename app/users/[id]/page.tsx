@@ -55,7 +55,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
 			<CardHeader>
-				<div className="flex items-center justify-between gap-4">
+				<div className="fade-in flex items-center justify-between gap-4">
 					<UserAvatarNameLarge user={userDetails} />
 					<div className="flex gap-2">
 						<Button asChild size="sm">
@@ -72,7 +72,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent className="grid gap-6">
+			<CardContent className="fade-in grid gap-6">
 				<div className="grid grid-cols-2 gap-4">
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department</h4> <p>{userDetails.department?.name}</p>

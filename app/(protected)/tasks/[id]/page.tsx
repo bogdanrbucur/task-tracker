@@ -62,7 +62,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 
 	return (
 		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
-			<div className="grid gap-6 md:grid-cols-[2fr_1fr]">
+			<div className="fade-in grid gap-6 md:grid-cols-[2fr_1fr]">
 				<div>
 					<div className="space-y-4">
 						<div>

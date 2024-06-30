@@ -18,7 +18,7 @@ const SignInForm = () => {
 	const [state, formAction] = useFormState(signIn, initialState);
 
 	return (
-		<div className="flex flex-col items-center justify-center h-screen -mt-36">
+		<div className="fade-in flex flex-col items-center justify-center h-screen -mt-36">
 			<Card className="w-[355px]">
 				<CardHeader>
 					<CardTitle>Login</CardTitle>

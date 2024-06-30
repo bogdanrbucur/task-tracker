@@ -14,7 +14,7 @@ export default function DepartmentsChart({ data }: { data: { name: string; inpro
 	}
 
 	return (
-		<div id="my-tasks" className="hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
+		<div id="my-tasks" className="fade-in hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
 			<div className="p-0">
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Departments</h4>
 			</div>
@@ -26,8 +26,8 @@ export default function DepartmentsChart({ data }: { data: { name: string; inpro
 						cy="50%"
 						labelLine={false}
 						// label={inPieLabel}
-						innerRadius={65}
-						outerRadius={105}
+						innerRadius={75}
+						outerRadius={115}
 						fill="#8884d8"
 						dataKey="value"
 						activeIndex={inPieActiveIndex}
@@ -65,7 +65,10 @@ const inPieHover = (props: any) => {
 
 	return (
 		<g>
-			<text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+			<text x={cx} y={cy} dy={-10} textAnchor="middle" fill={fill}>
+				{payload.name}
+			</text>
+			<text x={cx} y={cy} dy={10} textAnchor="middle" fill={fill}>
 				{`${value} (${(percent * 100).toFixed(0)}%)`}
 			</text>
 			<Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
