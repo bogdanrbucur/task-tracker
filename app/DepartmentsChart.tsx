@@ -4,9 +4,8 @@ import { useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector } from "recharts";
 import { DeptTaskChartData } from "./deptTasksChartData";
 import { StatusColors } from "./page";
-import useDarkMode from "@/lib/isDarkMode";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#16a34a", "#ef4444", "#3b82f6", "#f97316", "#a855f7", "#64748b", "#e035d2"];
 
 interface Props {
 	data: DeptTaskChartData[];
@@ -16,9 +15,6 @@ interface Props {
 export default function DepartmentsChart({ data, statusColors }: Props) {
 	const router = useRouter();
 	const [inPieActiveIndex, setInPieActiveIndex] = useState<number | undefined>(undefined);
-
-	const isDarkMode = useDarkMode();
-	console.log(isDarkMode);
 
 	function onInPieHover(_: any, index: number | undefined) {
 		setInPieActiveIndex(index);
