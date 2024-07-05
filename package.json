@@ -25,6 +25,7 @@
 		"@radix-ui/react-select": "^2.0.0",
 		"@radix-ui/react-separator": "^1.0.3",
 		"@radix-ui/react-slot": "^1.0.2",
+		"@react-email/components": "^0.0.21",
 		"@tanstack/react-table": "^8.16.0",
 		"@types/fs-extra": "^11.0.4",
 		"@types/recharts": "^1.8.29",
