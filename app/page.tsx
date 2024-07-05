@@ -9,6 +9,7 @@ import { getAuth } from "./_auth/actions/get-auth";
 import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
 import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
 import getUserDetails, { prismaExtendedUserSelection } from "./users/getUserById";
+import { getTeamTasks, userTasks } from "./users/userAndTeamTasks";
 
 export type StatusColors = {
 	inprogress: string;
@@ -37,54 +38,25 @@ export default async function Home() {
 	const deptTasksChartData = departmentTasks(activeTasks);
 	const statusTasksChartData = statusTasks(activeTasks);
 
-	// TODO fix guest mobile view...
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	userDetails = await getUserDetails(user.id);
+	userDetails.assignedTasks = await userTasks(userDetails);
 
-	// Get the status for each task
-	const statuses = await prisma.status.findMany();
-	userDetails.assignedTasks.forEach((task) => {
-		Object.assign(task, { status: statuses.find((status) => status.id === task.statusId) });
-	});
-
-	// Sort the tasks by due date
-	userDetails.assignedTasks.sort((a, b) => {
-		if (a.dueDate < b.dueDate) return -1;
-		if (a.dueDate > b.dueDate) return 1;
-		return 0;
-	});
-
-	// Filter out the tasks with statusId 3 (closed) or 4 (cancelled)
-	userDetails.assignedTasks = userDetails.assignedTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.active);
 	if (activeSubordinates.length > 0) hasSubordinates = true;
 
-	// TODO move this crap to a function
-	let teamTasks;
-	if (hasSubordinates) {
-		const subordinatesIds = activeSubordinates.map((subordinate) => subordinate.id);
-		teamTasks = allTasks.filter((task) => subordinatesIds.includes(task.assignedToUserId!));
-		teamTasks = teamTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
-
-		// Sorth the tasks first by Completed (statusId 2) and then by Due Date
-		teamTasks.sort((a, b) => {
-			if (a.statusId === 2 && b.statusId !== 2) return -1;
-			if (a.statusId !== 2 && b.statusId === 2) return 1;
-			if (a.dueDate < b.dueDate) return -1;
-			if (a.dueDate > b.dueDate) return 1;
-			return 0;
-		});
-	}
+	const teamTasks = getTeamTasks(userDetails, allTasks);
 
 	return (
 		<Card className="container mx-auto p-0">
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
-				<StatusChart data={statusTasksChartData} colors={statusColors} />
+				{/* Guests see the charts in mobile view as well, so if user is logged in, isGuest=true */}
+				<StatusChart data={statusTasksChartData} colors={statusColors} isGuest={!user && true} />
 				<div className="fade-in enter- row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>
-				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors} />
+				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors} isGuest={!user && true} />
 			</div>
 		</Card>
 	);
@@ -93,9 +65,9 @@ export default async function Home() {
 function GuestView({ statusTasksChartData, deptTasksChartData }: { statusTasksChartData: StatusTasksChartData[]; deptTasksChartData: DeptTaskChartData[] }) {
 	return (
 		<Card className="container mx-auto p-0">
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "44vh", maxHeight: "44vh" }}>
-				<StatusChart data={statusTasksChartData} colors={statusColors} />
-				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors} />
+			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
+				<StatusChart data={statusTasksChartData} colors={statusColors} isGuest={true} />
+				<DepartmentsChart data={deptTasksChartData} statusColors={statusColors} isGuest={true} />
 			</div>
 		</Card>
 	);

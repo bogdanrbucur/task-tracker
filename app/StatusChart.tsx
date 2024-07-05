@@ -8,9 +8,10 @@ import { StatusTasksChartData } from "./statusTasksChartData";
 interface Props {
 	data: StatusTasksChartData[];
 	colors: StatusColors;
+	isGuest: boolean;
 }
 
-export default function StatusChart({ data, colors }: Props) {
+export default function StatusChart({ data, colors, isGuest }: Props) {
 	const router = useRouter();
 	const [inPieActiveIndex, setInPieActiveIndex] = useState<number | undefined>(undefined);
 
@@ -21,7 +22,7 @@ export default function StatusChart({ data, colors }: Props) {
 	const totalTasks = data.reduce((acc, curr) => acc + curr.value, 0);
 
 	return (
-		<div id="status-chart" className="fade-in hidden md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0">
+		<div id="status-chart" className={`fade-in ${isGuest ? "" : "hidden"} md:block border-none p-3 pr-0 space-y-2 md:px-6 md:pr-0`}>
 			<div className="p-0">
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">{`${totalTasks} open tasks`}</h4>
 			</div>
