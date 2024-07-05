@@ -62,7 +62,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] Overdue status filter for tasks
 - [x] Overdue checking when editing a task
 - [x] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
-- [ ] Footer: Proudly made in RO by me
+- [x] Footer: Proudly made in RO by me
 - [ ] Email notifications for comment @mentions, re-opened tasks, task completion, task assigned
 - [ ] Scheduled function to check for overdue tasks and send due soon and overdue emails
 - [ ] Add Sonner toast notifications for changes
