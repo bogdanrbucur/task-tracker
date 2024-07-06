@@ -1,16 +1,16 @@
+import { formatDate } from "@/lib/utilityFunctions";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
 import * as React from "react";
 
 interface TaskOverdueEmailProps {
 	firstName: string;
 	taskTitle: string;
-	dueDate: string;
+	dueDate: Date;
 	link: string;
+	baseUrl: string;
 }
 
-const baseUrl = process.env.BASE_URL ? `https://${process.env.BASE_URL}` : "http://localhost:3001";
-
-export const TaskOverdueEmail = ({ firstName, taskTitle, dueDate, link }: TaskOverdueEmailProps) => {
+export const TaskOverdueEmail = ({ firstName, taskTitle, dueDate, link, baseUrl }: TaskOverdueEmailProps) => {
 	const previewText = `Task due today`;
 
 	return (
@@ -33,7 +33,7 @@ export const TaskOverdueEmail = ({ firstName, taskTitle, dueDate, link }: TaskOv
 								</p>
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
-								Due on <span className="text-red-600">{dueDate}</span>
+								Due on <span className="text-red-600">{formatDate(dueDate)}</span>
 							</Text>
 						</Section>
 						<Text>View the task to Complete it.</Text>
@@ -58,7 +58,7 @@ TaskOverdueEmail.PreviewProps = {
 	firstName: "Bogdan",
 	link: "http://localhost:3001/tasks/13",
 	taskTitle: "Add comprehensive logging to the application",
-	dueDate: "10 May 2024",
+	dueDate: new Date("2024-07-05"),
 } as TaskOverdueEmailProps;
 
 export default TaskOverdueEmail;

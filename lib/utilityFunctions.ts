@@ -30,6 +30,7 @@ export async function checkForOverdueTasks() {
 		where: {
 			AND: [{ statusId: 1 }, { dueDate: { lt: new Date() } }, { completedOn: null }],
 		},
+		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
 	// Change status to overdue (5) if task is past due
 	tasks.forEach(async (task) => {

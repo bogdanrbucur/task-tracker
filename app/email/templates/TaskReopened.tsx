@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/utilityFunctions";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
 import * as React from "react";
 
@@ -6,13 +7,12 @@ interface TaskReopenedEmailProps {
 	userFirstName: string;
 	userLastName: string;
 	taskTitle: string;
-	dueDate: string;
+	dueDate: Date;
 	link: string;
+	baseUrl: string;
 }
 
-const baseUrl = process.env.BASE_URL ? `https://${process.env.BASE_URL}` : "http://localhost:3001";
-
-export const TaskReopenedEmail = ({ firstName, userFirstName, userLastName, taskTitle, dueDate, link }: TaskReopenedEmailProps) => {
+export const TaskReopenedEmail = ({ firstName, userFirstName, userLastName, taskTitle, dueDate, link, baseUrl }: TaskReopenedEmailProps) => {
 	const previewText = `Task reopened`;
 
 	return (
@@ -35,7 +35,7 @@ export const TaskReopenedEmail = ({ firstName, userFirstName, userLastName, task
 								</p>
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
-								Due on <span>{dueDate}</span>
+								Due on <span>{formatDate(dueDate)}</span>
 							</Text>
 						</Section>
 						<Text>View the task to see the details and Complete it again.</Text>
@@ -62,7 +62,7 @@ TaskReopenedEmail.PreviewProps = {
 	userLastName: "Doe",
 	link: "http://localhost:3001/tasks/13",
 	taskTitle: "Add comprehensive logging to the application",
-	dueDate: "10 May 2024",
+	dueDate: new Date("2024-07-05"),
 } as TaskReopenedEmailProps;
 
 export default TaskReopenedEmail;

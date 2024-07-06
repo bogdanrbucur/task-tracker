@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/utilityFunctions";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
 import * as React from "react";
 
@@ -6,14 +7,13 @@ interface CommentMentionEmailProps {
 	userFirstName: string;
 	userLastName: string;
 	taskTitle: string;
-	dueDate: string;
+	dueDate: Date;
 	comment: string;
 	link: string;
+	baseUrl: string;
 }
 
-const baseUrl = process.env.BASE_URL ? `https://${process.env.BASE_URL}` : "http://localhost:3001";
-
-export const CommentMentionEmail = ({ firstName, userFirstName, userLastName, taskTitle, dueDate, comment, link }: CommentMentionEmailProps) => {
+export const CommentMentionEmail = ({ firstName, userFirstName, userLastName, taskTitle, dueDate, comment, link, baseUrl }: CommentMentionEmailProps) => {
 	const previewText = `Comment mention`;
 
 	return (
@@ -36,7 +36,7 @@ export const CommentMentionEmail = ({ firstName, userFirstName, userLastName, ta
 								</p>
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
-								Due on <span>{dueDate}</span>
+								Due on <span>{formatDate(dueDate)}</span>
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
 								<strong>Comment:</strong> {comment}
@@ -66,7 +66,7 @@ CommentMentionEmail.PreviewProps = {
 	userLastName: "Doe",
 	link: "http://localhost:3001/tasks/13",
 	taskTitle: "Add comprehensive logging to the application",
-	dueDate: "10 May 2024",
+	dueDate: new Date("2024-07-05"),
 	comment: "Hello @Bogdan. Can you please review this task?",
 } as CommentMentionEmailProps;
 

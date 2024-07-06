@@ -1,16 +1,16 @@
+import { formatDate } from "@/lib/utilityFunctions";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
 import * as React from "react";
 
 interface NewTaskEmailProps {
 	firstName: string;
 	taskTitle: string;
-	dueDate: string;
+	dueDate: Date;
 	link: string;
+	baseUrl: string;
 }
 
-const baseUrl = process.env.BASE_URL ? `https://${process.env.BASE_URL}` : "http://localhost:3001";
-
-export const NewTaskEmail = ({ firstName, taskTitle, dueDate, link }: NewTaskEmailProps) => {
+export const NewTaskEmail = ({ firstName, taskTitle, dueDate, link, baseUrl }: NewTaskEmailProps) => {
 	const previewText = `New task assigned`;
 
 	return (
@@ -32,7 +32,7 @@ export const NewTaskEmail = ({ firstName, taskTitle, dueDate, link }: NewTaskEma
 									<strong>{taskTitle}</strong>
 								</p>
 							</Text>
-							<Text className="text-black text-[14px] leading-[24px]">Due on {dueDate}</Text>
+							<Text className="text-black text-[14px] leading-[24px]">Due on {formatDate(dueDate)}</Text>
 						</Section>
 						<Text>View the task to see the details and Complete it.</Text>
 						<Section className="text-center mt-[32px] mb-[32px]">
@@ -56,7 +56,7 @@ NewTaskEmail.PreviewProps = {
 	firstName: "Bogdan",
 	link: "http://localhost:3001/tasks/13",
 	taskTitle: "Add comprehensive logging to the application",
-	dueDate: "10 May 2024",
+	dueDate: new Date("2024-07-05"),
 } as NewTaskEmailProps;
 
 export default NewTaskEmail;

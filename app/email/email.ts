@@ -1,12 +1,10 @@
-import fs from "fs-extra";
 import { Resend } from "resend";
-import { NewTaskEmail } from "./templates/NewTaskAssigned";
-import TaskOverdueEmail from "./templates/TaskOverdue";
-import TaskDueSoonEmail from "./templates/TaskDueSoon";
-import TaskCompletedEmail from "./templates/TaskCompleted";
-import TaskReopenedEmail from "./templates/TaskReopened";
 import CommentMentionEmail from "./templates/CommentMention";
-import { sub } from "date-fns";
+import NewTaskEmail from "./templates/NewTaskAssigned";
+import TaskCompletedEmail from "./templates/TaskCompleted";
+import TaskDueSoonEmail from "./templates/TaskDueSoon";
+import TaskOverdueEmail from "./templates/TaskOverdue";
+import TaskReopenedEmail from "./templates/TaskReopened";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -18,32 +16,37 @@ type Props = {
 	cc?: string[] | string;
 	emailType: EmailType;
 	taskTitle: string;
-	dueDate: string;
-	completedDate?: string;
+	dueDate: Date;
+	completedDate?: Date;
 	comment?: string;
 	link: string;
 };
 
-// TODO read the logo.png and convert it to base64
-// const logo = fs.readFileSync("logo.png", "base64");
+// const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
 
 export type EmailType = "taskAssigned" | "taskDueSoon" | "taskOverdue" | "taskCompleted" | "taskReopened" | "commentMention";
 
 // Resend email
-export async function testEmail({ recipientFirstName, userFirstName, userLastName, recipients, cc, emailType, taskTitle, dueDate, completedDate, comment, link }: Props) {
+export async function sendEmail({ recipientFirstName, userFirstName, userLastName, recipients, cc, emailType, taskTitle, dueDate, completedDate, comment, link }: Props) {
 	// Choose the email template based on the emailType
+
+	console.log(`Sending email of type ${emailType} to ${recipients}...`);
 	let emailTemplate;
 	let subject = "";
 	switch (emailType) {
 		case "taskAssigned":
-			emailTemplate = NewTaskEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link });
+			emailTemplate = NewTaskEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link, baseUrl });
 			subject = "New task assigned to you";
+			break;
 		case "taskDueSoon":
-			emailTemplate = TaskDueSoonEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link });
+			emailTemplate = TaskDueSoonEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link, baseUrl });
 			subject = "Task due soon";
+			break;
 		case "taskOverdue":
-			emailTemplate = TaskOverdueEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link });
+			emailTemplate = TaskOverdueEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link, baseUrl });
 			subject = "Task due today";
+			break;
 		case "taskCompleted":
 			emailTemplate = TaskCompletedEmail({
 				managerFistName: recipientFirstName,
@@ -51,10 +54,12 @@ export async function testEmail({ recipientFirstName, userFirstName, userLastNam
 				userLastName: userLastName!,
 				dueDate: dueDate,
 				taskTitle: taskTitle,
-				completedDate: completedDate!,
+				completedDate: completedDate || new Date(),
 				link: link,
+				baseUrl,
 			});
 			subject = "Task completed - ready for review";
+			break;
 		case "taskReopened":
 			emailTemplate = TaskReopenedEmail({
 				firstName: recipientFirstName,
@@ -63,8 +68,10 @@ export async function testEmail({ recipientFirstName, userFirstName, userLastNam
 				dueDate: dueDate,
 				taskTitle: taskTitle,
 				link: link,
+				baseUrl,
 			});
 			subject = "Task reopened";
+			break;
 		case "commentMention":
 			emailTemplate = CommentMentionEmail({
 				firstName: recipientFirstName,
@@ -74,8 +81,10 @@ export async function testEmail({ recipientFirstName, userFirstName, userLastNam
 				dueDate: dueDate,
 				comment: comment!,
 				link: link,
+				baseUrl,
 			});
 			subject = "You were mentioned in a comment";
+			break;
 		default:
 			null;
 	}

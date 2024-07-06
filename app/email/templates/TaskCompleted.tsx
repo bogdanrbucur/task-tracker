@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/utilityFunctions";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
 import * as React from "react";
 
@@ -6,14 +7,13 @@ interface TaskCompletedEmailProps {
 	userFirstName: string;
 	userLastName: string;
 	taskTitle: string;
-	dueDate: string;
-	completedDate: string;
+	dueDate: Date;
+	completedDate: Date;
 	link: string;
+	baseUrl: string;
 }
 
-const baseUrl = process.env.BASE_URL ? `https://${process.env.BASE_URL}` : "http://localhost:3001";
-
-export const TaskCompletedEmail = ({ managerFistName, userFirstName, userLastName, taskTitle, dueDate, completedDate, link }: TaskCompletedEmailProps) => {
+export const TaskCompletedEmail = ({ managerFistName, userFirstName, userLastName, taskTitle, dueDate, completedDate, link, baseUrl }: TaskCompletedEmailProps) => {
 	const previewText = `Task completed`;
 
 	return (
@@ -36,10 +36,10 @@ export const TaskCompletedEmail = ({ managerFistName, userFirstName, userLastNam
 								</p>
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
-								Due on <span>{dueDate}</span>
+								Due on <span>{formatDate(dueDate)}</span>
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
-								Completed on <span>{completedDate}</span>
+								Completed on <span>{formatDate(completedDate)}</span>
 							</Text>
 						</Section>
 						<Text>View the task to Close or Reopen it.</Text>
@@ -66,8 +66,8 @@ TaskCompletedEmail.PreviewProps = {
 	userLastName: "Doe",
 	link: "http://localhost:3001/tasks/13",
 	taskTitle: "Add comprehensive logging to the application",
-	dueDate: "10 May 2024",
-	completedDate: "06 Jul 2024",
+	dueDate: new Date("2024-06-05"),
+	completedDate: new Date("2024-07-05"),
 } as TaskCompletedEmailProps;
 
 export default TaskCompletedEmail;

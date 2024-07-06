@@ -1,7 +1,7 @@
 import prisma from "@/prisma/client";
 import { Editor, NewTask } from "./submitTask";
 import { recordTaskHistory } from "../[id]/recordTaskHistory";
-import { testEmail } from "@/app/email/email";
+import { sendEmail } from "@/app/email/email";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 
 // Create a new task in the database
@@ -25,7 +25,7 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 	console.log(`Task ${newTask.id} created successfully`);
 
 	// TODO: Send email notification to the assigned user
-	const email = (await testEmail({
+	const email = (await sendEmail({
 		firstName: newTask.assignedToUser!.firstName,
 		recipients: newTask.assignedToUser!.email,
 		subject: "New Task Assigned",
