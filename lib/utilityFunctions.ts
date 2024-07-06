@@ -1,3 +1,4 @@
+import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { differenceInCalendarDays, format, isPast, isToday } from "date-fns";
@@ -44,12 +45,19 @@ export async function checkForOverdueTasks() {
 export async function checkIfTaskOverdue(taskId: number) {
 	const task = await prisma.task.findUnique({
 		where: { id: taskId },
+		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
 	if (task?.statusId === 1 && isPast(task.dueDate)) {
-		console.log(`Task ${taskId} is overdue.`);
+		console.log(`Task ${taskId} is overdue!`);
 
-		// TODO send notification to assigned user
-		//
+		// send email notification to assignee and their manager
+		await sendEmail({
+			recipients: task.assignedToUser ? task.assignedToUser.email : "",
+			cc: task.assignedToUser && task.assignedToUser.manager ? task.assignedToUser.manager.email : "",
+			emailType: "taskOverdue",
+			task: task,
+		});
+
 		await prisma.task.update({
 			where: { id: taskId },
 			data: { statusId: 5 },

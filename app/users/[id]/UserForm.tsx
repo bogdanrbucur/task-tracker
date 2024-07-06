@@ -97,6 +97,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 								<Input name="avatar" type="file" accept="image/*" />
 							</div>
 						</div>
+
 						{/* Do not allow admins to un-make themselves admins */}
 						{editor !== user?.id && (
 							<div>

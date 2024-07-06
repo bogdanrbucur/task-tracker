@@ -6,6 +6,7 @@ import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
 import getUserDetails from "@/app/users/getUserById";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
+import { sendEmail } from "@/app/email/email";
 
 export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -47,6 +48,17 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 				closedOn: null,
 				completedOn: null,
 			},
+			include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
+		});
+
+		// Email the user the task is assigned to
+		await sendEmail({
+			recipients: reopenedTask.assignedToUser ? reopenedTask.assignedToUser.email : "",
+			emailType: "taskReopened",
+			userFirstName: editor.firstName,
+			userLastName: editor.lastName,
+			comment: data.reopenComment,
+			task: reopenedTask,
 		});
 
 		// Check if the task is overdue

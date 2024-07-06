@@ -1,3 +1,4 @@
+import { Task } from "@prisma/client";
 import { Resend } from "resend";
 import CommentMentionEmail from "./templates/CommentMention";
 import NewTaskEmail from "./templates/NewTaskAssigned";
@@ -9,18 +10,26 @@ import TaskReopenedEmail from "./templates/TaskReopened";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 type Props = {
-	recipientFirstName: string;
 	userFirstName?: string;
 	userLastName?: string;
 	recipients: string[] | string;
 	cc?: string[] | string;
 	emailType: EmailType;
-	taskTitle: string;
-	dueDate: Date;
-	completedDate?: Date;
 	comment?: string;
-	link: string;
+	task: EmailTask;
 };
+
+export interface EmailTask extends Task {
+	assignedToUser: {
+		email: string;
+		firstName: string;
+		manager: {
+			email: string;
+			firstName: string;
+			lastName: string;
+		} | null;
+	} | null;
+}
 
 // const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
@@ -28,7 +37,7 @@ const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
 export type EmailType = "taskAssigned" | "taskDueSoon" | "taskOverdue" | "taskCompleted" | "taskReopened" | "commentMention";
 
 // Resend email
-export async function sendEmail({ recipientFirstName, userFirstName, userLastName, recipients, cc, emailType, taskTitle, dueDate, completedDate, comment, link }: Props) {
+export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props) {
 	// Choose the email template based on the emailType
 
 	console.log(`Sending email of type ${emailType} to ${recipients}...`);
@@ -36,52 +45,43 @@ export async function sendEmail({ recipientFirstName, userFirstName, userLastNam
 	let subject = "";
 	switch (emailType) {
 		case "taskAssigned":
-			emailTemplate = NewTaskEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link, baseUrl });
+			emailTemplate = NewTaskEmail({ baseUrl, task });
 			subject = "New task assigned to you";
 			break;
 		case "taskDueSoon":
-			emailTemplate = TaskDueSoonEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link, baseUrl });
+			emailTemplate = TaskDueSoonEmail({ baseUrl, task });
 			subject = "Task due soon";
 			break;
 		case "taskOverdue":
-			emailTemplate = TaskOverdueEmail({ firstName: recipientFirstName, dueDate: dueDate, taskTitle: taskTitle, link: link, baseUrl });
-			subject = "Task due today";
+			emailTemplate = TaskOverdueEmail({ baseUrl, task });
+			subject = "Task overdue";
 			break;
 		case "taskCompleted":
 			emailTemplate = TaskCompletedEmail({
-				managerFistName: recipientFirstName,
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
-				dueDate: dueDate,
-				taskTitle: taskTitle,
-				completedDate: completedDate || new Date(),
-				link: link,
 				baseUrl,
+				task,
 			});
 			subject = "Task completed - ready for review";
 			break;
 		case "taskReopened":
 			emailTemplate = TaskReopenedEmail({
-				firstName: recipientFirstName,
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
-				dueDate: dueDate,
-				taskTitle: taskTitle,
-				link: link,
+				comment: comment!,
 				baseUrl,
+				task: task!,
 			});
 			subject = "Task reopened";
 			break;
 		case "commentMention":
 			emailTemplate = CommentMentionEmail({
-				firstName: recipientFirstName,
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
-				taskTitle: taskTitle,
-				dueDate: dueDate,
 				comment: comment!,
-				link: link,
 				baseUrl,
+				task,
 			});
 			subject = "You were mentioned in a comment";
 			break;

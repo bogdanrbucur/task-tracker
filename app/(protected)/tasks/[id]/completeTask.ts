@@ -5,6 +5,7 @@ import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
+import { sendEmail } from "@/app/email/email";
 
 export default async function completeTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -45,9 +46,20 @@ export default async function completeTask(prevState: any, formData: FormData) {
 				statusId: 2,
 				completedOn: new Date(),
 			},
+			include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 		});
 
 		const completeComment = `Task completed by ${editor.firstName} ${editor.lastName}${data.completeComment ? `: ${data.completeComment}` : "."}`;
+
+		// TODO Email the manager
+		await sendEmail({
+			recipients: completedTask.assignedToUser && completedTask.assignedToUser.manager ? completedTask.assignedToUser.manager.email : "",
+			emailType: "taskCompleted",
+			userFirstName: editor.firstName,
+			userLastName: editor.lastName,
+			comment: data.completeComment,
+			task: completedTask,
+		});
 
 		// Add the changes to the task history
 		const newChange = await recordTaskHistory(completedTask, editor, [completeComment]);

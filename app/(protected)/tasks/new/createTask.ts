@@ -14,7 +14,7 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 			assignedToUserId: task.assignedToUserId,
 			createdByUserId: task.createdByUserId,
 		},
-		include: { assignedToUser: true },
+		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
 
 	if (!newTask) throw new Error("Task creation failed");
@@ -25,15 +25,12 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 	console.log(`Task ${newTask.id} created successfully`);
 
 	// TODO: Send email notification to the assigned user
-	const email = (await sendEmail({
-		firstName: newTask.assignedToUser!.firstName,
-		recipients: newTask.assignedToUser!.email,
-		subject: "New Task Assigned",
+	await sendEmail({
+		recipients: newTask.assignedToUser ? newTask.assignedToUser.email : "",
+		cc: newTask.assignedToUser && newTask.assignedToUser.manager ? newTask.assignedToUser.manager.email : "",
 		emailType: "taskAssigned",
-		miscPayload: `${process.env.BASE_URL}/tasks/${newTask.id}`,
-	})) as { id: string };
-
-	console.log(`Email ID ${email.id} sent to ${newTask.assignedToUser!.email}`);
+		task: newTask,
+	});
 
 	// Record the task creation in the task history
 	const newChange = await recordTaskHistory(newTask, editingUser);

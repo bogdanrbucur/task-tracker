@@ -4,7 +4,7 @@ import getUserDetails from "@/app/users/getUserById";
 import getUsers from "@/app/users/getUsers";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
-import TaskForm from "../taskForm";
+import TaskForm from "../TaskForm";
 
 const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Check user permissions

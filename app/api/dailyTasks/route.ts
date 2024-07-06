@@ -21,13 +21,10 @@ export async function POST(req: NextRequest) {
 
 		// send email notification to assignee and their manager
 		await sendEmail({
-			recipientFirstName: task.assignedToUser ? task.assignedToUser.firstName : "",
 			recipients: task.assignedToUser ? task.assignedToUser.email : "",
 			cc: task.assignedToUser && task.assignedToUser.manager ? task.assignedToUser.manager.email : "",
 			emailType: "taskOverdue",
-			taskTitle: task.title,
-			dueDate: task.dueDate,
-			link: `${process.env.BASE_URL}/tasks/${task.id}`,
+			task,
 		});
 
 		await prisma.task.update({
@@ -40,9 +37,28 @@ export async function POST(req: NextRequest) {
 	//
 	const dueSoonTasks = await prisma.task.findMany({
 		where: {
-			AND: [{ statusId: 1 }, { dueDate: { lte: new Date() } }, { completedOn: null }],
+			AND: [{ statusId: 1 }, { completedOn: null }, { dueSoonReminderSent: false }, { dueDate: { gte: subDays(new Date(), dueSoonDays) } }],
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
+
+	console.log(`Tasks due soon retrieved: ${dueSoonTasks.length}...`);
+
+	dueSoonTasks.forEach(async (task) => {
+		console.log(`Task ${task.id} is due soon!`);
+
+		// send email notification to assignee and their manager
+		await sendEmail({
+			recipients: task.assignedToUser ? task.assignedToUser.email : "",
+			emailType: "taskDueSoon",
+			task,
+		});
+
+		await prisma.task.update({
+			where: { id: task.id },
+			data: { dueSoonReminderSent: true },
+		});
+	});
+
 	return NextResponse.json({ ok: true });
 }
