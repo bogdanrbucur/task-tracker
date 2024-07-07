@@ -51,6 +51,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	userDetails.assignedTasks = userDetails.assignedTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
 	const tasksNumber = userDetails.assignedTasks.length;
 	const subordinatedNumber = activeSubordinates.length;
+	const canEdit = userPermissions?.isAdmin || userDetails.id === user?.id;
 
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
@@ -58,12 +59,14 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 				<div className="fade-in flex items-center justify-between gap-4">
 					<UserAvatarNameLarge user={userDetails} />
 					<div className="flex gap-2">
-						<Button asChild size="sm">
-							<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
-								Edit
-								<SquarePen size="18" />
-							</Link>
-						</Button>
+						{canEdit && (
+							<Button asChild size="sm">
+								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
+									Edit
+									<SquarePen size="18" />
+								</Link>
+							</Button>
+						)}
 						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
 						{/* Only admins can deactivate users but cannot deactivate themselves */}
 						{userPermissions.isAdmin && user.id !== userDetails.id && (

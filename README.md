@@ -73,7 +73,9 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] Task re-opened
   - [ ] @comment mentions
 - [ ] Add Sonner toast notifications for changes and sent emails
-- [ ] If saving new user as admin, pop-up to confirm the action
+- [ ] [FEAT] If saving new user as admin, pop-up to confirm the action
+- [x] [BUG] Fix user Edit button access
+- [ ] [FEAT] Ability to deactivate other admins
 - [ ] User name red if the user is inactive
 - [ ] Add a favicon
 - [ ] Links from Departments users to users filtered by department
