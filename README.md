@@ -64,19 +64,19 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
 - [x] Footer: Proudly made in RO by me
 - [x] Scheduled function to check for overdue tasks and send due soon and overdue emails
-- [ ] Comments @ mentions
-- [ ] Email notifications for:
-  - [x] Task assigned
-  - [x] Task due soon
-  - [x] Task overdue
-  - [ ] Task completed
-  - [x] Task re-opened
-  - [ ] @comment mentions
-- [ ] Add Sonner toast notifications for changes and sent emails
-- [ ] [FEAT] If saving new user as admin, pop-up to confirm the action
-- [x] [BUG] Fix user Edit button access
-- [ ] [FEAT] Ability to deactivate other admins
-- [ ] User name red if the user is inactive
-- [ ] Add a favicon
-- [ ] Links from Departments users to users filtered by department
-- [ ] Links from User tasks to tasks filtered by user
+- [ ] [feat] Comments @ mentions
+- [ ] [feat] Email notifications for:
+  - [x] [feat] Task assigned
+  - [x] [feat] Task due soon
+  - [x] [feat] Task overdue to user and manager
+  - [x] [feat] Task completed
+  - [x] [feat] Task re-opened
+  - [ ] [feat] @comment mentions
+- [ ] [feat] Add Sonner toast notifications for changes and sent emails
+- [ ] [feat] If saving new user as admin, pop-up to confirm the action
+- [x] [fix] Fix user Edit button access
+- [ ] [feat] Ability to deactivate other admins
+- [ ] [feat] User name red if the user is inactive
+- [ ] [feat] Add a favicon
+- [ ] [feat] Links from Departments users to users filtered by department
+- [ ] [feat] Links from User tasks to tasks filtered by user
