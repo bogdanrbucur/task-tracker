@@ -80,3 +80,4 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [ ] [feat] Add a favicon
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
+- [ ] [feat] Excel export tasks, but with all pages
