@@ -13,6 +13,8 @@ export default function useCommentsKeyboardPress(
 ) {
 	return useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
+			if (filteredUsers.length === 0) setHighlightedIndex(0);
+
 			if (e.key === "ArrowDown") {
 				e.preventDefault(); // Prevent scrolling
 				setHighlightedIndex((prevIndex: any) => Math.min(filteredUsers.length - 1, prevIndex + 1));

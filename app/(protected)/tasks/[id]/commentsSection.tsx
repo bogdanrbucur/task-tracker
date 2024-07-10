@@ -6,7 +6,7 @@ import { UserAvatarNameComment } from "@/components/AvatarAndName";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@prisma/client";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
@@ -46,9 +46,14 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 	const [isMentioning, setIsMentioning] = useState(false);
 	const [filteredUsers, setFilteredUsers] = useState(users);
 	const [mentionStart, setMentionStart] = useState(-1);
+	const [mentionedUsersIds, setMentionedUsersIds] = useState<string[]>([]); // Users mentioned in the comment
+	const [mentionedUserNames, setMentionedUserNames] = useState<string[]>([]); // Users mentioned in the comment
 
 	// Selected user for @ mention while the list is displayed
 	const [highlightedIndex, setHighlightedIndex] = useState(0); // 0 means first item is highlighted
+
+	// Remove the current user from the list of users
+	users = users.filter((user) => user.id !== userId);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		const value = e.target.value;
@@ -71,7 +76,6 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 
 	const handleUserSelect = (user: any) => {
 		const beforeMention = inputValue.substring(0, mentionStart);
-		const afterMention = inputValue.substring(inputValue.indexOf(" ", mentionStart + 1));
 		setInputValue(`${beforeMention}@${user.firstName} ${user.lastName}`);
 		setIsMentioning(false);
 		setFilteredUsers([]);
@@ -95,17 +99,19 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 	// Hook to watch if the comment section contains a user mention to add/remove the user from the form payload
 	useEffect(() => {
 		// Check if the inptuValue contains a mention of a user, from all the users
-		const mentionedUser = users.find((user) => inputValue.includes(`@${user.firstName} ${user.lastName}`));
+		const mentionedUsers = users.filter((user) => inputValue.includes(`@${user.firstName} ${user.lastName}`));
 
-		// If it does, find the @user.firstName user.lastName part and make the text blue
-		if (mentionedUser) {
-			const firstNameIndex = inputValue.indexOf(`@${mentionedUser.firstName}`);
-			// TODO highlight the users and add them to the form payload
+		// Remove users which are not in mentionedUsers
+		const newMentionedUsersIds = mentionedUsersIds.filter((id) => mentionedUsers.map((user) => user.id).includes(id));
+		setMentionedUsersIds(newMentionedUsersIds);
+		const newMentionedUserNames = mentionedUserNames.filter((name) => mentionedUsers.map((user) => `${user.firstName} ${user.lastName}`).includes(name));
+		setMentionedUserNames(newMentionedUserNames);
 
-			// make the text blue, change the Tailwind className to text-blue-500
-			const updatedInputValue = inputValue.replace(`@${mentionedUser.firstName}`, `<span class="text-blue-500">@${mentionedUser.firstName}</span>`);
-			setInputValue(updatedInputValue);
-		}
+		// Fir each mentioned user, add their id to the arrays, if not already there
+		mentionedUsers.forEach((user) => {
+			if (!mentionedUsersIds.includes(user.id)) setMentionedUsersIds([...mentionedUsersIds, user.id]);
+			if (!mentionedUserNames.includes(`${user.firstName} ${user.lastName}`)) setMentionedUserNames([...mentionedUserNames, `${user.firstName} ${user.lastName}`]);
+		});
 	}, [inputValue]);
 
 	return (
@@ -165,10 +171,16 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 								))}
 							</ul>
 						)}
-						<PostCommentButton />
+						<div className="flex gap-3">
+							<PostCommentButton />
+							{mentionedUserNames.length > 0 && (
+								<p className="text-xs text-foreground">{mentionedUserNames.join(", ").replace(/,([^,]*)$/, " and$1")} will be notified of this comment.</p>
+							)}
+						</div>
 						{/* Hidden input fields ensures formData is submitted */}
 						<input type="hidden" name="userId" value={userId} />
 						<input type="hidden" name="taskId" value={taskId} />
+						<input type="hidden" name="mentionedUsers" value={mentionedUsersIds} />
 					</div>
 				)}
 			</form>
