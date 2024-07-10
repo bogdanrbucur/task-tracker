@@ -10,8 +10,6 @@ import addComment from "./addComment";
 import CommentSkeleton from "./commentSkeleton";
 import { UserAvatarNameComment } from "@/components/AvatarAndName";
 import { Avatar } from "@prisma/client";
-import { UserExtended } from "@/app/users/getUserById";
-import { Select, SelectContent, SelectGroup, SelectItem } from "@radix-ui/react-select";
 
 const initialState = {
 	message: null,
@@ -32,13 +30,14 @@ type CommentDetails = {
 	user: CommentUser;
 };
 
-const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string; taskId: number; comments: CommentDetails[]; users: UserExtended[] }) => {
+const users = [
+	{ id: "1", firstName: "John", lastName: "Doe" },
+	{ id: "2", firstName: "Jane", lastName: "Doe" },
+];
+
+const CommentsSection = ({ userId, taskId, comments }: { userId?: string; taskId: number; comments: CommentDetails[] }) => {
 	const [state, formAction] = useFormState(addComment, initialState);
-
-	// Form reference to reset the form after submission
 	const ref = useRef<HTMLFormElement>(null);
-
-	// For @ mentions
 	const [inputValue, setInputValue] = useState("");
 	const [isMentioning, setIsMentioning] = useState(false);
 	const [filteredUsers, setFilteredUsers] = useState(users);
@@ -71,22 +70,16 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 		setFilteredUsers([]);
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === "Enter" && filteredUsers.length > 0) {
-			e.preventDefault(); // Prevent form submission
-			handleUserSelect(filteredUsers[0]); // Select the first user in the filtered list
-		}
-	};
-
 	return (
 		<div className="space-y-6">
 			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Comments</h3>
 			<form
 				ref={ref}
 				className="flex flex-col gap-4"
-				action={(formData) => {
+				onSubmit={(e) => {
+					e.preventDefault();
+					const formData = new FormData(e.target as HTMLFormElement);
 					formAction(formData);
-					// Reset the form upon submission
 					ref.current?.reset();
 				}}
 			>
@@ -105,33 +98,21 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 							</div>
 						</div>
 					))}
-					<CommentSkeleton />
+					{/* Input field for new comment with @mention functionality */}
+					<textarea className="form-textarea mt-1 block w-full" rows={3} placeholder="Add a comment..." value={inputValue} onChange={handleInputChange}></textarea>
+					{isMentioning && (
+						<ul className="absolute z-10 list-disc bg-white shadow-lg max-h-56 overflow-auto">
+							{filteredUsers.map((user) => (
+								<li key={user.id} className="cursor-pointer p-2 hover:bg-gray-100" onClick={() => handleUserSelect(user)}>
+									{user.firstName} {user.lastName}
+								</li>
+							))}
+						</ul>
+					)}
 				</section>
-				{userId && (
-					<div className="flex flex-col gap-5">
-						{/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight">Add comment</h4> */}
-						{state?.message && (
-							<Alert variant="destructive">
-								<AlertCircle className="h-4 w-4" />
-								<AlertTitle>{state?.message}</AlertTitle>
-							</Alert>
-						)}
-						<Textarea name="comment" placeholder="Add a comment..." value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} />
-						{isMentioning && (
-							<ul className="absolute z-10 list-disc shadow-lg max-h-56 overflow-auto rounded-lg border bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-700">
-								{filteredUsers.map((user) => (
-									<li key={user.id} className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm" onClick={() => handleUserSelect(user)}>
-										{user.firstName} {user.lastName}
-									</li>
-								))}
-							</ul>
-						)}
-						<PostCommentButton />
-						{/* Hidden input fields ensures formData is submitted */}
-						<input type="hidden" name="userId" value={userId} />
-						<input type="hidden" name="taskId" value={taskId} />
-					</div>
-				)}
+				<button type="submit" className="self-end px-4 py-2 bg-blue-500 text-white rounded-md">
+					Post Comment
+				</button>
 			</form>
 		</div>
 	);

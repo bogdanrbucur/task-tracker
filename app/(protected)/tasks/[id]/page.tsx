@@ -60,6 +60,12 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 	const canCloseTask = user?.id === task.assignedToUser?.manager?.id || userPermissions?.isAdmin;
 	const canReopenTask = userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id;
 
+	// Get all active users for the @ mentions
+	const users = await prisma.user.findMany({
+		where: { active: true },
+		select: prismaExtendedUserSelection,
+	});
+
 	return (
 		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
 			<div className="fade-in grid gap-6 md:grid-cols-[2fr_1fr]">
@@ -118,7 +124,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 						</div>
 					</div>
 					<Separator className="my-6" />
-					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} />
+					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} users={users as UserExtended[]} />
 				</div>
 				<div className="space-y-6">
 					<Card>
