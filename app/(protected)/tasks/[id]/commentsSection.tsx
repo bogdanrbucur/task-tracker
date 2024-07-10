@@ -6,16 +6,19 @@ import { UserAvatarNameComment } from "@/components/AvatarAndName";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@prisma/client";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import PostCommentButton from "./PostCommentButton";
 import addComment from "./addComment";
 import CommentSkeleton from "./commentSkeleton";
+import { Toaster, toast } from "sonner";
 
 const initialState = {
 	message: null,
+	success: undefined,
+	emailSent: undefined,
 };
 
 export type CommentUser = {
@@ -94,7 +97,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 	);
 
 	// To determine the position of the mentionList based on the text cursor (caret position)
-	useMentionsListPosition(isMentioning, textInputRef, mentionsListRef);
+	useMentionsListPosition(isMentioning, textInputRef, mentionsListRef, formRef);
 
 	// Hook to watch if the comment section contains a user mention to add/remove the user from the form payload
 	useEffect(() => {
@@ -114,6 +117,18 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 		});
 	}, [inputValue]);
 
+	// Watch for the success state to show a toast notification
+	useEffect(() => {
+		if (state?.success && state?.emailSent) {
+			// Reset the form
+			formRef.current?.reset();
+			toast.success("Email sent to mentioned users.");
+		}
+		if (state?.message && !state?.emailSent) {
+			toast.error("Failed to send email.");
+		}
+	}, [state]);
+
 	return (
 		<div className="space-y-6">
 			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Comments</h3>
@@ -123,7 +138,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 				action={(formData) => {
 					formAction(formData);
 					// Reset the form upon submission
-					formRef.current?.reset();
+					setInputValue("");
 				}}
 			>
 				<section className="space-y-4">
@@ -173,8 +188,10 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 						)}
 						<div className="flex gap-3">
 							<PostCommentButton />
-							{mentionedUserNames.length > 0 && (
+							{mentionedUserNames.length > 0 ? (
 								<p className="text-xs text-foreground">{mentionedUserNames.join(", ").replace(/,([^,]*)$/, " and$1")} will be notified of this comment.</p>
+							) : (
+								<p className="text-xs text-foreground"></p>
 							)}
 						</div>
 						{/* Hidden input fields ensures formData is submitted */}
@@ -184,6 +201,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 					</div>
 				)}
 			</form>
+			<Toaster richColors />
 		</div>
 	);
 };

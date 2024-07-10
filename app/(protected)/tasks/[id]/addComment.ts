@@ -1,5 +1,6 @@
 // server function to add new comment
 "use server";
+import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -10,6 +11,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 		taskId: z.string(),
 		userId: z.string().length(25, { message: "User not provided." }),
 		comment: z.string().min(2, { message: "Comment must be at least 2 characters." }),
+		mentionedUsers: z.array(z.string()).optional(),
 	});
 
 	try {
@@ -19,6 +21,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 			taskId: formData.get("taskId") as string,
 			userId: formData.get("userId") as string,
 			comment: formData.get("comment") as string,
+			mentionedUsers: formData.getAll("mentionedUsers").filter((e) => e !== "") as string[],
 		});
 
 		const newComment = await prisma.comment.create({
@@ -29,6 +32,52 @@ export default async function addComment(prevState: any, formData: FormData) {
 				comment: data.comment,
 			},
 		});
+
+		console.log(data.mentionedUsers);
+
+		// if (data.mentionedUsers && data.mentionedUsers.length === 0) return { success: true };
+
+		if (data.mentionedUsers && data.mentionedUsers.length > 0) {
+			// Fetch the task
+			const task = await prisma.task.findUnique({
+				where: { id: Number(data.taskId) },
+				include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
+			});
+
+			// Get the users mentioned in the comment
+			const mentionedUsersExtended = await prisma.user.findMany({
+				where: { id: { in: data.mentionedUsers! } },
+			});
+
+			// Get the user who commented
+			const user = await prisma.user.findUnique({
+				where: { id: data.userId },
+			});
+
+			// Build the array of email addresses
+			const recipients = mentionedUsersExtended.map((user) => user.email);
+
+			// Email the users mentioned in the comment
+			const emailStatus: any = await sendEmail({
+				recipients,
+				cc: "",
+				userFirstName: user!.firstName,
+				userLastName: user!.lastName,
+				emailType: "commentMention",
+				task: task!,
+				comment: data.comment,
+			});
+
+			// If the email sent failed
+			if (emailStatus.hasOwnProperty("statusCode")) {
+				revalidatePath(`/tasks/${formData.get("taskId")}`);
+				return { success: true, emailSent: false, message: emailStatus.message };
+				// Else it succeded
+			} else {
+				revalidatePath(`/tasks/${formData.get("taskId")}`);
+				return { success: true, emailSent: true };
+			}
+		}
 
 		// console.log("New comment added: ", newComment);
 	} catch (error) {

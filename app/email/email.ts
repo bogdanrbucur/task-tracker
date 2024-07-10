@@ -83,7 +83,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				baseUrl,
 				task,
 			});
-			subject = "You were mentioned in a comment";
+			subject = "You were mentioned in a task comment";
 			break;
 		default:
 			null;
@@ -104,6 +104,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			return error;
 		}
 
+		console.log(data);
 		return data;
 	} catch (error) {
 		console.log(error);
