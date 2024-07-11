@@ -10,10 +10,10 @@ import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
+import { Toaster, toast } from "sonner";
 import PostCommentButton from "./PostCommentButton";
 import addComment from "./addComment";
 import CommentSkeleton from "./commentSkeleton";
-import { Toaster, toast } from "sonner";
 
 const initialState = {
 	message: null,
@@ -79,7 +79,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 
 	const handleUserSelect = (user: any) => {
 		const beforeMention = inputValue.substring(0, mentionStart);
-		setInputValue(`${beforeMention}@${user.firstName} ${user.lastName}`);
+		setInputValue(`${beforeMention}@${user.firstName} ${user.lastName} `);
 		setIsMentioning(false);
 		setFilteredUsers([]);
 	};
@@ -99,6 +99,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 	// To determine the position of the mentionList based on the text cursor (caret position)
 	useMentionsListPosition(isMentioning, textInputRef, mentionsListRef, formRef);
 
+	// TODO move to a custom hook
 	// Hook to watch if the comment section contains a user mention to add/remove the user from the form payload
 	useEffect(() => {
 		// Check if the inptuValue contains a mention of a user, from all the users
@@ -122,7 +123,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 		if (state?.success && state?.emailSent) {
 			// Reset the form
 			formRef.current?.reset();
-			toast.success("Email sent to mentioned users.");
+			toast.success(`Email sent to mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
 		}
 		if (state?.message && !state?.emailSent) {
 			toast.error("Failed to send email.");

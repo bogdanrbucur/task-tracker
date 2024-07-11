@@ -14,6 +14,9 @@ export default async function addComment(prevState: any, formData: FormData) {
 		mentionedUsers: z.array(z.string()).optional(),
 	});
 
+	let success;
+	let emailSent;
+
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
@@ -24,6 +27,9 @@ export default async function addComment(prevState: any, formData: FormData) {
 			mentionedUsers: formData.getAll("mentionedUsers").filter((e) => e !== "") as string[],
 		});
 
+		// Rebuild the array of mentioned user IDs
+		const mentionedUsersArray = data.mentionedUsers?.flatMap((e) => e.split(","));
+
 		const newComment = await prisma.comment.create({
 			data: {
 				taskId: Number(data.taskId),
@@ -33,11 +39,10 @@ export default async function addComment(prevState: any, formData: FormData) {
 			},
 		});
 
-		console.log(data.mentionedUsers);
+		if (newComment) success = true;
 
-		// if (data.mentionedUsers && data.mentionedUsers.length === 0) return { success: true };
-
-		if (data.mentionedUsers && data.mentionedUsers.length > 0) {
+		// If there are users mentioned in the comment
+		if (mentionedUsersArray && mentionedUsersArray.length > 0) {
 			// Fetch the task
 			const task = await prisma.task.findUnique({
 				where: { id: Number(data.taskId) },
@@ -46,7 +51,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 
 			// Get the users mentioned in the comment
 			const mentionedUsersExtended = await prisma.user.findMany({
-				where: { id: { in: data.mentionedUsers! } },
+				where: { id: { in: mentionedUsersArray! } },
 			});
 
 			// Get the user who commented
@@ -71,11 +76,15 @@ export default async function addComment(prevState: any, formData: FormData) {
 			// If the email sent failed
 			if (emailStatus.hasOwnProperty("statusCode")) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				return { success: true, emailSent: false, message: emailStatus.message };
+				console.log("Comment added, email error");
+				emailSent = false;
+				return { success, emailSent, message: emailStatus.message };
 				// Else it succeded
 			} else {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				return { success: true, emailSent: true };
+				console.log("Comment added, email sent");
+				emailSent = true;
+				return { success, emailSent };
 			}
 		}
 
