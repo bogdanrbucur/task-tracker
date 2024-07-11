@@ -32,6 +32,18 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const [managerId, setManagerId] = useState<string | null>(null);
 	const [departmentId, setDepartmentId] = useState<number | null>(null);
 	const editingSelf = editor === user?.id;
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
 	return (
 		<Card className="container w-full max-w-2xl">
@@ -90,11 +102,11 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 						<div>
 							<Label htmlFor="avatar">Avatar</Label>
 							<div className="flex items-center gap-4">
-								<Avatar className="h-12 w-12">
-									<AvatarImage alt="Avatar" />
+								<Avatar className="h-16 w-16">
+									<AvatarImage alt="Avatar" src={imageUrl || ''}/>
 									<AvatarFallback>JD</AvatarFallback>
 								</Avatar>
-								<Input name="avatar" type="file" accept="image/*" />
+								<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} />
 							</div>
 						</div>
 

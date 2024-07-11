@@ -72,7 +72,8 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Task completed
   - [x] [feat] Task re-opened
   - [x] [feat] @comment mentions
-- [ ] [fix] Saving user errors
+- [x] [fix] Saving user errors
+- [x] [feat] User edit avatar change in real-time
 - [ ] [feat] Add Sonner toast notifications for changes and sent emails
 - [ ] [feat] If saving new user as admin, pop-up to confirm the action
 - [x] [fix] Fix user Edit button access
@@ -82,3 +83,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages
+- [ ] [feat] Server-side logging
+- [ ] [feat] User password reset
+- [ ] [feat] User password reset email
+- [ ] [feat] User password reset page

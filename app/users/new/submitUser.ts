@@ -45,8 +45,8 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		id: z.string().nullable(),
 		firstName: z.string().min(2, { message: "First name must be at least 2 characters long." }).max(30, { message: "First name must be at most 30 characters long." }),
 		lastName: z.string().min(2, { message: "Last name must be at least 2 characters long." }).max(30, { message: "Last name must be at most 30 characters long." }),
-		email: z.string().email({ message: "Invalid email address." }),
-		position: z.string().min(3, { message: "Position must be at least 2 characters long." }),
+		email: z.string().email({ message: "Invalid email address." }).nullable(),
+		position: z.string().min(3, { message: "Position must be at least 2 characters long." }).nullable(),
 		departmentId: z.string({ message: "Invalid department." }).max(3, { message: "Invalid department." }).min(1, { message: "Invalid department." }),
 		managerId: z.string().nullable(),
 		editor: z.string().length(25, { message: "Invalid editor." }),
@@ -76,6 +76,16 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			avatar: formData.get("avatar") as File | null,
 			// avatarBuffer: undefined as Buffer | undefined,
 		});
+
+		// If the user edited themselves, they cannot change their email or position
+		// The client will not send them to the server, so need to fill them in here
+		if (data.id === data.editor) {
+			// Fetch the user details
+			const user = await getUserDetails(data.id);
+			data.email = user.email;
+			data.position = user.position;
+			data.isAdmin = user.isAdmin ? "on" : null;
+		}
 
 		if (data.password !== data.confirmPassword) {
 			return { message: "Passwords do not match." };
@@ -116,7 +126,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		// If a user ID is provided, update the existing user
 		if (data.id) newUser = await updateUser(data as UpdateUser, editingUser!);
 		// If no user ID is provided, create a new user
-		else newUser = await createUser(data, editingUser);
+		else newUser = await createUser(data as NewUser, editingUser);
 		// console.log(newUser);
 
 		// Redirect to the task page, either for the updated task or the new task
