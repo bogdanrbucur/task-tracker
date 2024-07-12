@@ -76,9 +76,14 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] User edit avatar change in real-time
 - [x] [fix] Fix user Edit button access
 - [ ] [feat] Add Sonner toast notifications for changes and sent emails
+  - [ ] [feat] For new task email sent
+  - [ ] [feat] For task modified, if email sent
+  - [ ] [feat] For task completed, if email sent
+  - [ ] [feat] For task re-opened, if email sent
 - [ ] [feat] If saving new user as admin, pop-up to confirm the action
 - [ ] [feat] Ability to deactivate other admins
 - [ ] [feat] User name red if the user is inactive
+- [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
