@@ -1,13 +1,13 @@
 // server function to add new task
 "use server";
 
+import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/getUserById";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createTask } from "./createTask";
 import { updateTask } from "../[id]/updateTask";
-import { EmailResponse } from "@/app/email/email";
+import { createTask } from "./createTask";
 
 export type NewTask = {
 	title: string;
@@ -62,24 +62,11 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			emailStatus = statusTempVar;
 		}
 
-		// if (!emailStatus) {
-		// 	console.log("Task updated, but user not changed, no email sent");
-		// 	// redirect(newTask ? `/tasks/${String(newTask.id)}` : "");
-		// 	// return;
-		// }
-
-		// // If the email sent failed
-		// else if (emailStatus && !emailStatus.success) {
-		// 	console.log("Task assigned user changed, email error");
-		// 	// redirect(newTask ? `/tasks/${String(newTask.id)}?toast=fail` : "");
-		// 	// return;
-		// 	// Else it succeded
-		// } else {
-		// 	console.log("Task assigned user changed, email sent");
-		// 	// redirect(newTask ? `/tasks/${String(newTask.id)}?toast=success` : "");
-		// 	// return;
-		// }
-		// console.log(emailStatus);
+		// If email wasn't sent
+		if (!emailStatus) console.log("Task updated, but user not changed, no email sent");
+		// If the email sent failed
+		else if (emailStatus && !emailStatus.success) console.log("Task assigned user changed, email error");
+		else console.log("Task assigned user changed, email sent");
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {
@@ -88,11 +75,10 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			for (const subError of error.errors) {
 				return { message: subError.message };
 			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
 		}
-		console.log(emailStatus);
-		redirect(newTask ? `/tasks/${String(newTask.id)}` : "");
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
+	console.log(emailStatus);
+	redirect(newTask ? `/tasks/${String(newTask.id)}${emailStatus && !emailStatus.success ? "?toast=fail" : emailStatus ? "?toast=success" : ""}` : "");
 }
