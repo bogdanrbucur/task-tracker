@@ -62,24 +62,24 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			emailStatus = statusTempVar;
 		}
 
-		if (!emailStatus) {
-			console.log("Task updated, but user not changed, no email sent");
-			// redirect(newTask ? `/tasks/${String(newTask.id)}` : "");
-			// return;
-		}
+		// if (!emailStatus) {
+		// 	console.log("Task updated, but user not changed, no email sent");
+		// 	// redirect(newTask ? `/tasks/${String(newTask.id)}` : "");
+		// 	// return;
+		// }
 
-		// If the email sent failed
-		if (emailStatus && !emailStatus.success) {
-			console.log("Task assigned user changed, email error");
-			// redirect(newTask ? `/tasks/${String(newTask.id)}?toast=fail` : "");
-			// return;
-			// Else it succeded
-		} else {
-			console.log("Task assigned user changed, email sent");
-			// redirect(newTask ? `/tasks/${String(newTask.id)}?toast=success` : "");
-			// return;
-		}
-		console.log(emailStatus);
+		// // If the email sent failed
+		// else if (emailStatus && !emailStatus.success) {
+		// 	console.log("Task assigned user changed, email error");
+		// 	// redirect(newTask ? `/tasks/${String(newTask.id)}?toast=fail` : "");
+		// 	// return;
+		// 	// Else it succeded
+		// } else {
+		// 	console.log("Task assigned user changed, email sent");
+		// 	// redirect(newTask ? `/tasks/${String(newTask.id)}?toast=success` : "");
+		// 	// return;
+		// }
+		// console.log(emailStatus);
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {
@@ -93,6 +93,6 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 		console.log(emailStatus);
-		redirect(newTask ? `/tasks/${String(newTask.id)}${emailStatus && !emailStatus.success ? "?toast=fail" : emailStatus ? "?toast=success" : ""}` : "");
+		redirect(newTask ? `/tasks/${String(newTask.id)}` : "");
 	}
 }
