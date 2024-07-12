@@ -31,7 +31,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 				<form className="space-y-4 md:space-y-6" action={formAction}>
 					<div className="space-y-2">
 						<Label htmlFor="title">Title</Label>
-						<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} required/>
+						<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} required />
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="description">Description</Label>

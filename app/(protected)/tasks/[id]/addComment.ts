@@ -15,8 +15,6 @@ export default async function addComment(prevState: any, formData: FormData) {
 	});
 
 	let success;
-	let emailSent;
-
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
@@ -74,17 +72,15 @@ export default async function addComment(prevState: any, formData: FormData) {
 			});
 
 			// If the email sent failed
-			if (emailStatus.hasOwnProperty("statusCode")) {
+			if (!emailStatus.success) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("Comment added, email error");
-				emailSent = false;
-				return { success, emailSent, message: emailStatus.message };
+				return { success, emailSent: emailStatus.success, message: emailStatus.error };
 				// Else it succeded
 			} else {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("Comment added, email sent");
-				emailSent = true;
-				return { success, emailSent };
+				return { success, emailSent: emailStatus.success };
 			}
 		}
 

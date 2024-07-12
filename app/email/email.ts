@@ -31,13 +31,18 @@ export interface EmailTask extends Task {
 	} | null;
 }
 
+export interface EmailResponse {
+	success: boolean;
+	error: string | null;
+}
+
 // const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
 
 export type EmailType = "taskAssigned" | "taskDueSoon" | "taskOverdue" | "taskCompleted" | "taskReopened" | "commentMention";
 
 // Resend email
-export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props) {
+export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props): Promise<EmailResponse> {
 	// Choose the email template based on the emailType
 
 	console.log(`Sending email of type ${emailType} to ${recipients}...`);
@@ -101,13 +106,13 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 
 		if (error) {
 			console.log(error);
-			return error;
+			return { success: false, error: error.message };
 		}
 
 		console.log(data);
-		return data;
-	} catch (error) {
+		return { success: true, error: null };
+	} catch (error: any) {
 		console.log(error);
-		return error;
+		return { success: false, error: error.message };
 	}
 }

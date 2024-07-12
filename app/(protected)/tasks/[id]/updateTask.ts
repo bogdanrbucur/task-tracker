@@ -28,9 +28,10 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 	// Determine if the user was changed and if so, send an email to the new user
 	const oldUserId = oldTask?.assignedToUserId;
 	const newUserId = updatedTask.assignedToUserId;
+	let emailStatus;
 	if (oldUserId !== newUserId) {
 		// send email notification to assignee and their manager
-		await sendEmail({
+		emailStatus = await sendEmail({
 			recipients: updatedTask.assignedToUser ? updatedTask.assignedToUser.email : "",
 			emailType: "taskAssigned",
 			task: updatedTask,
@@ -47,5 +48,5 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 
 	// Add the changes to the task history
 	const newChange = await recordTaskHistory(updatedTask, editingUser, changes);
-	return updatedTask;
+	return { updatedTask, emailStatus };
 }

@@ -118,13 +118,6 @@ export default async function TasksPage({ searchParams }: Props) {
 		},
 	});
 
-	// Since Department is not a field in the Task table, need to filter by department after querying
-	// if (department) {
-	// 	tasks = tasks.filter((task) => task.assignedToUser?.department?.id === Number(department));
-
-	// 	//
-	// }
-
 	const taskCount = await prisma.task.count({ where });
 
 	return (

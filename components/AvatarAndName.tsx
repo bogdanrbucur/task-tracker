@@ -2,7 +2,7 @@
 import { UserExtended, UserRestricted } from "@/app/users/getUserById";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { CommentUser } from "@/app/(protected)/tasks/[id]/commentsSection";
+import { CommentUser } from "@/app/(protected)/tasks/[id]/CommentsSection";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
