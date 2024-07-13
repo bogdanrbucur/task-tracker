@@ -87,7 +87,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Task history entry
   - [x] [feat] Email notification to user and manager
   - [x] [feat] Sonner toast notification for email sending
-- [ ] [feat] If saving new user as admin, pop-up to confirm the action
+- [x] [feat] If saving new user as admin, highlight it will be admin
 - [ ] [feat] Ability to deactivate other admins
 - [ ] [feat] User name red if the user is inactive
 - [ ] [feat] User password reset

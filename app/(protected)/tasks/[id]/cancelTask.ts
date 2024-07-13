@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
 
-export default async function cancelTask(formData: FormData) {
+export default async function cancelTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
 	// console.log(rawData);
 
@@ -63,6 +63,12 @@ export default async function cancelTask(formData: FormData) {
 			comment: data.cancelComment,
 			task: cancelledTask,
 		});
+
+		// If email wasn't sent
+		if (!emailStatus) console.log("Task cancelled, but user not assigned, no email sent");
+		// If the email sent failed
+		else if (emailStatus && !emailStatus.success) console.log("Task cancelled, email error");
+		else console.log("Task cancelled, email sent");
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

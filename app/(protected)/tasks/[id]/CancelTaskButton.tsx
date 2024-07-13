@@ -1,6 +1,7 @@
+"use client";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
 	AlertDialog,
-	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -11,10 +12,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { CircleX } from "lucide-react";
+import { AlertCircle, CircleX } from "lucide-react";
+import { useFormState } from "react-dom";
 import cancelTask from "./cancelTask";
 
-export async function CancelTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+const initialState = {
+	message: null,
+};
+
+export function CancelTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+	const [state, formAction] = useFormState(cancelTask, initialState);
+
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -24,15 +32,21 @@ export async function CancelTaskButton({ userId, taskId }: { userId: string | un
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
-				<form action={cancelTask}>
+				<form action={formAction}>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Cancel the task</AlertDialogTitle>
 						<AlertDialogDescription>You hereby confirm the task is not required and can be cancelled. Please provide a reason for cancelling.</AlertDialogDescription>
 					</AlertDialogHeader>
+					{state?.message && (
+						<Alert variant="destructive" className="mt-2">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>{state?.message}</AlertTitle>
+						</Alert>
+					)}
 					<Textarea name="cancelComment" draggable="false" className="my-3" placeholder="Reason for cancelling..." />
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction type="submit">Confirm</AlertDialogAction>
+						<Button type="submit">Confirm</Button>
 					</AlertDialogFooter>
 					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />

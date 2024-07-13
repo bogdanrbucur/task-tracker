@@ -31,19 +31,22 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const [formState, formAction] = useFormState(submitUser, initialState);
 	const [managerId, setManagerId] = useState<string | null>(null);
 	const [departmentId, setDepartmentId] = useState<number | null>(null);
-	const editingSelf = editor === user?.id;
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
+	const [isAdminChecked, setIsAdminChecked] = useState<boolean>(false);
+	const editingSelf = editor === user?.id;
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setImageUrl(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const onIsAdminCheckboxChange = (checked: boolean) => setIsAdminChecked(checked);
 
 	return (
 		<Card className="container w-full max-w-2xl">
@@ -86,6 +89,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 						</div>
 					</div>
 					{/* Only show the password fields when creating new users */}
+					{/* TODO Remove completely after implementing password set/reset form */}
 					{!user && (
 						<div className="grid grid-cols-2 gap-4">
 							<div className="space-y-2">
@@ -103,7 +107,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 							<Label htmlFor="avatar">Avatar</Label>
 							<div className="flex items-center gap-4">
 								<Avatar className="h-16 w-16">
-									<AvatarImage alt="Avatar" src={imageUrl || ''}/>
+									<AvatarImage alt="Avatar" src={imageUrl || ""} />
 									<AvatarFallback>JD</AvatarFallback>
 								</Avatar>
 								<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} />
@@ -114,14 +118,16 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 						{editor !== user?.id && (
 							<div>
 								<div className="flex items-center space-x-2 justify-start pl-3">
-									<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} />
+									<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} onCheckedChange={onIsAdminCheckboxChange} />
 									<div>
 										<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
 											Admin user
 										</label>
 									</div>
 								</div>
-								<p className="text-xs text-muted-foreground pl-3">User will have full control over tasks and users.</p>
+								<p className={`text-xs ${isAdminChecked ? "text-red-600 dark:text-red-400" : "text-muted-foreground"} pl-3`}>
+									User will have full control over tasks and users, including other administrators.
+								</p>
 							</div>
 						)}
 					</div>
@@ -141,7 +147,9 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 						<input type="hidden" name="editor" value={editor} />
 						<input type="hidden" name="id" value={user ? user.id : undefined} />
 						<div className="flex justify-center md:justify-end">
-							<Button type="submit">{user ? "Save User" : "Create User"}</Button>
+							<Button className="gap-1" type="submit">
+								{user ? "Save User" : "Create User"}
+							</Button>
 						</div>
 					</div>
 				</form>
