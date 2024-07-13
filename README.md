@@ -78,7 +78,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [ ] [feat] Add Sonner toast notifications for changes and sent emails
   - [x] [feat] For new task email sent
   - [x] [feat] For task modified, if email sent
-  - [ ] [feat] For task completed, if email sent
+  - [x] [feat] For task completed, if email sent
   - [ ] [feat] For task re-opened, if email sent
 - [ ] [feat] If saving new user as admin, pop-up to confirm the action
 - [ ] [feat] Ability to deactivate other admins

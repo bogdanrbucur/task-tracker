@@ -80,5 +80,5 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		else return { message: (error as any).message };
 	}
 	console.log(emailStatus);
-	redirect(newTask ? `/tasks/${String(newTask.id)}${emailStatus && !emailStatus.success ? "?toast=fail" : emailStatus ? "?toast=success" : ""}` : "");
+	redirect(newTask ? `/tasks/${String(newTask.id)}${emailStatus && !emailStatus.success ? "?toastUser=fail" : emailStatus ? "?toastUser=success" : ""}` : "");
 }

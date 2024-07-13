@@ -26,7 +26,10 @@ import { ReopenTaskButton } from "./ReopenTaskButton";
 interface Props {
 	params: { id: string };
 	// toast indicates if a toast message should be displayed when loading the page
-	searchParams: { toast?: "success" | "fail" };
+	searchParams: {
+		toastUser?: "success" | "fail";
+		toastManager?: "success" | "fail";
+	};
 }
 
 export default async function TaskDetailsPage({ params, searchParams }: Props) {
@@ -143,8 +146,20 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 				</div>
 			</div>
 			<ClientToast
-				status={searchParams.toast}
-				message={searchParams.toast === "success" ? "Email sent to assigned user." : searchParams.toast === "fail" ? "Failed to send email to assigned user." : undefined}
+				status={searchParams.toastUser}
+				message={
+					searchParams.toastUser === "success" ? "Email sent to assigned user." : searchParams.toastUser === "fail" ? "Failed to send email to assigned user." : undefined
+				}
+			/>
+			<ClientToast
+				status={searchParams.toastManager}
+				message={
+					searchParams.toastManager === "success"
+						? "Email sent to the manager."
+						: searchParams.toastManager === "fail"
+						? "Failed to send email to the manager."
+						: undefined
+				}
 			/>
 		</Card>
 	);

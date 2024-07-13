@@ -1,6 +1,6 @@
 // server function to add new comment
 "use server";
-import { sendEmail } from "@/app/email/email";
+import { EmailResponse, sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -61,7 +61,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 			const recipients = mentionedUsersExtended.map((user) => user.email);
 
 			// Email the users mentioned in the comment
-			const emailStatus: any = await sendEmail({
+			const emailStatus: EmailResponse = await sendEmail({
 				recipients,
 				cc: "",
 				userFirstName: user!.firstName,
