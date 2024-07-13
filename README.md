@@ -90,14 +90,17 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [ ] [feat] If saving new user as admin, pop-up to confirm the action
 - [ ] [feat] Ability to deactivate other admins
 - [ ] [feat] User name red if the user is inactive
+- [ ] [feat] User password reset
+  - [ ] [feat] Token schema
+  - [ ] [feat] Password reset button for admins
+  - [ ] [feat] Password reset action to generate token and send email
+  - [ ] [feat] Password reset page to validate token and set new password
+  - [ ] [feat] Password reset email
+  - [ ] [feat] User creation automatic email with page to set password
 - [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages
 - [ ] [feat] Server-side logging
-- [ ] [feat] User password reset
-- [ ] [feat] User password reset email
-- [ ] [feat] User password reset page
-- [ ] [feat] User creation automatic email with page to set password
 - [ ] [feat] Automatic database backups
