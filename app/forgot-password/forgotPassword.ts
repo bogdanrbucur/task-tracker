@@ -7,6 +7,7 @@ import { alphabet, generateRandomString, sha256 } from "oslo/crypto";
 import { encodeHex } from "oslo/encoding";
 import { z } from "zod";
 import { sendEmail } from "../email/email";
+import generatePassChangeToken from "../_auth/actions/generatePassChangeToken";
 
 export default async function forgotUserPassword(prevState: any, formData: FormData) {
 	const rawFormData = Object.fromEntries(formData.entries());
@@ -33,21 +34,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		if (!user) return;
 
 		// Create a unique random password reset token
-		const secret = generateRandomString(10, alphabet("a-z", "0-9"));
-		const encodedText = new TextEncoder().encode(user.email + Date.now().toString() + secret);
-		const shaArrayBuffer = await sha256(encodedText);
-		const token = encodeHex(shaArrayBuffer);
-
-		console.log(token);
-
-		// Write the token to the database and give it a 15 min expiry
-		const newToken = await prisma.passwordResetToken.create({
-			data: {
-				userId: user.id,
-				token,
-				expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 min
-			},
-		});
+		const token = await generatePassChangeToken(user);
 
 		// Send the user an email with a link to reset their password
 		const emailStatus = await sendEmail({

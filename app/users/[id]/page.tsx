@@ -78,6 +78,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						)}
 					</div>
 				</div>
+				{/* TODO show if the user has confirmed their email or not and if the link expired */}
+				<div id="userStatus"></div>
 			</CardHeader>
 			<CardContent className="fade-in grid gap-6">
 				<div className="grid grid-cols-2 gap-4">

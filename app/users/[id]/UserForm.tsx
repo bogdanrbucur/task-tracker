@@ -94,20 +94,6 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 							<input type="hidden" name="managerId" value={managerId ?? ""} />
 						</div>
 					</div>
-					{/* Only show the password fields when creating new users */}
-					{/* TODO Remove completely after implementing password set/reset form */}
-					{!user && (
-						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-2">
-								<Label htmlFor="password">Password</Label>
-								<Input name="password" placeholder="Password" type="password" required />
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="confirmPassword">Confirm Password</Label>
-								<Input name="confirmPassword" placeholder="Confirm Password" type="password" required />
-							</div>
-						</div>
-					)}
 					<div className="space-y-2 flex justify-between">
 						<div>
 							<Label htmlFor="avatar">Avatar</Label>

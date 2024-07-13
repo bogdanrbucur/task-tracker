@@ -101,11 +101,13 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Forgot password link in the login page with email input
   - [x] [feat] Server action to create token and send email
   - [x] [feat] Password reset email
-  - [ ] [feat] User creation automatic email with page to set password
+  - [x] [feat] User creation automatic email with page to set password
   - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Notify the admin?
+  - [ ] [feat] Show the user in yellow if the user has no password
   - [ ] [feat] Sonner toast notification that email is sent
 - [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon
+- [ ] [feat] Greeting should only say good morning after 5 AM
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages

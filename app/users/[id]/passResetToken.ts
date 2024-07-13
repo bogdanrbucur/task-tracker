@@ -1,6 +1,7 @@
 // server function to create a password reset token and email the user a link to reset their password
 "use server";
 
+import generatePassChangeToken from "@/app/_auth/actions/generatePassChangeToken";
 import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
@@ -31,21 +32,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 		if (!user) throw new Error("Incorrect email or password.");
 
 		// Create a unique random password reset token
-		const secret = generateRandomString(10, alphabet("a-z", "0-9"));
-		const encodedText = new TextEncoder().encode(user.email + Date.now().toString() + secret);
-		const shaArrayBuffer = await sha256(encodedText);
-		const token = encodeHex(shaArrayBuffer);
-
-		console.log(token);
-
-		// Write the token to the database and give it a 15 min expiry
-		const newToken = await prisma.passwordResetToken.create({
-			data: {
-				userId: user.id,
-				token,
-				expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-			},
-		});
+		const token = await generatePassChangeToken(user);
 
 		// Send the user an email with a link to reset their password
 		const emailStatus = await sendEmail({

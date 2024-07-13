@@ -18,7 +18,6 @@ export type NewUser = {
 	position: string;
 	departmentId: string;
 	managerId: string | null;
-	password: string | null;
 	isAdmin?: string | null;
 	avatar: Avatar | null;
 	avatarPath?: string | null;
@@ -50,8 +49,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		departmentId: z.string({ message: "Invalid department." }).max(3, { message: "Invalid department." }).min(1, { message: "Invalid department." }),
 		managerId: z.string().nullable(),
 		editor: z.string().length(25, { message: "Invalid editor." }),
-		password: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
-		confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }).nullable(),
 		isAdmin: z.string().nullable(),
 		avatar: Avatar.nullable(),
 		avatarPath: z.string().optional(),
@@ -70,8 +67,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			departmentId: formData.get("departmentId") as string,
 			managerId: formData.get("managerId") as string,
 			editor: formData.get("editor") as string,
-			password: formData.get("password") as string,
-			confirmPassword: formData.get("confirmPassword") as string,
 			isAdmin: formData.get("isAdmin"),
 			avatar: formData.get("avatar") as File | null,
 			// avatarBuffer: undefined as Buffer | undefined,
@@ -87,15 +82,12 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			data.isAdmin = user.isAdmin ? "on" : null;
 		}
 
-		if (data.password !== data.confirmPassword) {
-			return { message: "Passwords do not match." };
-		}
-
 		// Check the size of the avatar and reject if it's too large
 		if (data.avatar && data.avatar.size > 4194304) {
 			return { message: "Avatar file is too large. Maximum size is 4 MB." };
 		}
 
+		// TODO save it after the user is created, so that we can use the user ID
 		// Save the avatar locally
 		if (data.avatar && data.avatar?.size > 0) {
 			const avatar = formData.get("avatar") as File;
@@ -123,13 +115,17 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.editor);
 
+		// TODO clean-up... this is a mess
 		// If a user ID is provided, update the existing user
-		if (data.id) newUser = await updateUser(data as UpdateUser, editingUser!);
+		if (data.id) {
+			newUser = await updateUser(data as UpdateUser, editingUser!);
+		}
 		// If no user ID is provided, create a new user
-		else newUser = await createUser(data as NewUser, editingUser);
-		// console.log(newUser);
-
-		// Redirect to the task page, either for the updated task or the new task
+		else {
+			const { newUser: tempUsr, emailStatus, error } = await createUser(data as NewUser, editingUser);
+			if (error instanceof Error) throw new Error(error.message);
+			newUser = tempUsr ?? null;
+		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

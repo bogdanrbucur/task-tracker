@@ -18,7 +18,7 @@ export default function ForgotPasswordForm() {
 			<Card className="w-[355px]">
 				<CardHeader>
 					<CardTitle>Forgot password</CardTitle>
-					<CardDescription>Enter your login email address. If it's registered in the app, you will receive a password reset email.</CardDescription>
+					<CardDescription>Enter your email address. If it's registered in the app, you will receive a password reset email.</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form action={formAction} className="flex flex-col gap-y-9">

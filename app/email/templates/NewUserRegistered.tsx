@@ -23,7 +23,7 @@ export const NewUserRegistration = ({ baseUrl, firstName, token }: PasswordReset
 							<Text className="text-black text-[14px] leading-[24px]">Welcome to Task Tracker! 🥳</Text>
 							<Text className="text-black text-[14px] leading-[24px]">A new account has been created for you with this email address.</Text>
 						</Section>
-						<Text>Click the link below to set your account password. The link is valid for 24 hours.</Text>
+						<Text>Click the link below to confirm your email and set your account password. The link is valid for 24 hours.</Text>
 						<Section className="text-center mt-[32px] mb-[32px]">
 							<Button
 								className="bg-[#000000] rounded text-white text-[14px] font-semibold no-underline text-center px-5 py-3"

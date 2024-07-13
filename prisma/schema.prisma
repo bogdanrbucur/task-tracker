@@ -69,7 +69,7 @@ model User {
   assignedTasks  Task[]      @relation("AssignedToUser")
   department     Department? @relation(fields: [departmentId], references: [id])
   departmentId   Int?
-  hashedPassword String
+  hashedPassword String?
   comments       Comment[]   @relation("UserComment")
   changes        Change[]    @relation("ChangeUser")
   managerId      String?
