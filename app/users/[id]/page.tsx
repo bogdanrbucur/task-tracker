@@ -17,7 +17,7 @@ import getUserDetails from "../getUserById";
 import ChangePasswordButton from "./ChangePasswordButton";
 import ToggleUserButton from "./ToggleUserButton";
 
-export const revalidate = 5;
+export const revalidate = 2;
 
 export default async function UserPage({ params }: { params: { id: string } }) {
 	// error handling if id is not a number

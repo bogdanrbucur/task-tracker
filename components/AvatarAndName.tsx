@@ -1,8 +1,8 @@
 "use client";
+import { CommentUser } from "@/app/(protected)/tasks/[id]/commentsSection";
 import { UserExtended, UserRestricted } from "@/app/users/getUserById";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { CommentUser } from "@/app/(protected)/tasks/[id]/CommentsSection";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -40,7 +40,7 @@ export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestric
 				<AvatarImage src={avatar} alt={initials} />
 				<AvatarFallback>{initials}</AvatarFallback>
 			</Avatar>
-			<small className="text-sm font-medium leading-none">
+			<small className={`text-sm font-medium leading-none ${!user.active && "text-red-600 dark:text-red-400"}`}>
 				{user.firstName} {user.lastName} <p className="text-xs text-muted-foreground">{user.position}</p>
 			</small>
 		</div>
@@ -61,7 +61,7 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 			</Avatar>
 			<div>
 				<h1 className="text-2xl font-bold">
-					{user.firstName} {user.lastName}
+					{user.firstName} {user.lastName} {user.active ? null : <span className="text-red-600 dark:text-red-400">(Inactive)</span>}
 				</h1>
 				<p className="text-muted-foreground">{user.position}</p>
 			</div>

@@ -88,8 +88,9 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Email notification to user and manager
   - [x] [feat] Sonner toast notification for email sending
 - [x] [feat] If saving new user as admin, highlight it will be admin
-- [ ] [feat] Ability to deactivate other admins
-- [ ] [feat] User name red if the user is inactive
+- [x] [feat] Ability to deactivate other admins
+- [x] [feat] User name red if the user is inactive
+- [ ] [feat] Populate user's avatar in the edit page, if available
 - [ ] [feat] User password reset
   - [ ] [feat] Token schema
   - [ ] [feat] Password reset button for admins

@@ -44,12 +44,12 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 			await prisma.avatar.deleteMany({
 				where: { userId: data.id },
 			});
+			// Check if the avatar file exists before deleting it
+			if (fs.existsSync(`avatars/${data.id}.jpg`)) {
+				fs.unlinkSync(`avatars/${data.id}.jpg`);
+			}
 			// Delete the user's avatar file
-			fs.unlinkSync(`avatars/${data.id}.jpg`);
 			console.log("User deactivated. Avatar deleted.");
-
-			// TODO Sonner
-			// ...
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
