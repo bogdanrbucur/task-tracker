@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Department } from "@prisma/client";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { UserExtended } from "../getUserById";
 import submitUser from "../new/submitUser";
@@ -34,6 +34,12 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [isAdminChecked, setIsAdminChecked] = useState<boolean>(false);
 	const editingSelf = editor === user?.id;
+
+	// Get the avatar file from the server
+	const avatar = user?.avatar ? `/avatars/${user.id}` : undefined;
+	useEffect(() => {
+		if (avatar) setImageUrl(avatar);
+	}, [avatar]);
 
 	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];

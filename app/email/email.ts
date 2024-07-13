@@ -7,6 +7,8 @@ import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
 import TaskCancelledEmail from "./templates/TaskCancelled";
+import PasswordResetEmail from "./templates/PasswordResetRequest";
+import NewUserRegistered from "./templates/NewUserRegistered";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,7 +19,7 @@ type Props = {
 	cc?: string[] | string;
 	emailType: EmailType;
 	comment?: string;
-	task: EmailTask;
+	task?: EmailTask;
 };
 
 export interface EmailTask extends Task {
@@ -40,7 +42,16 @@ export interface EmailResponse {
 // const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
 
-export type EmailType = "taskAssigned" | "taskDueSoon" | "taskOverdue" | "taskCompleted" | "taskReopened" | "commentMention" | "taskCancelled";
+export type EmailType =
+	| "taskAssigned"
+	| "taskDueSoon"
+	| "taskOverdue"
+	| "taskCompleted"
+	| "taskReopened"
+	| "commentMention"
+	| "taskCancelled"
+	| "passwordResetRequest"
+	| "newUserRegistration";
 
 // Resend email
 export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props): Promise<EmailResponse> {
@@ -51,15 +62,15 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	let subject = "";
 	switch (emailType) {
 		case "taskAssigned":
-			emailTemplate = NewTaskEmail({ baseUrl, task });
+			emailTemplate = NewTaskEmail({ baseUrl, task: task! });
 			subject = "New task assigned to you";
 			break;
 		case "taskDueSoon":
-			emailTemplate = TaskDueSoonEmail({ baseUrl, task });
+			emailTemplate = TaskDueSoonEmail({ baseUrl, task: task! });
 			subject = "Task due soon";
 			break;
 		case "taskOverdue":
-			emailTemplate = TaskOverdueEmail({ baseUrl, task });
+			emailTemplate = TaskOverdueEmail({ baseUrl, task: task! });
 			subject = "Task overdue";
 			break;
 		case "taskCompleted":
@@ -67,7 +78,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
 				baseUrl,
-				task,
+				task: task!,
 			});
 			subject = "Task completed - ready for review";
 			break;
@@ -87,7 +98,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				userLastName: userLastName!,
 				comment: comment!,
 				baseUrl,
-				task,
+				task: task!,
 			});
 			subject = "You were mentioned in a task comment";
 			break;
@@ -100,6 +111,22 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				task: task!,
 			});
 			subject = "Task cancelled";
+			break;
+		case "passwordResetRequest":
+			emailTemplate = PasswordResetEmail({
+				baseUrl,
+				firstName: userFirstName!,
+				token: comment!,
+			});
+			subject = "Password reset request";
+			break;
+		case "newUserRegistration":
+			emailTemplate = NewUserRegistered({
+				baseUrl,
+				firstName: userFirstName!,
+				token: comment!,
+			});
+			subject = "New account created";
 			break;
 		default:
 			null;

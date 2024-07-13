@@ -98,3 +98,10 @@ model Department {
   name  String @unique
   users User[]
 }
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  userId    String
+}

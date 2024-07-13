@@ -90,18 +90,27 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] If saving new user as admin, highlight it will be admin
 - [x] [feat] Ability to deactivate other admins
 - [x] [feat] User name red if the user is inactive
-- [ ] [feat] Populate user's avatar in the edit page, if available
+- [x] [feat] Populate user's avatar in the edit page, if available
 - [ ] [feat] User password reset
-  - [ ] [feat] Token schema
-  - [ ] [feat] Password reset button for admins
-  - [ ] [feat] Password reset action to generate token and send email
-  - [ ] [feat] Password reset page to validate token and set new password
-  - [ ] [feat] Password reset email
+  - [x] [feat] Token schema
+  - [x] [feat] Password reset button for admins
+  - [x] [feat] Password reset action to generate token and send email
+  - [x] [feat] Password reset page to validate token and set new password
+  - [x] [feat] Email template for password reset
+  - [x] [feat] Email template for new user created
+  - [x] [feat] Forgot password link in the login page with email input
+  - [x] [feat] Server action to create token and send email
+  - [x] [feat] Password reset email
   - [ ] [feat] User creation automatic email with page to set password
+  - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Notify the admin?
+  - [ ] [feat] Sonner toast notification that email is sent
 - [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages
 - [ ] [feat] Server-side logging
+- [ ] [feat] Make all pages responsive
+- [ ] [feat] Restructure the files/folders
+- [ ] [feat] Enforce password complexity
 - [ ] [feat] Automatic database backups

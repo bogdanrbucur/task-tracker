@@ -16,6 +16,7 @@ import { notFound } from "next/navigation";
 import getUserDetails from "../getUserById";
 import ChangePasswordButton from "./ChangePasswordButton";
 import ToggleUserButton from "./ToggleUserButton";
+import ResetPasswordButton from "./ResetPasswordButton";
 
 export const revalidate = 2;
 
@@ -53,6 +54,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	const subordinatedNumber = activeSubordinates.length;
 	const canEdit = userPermissions?.isAdmin || userDetails.id === user?.id;
 
+	// TODO toast notification for password reset email sent
+
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
 			<CardHeader>
@@ -68,6 +71,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 							</Button>
 						)}
 						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
+						{userPermissions?.isAdmin && user.id !== userDetails.id && <ResetPasswordButton userId={userDetails.id} />}
 						{/* Only admins can deactivate users but cannot deactivate themselves */}
 						{userPermissions.isAdmin && user.id !== userDetails.id && (
 							<ToggleUserButton userId={userDetails.id} active={userDetails.active} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />

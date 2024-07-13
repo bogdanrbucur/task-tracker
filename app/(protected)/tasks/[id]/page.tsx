@@ -18,11 +18,11 @@ import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CancelTaskButton } from "./CancelTaskButton";
 import { CloseTaskButton } from "./CloseTaskButton";
 import CommentsSection from "./CommentsSection";
 import { CompleteTaskButton } from "./CompleteTaskButton";
 import { ReopenTaskButton } from "./ReopenTaskButton";
-import { CancelTaskButton } from "./CancelTaskButton";
 
 interface Props {
 	params: { id: string };

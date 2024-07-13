@@ -1,22 +1,20 @@
-// server function to add new task
+// server function to create a password reset token and email the user a link to reset their password
 "use server";
 
+import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { Argon2id } from "oslo/password";
+import { alphabet, generateRandomString, sha256 } from "oslo/crypto";
+import { encodeHex } from "oslo/encoding";
 import { z } from "zod";
 
-export default async function changeUserPassword(prevState: any, formData: FormData) {
+export default async function passResetToken(prevState: any, formData: FormData) {
 	const rawFormData = Object.fromEntries(formData.entries());
 	console.log(rawFormData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		id: z.string().length(25, { message: "Invalid user ID." }),
-		oldPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }),
-		newPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }),
-		confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }),
 	});
 
 	try {
@@ -24,9 +22,6 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 		// If validation fails, an error will be thrown and caught in the catch block
 		const data = schema.parse({
 			id: formData.get("id") as string,
-			oldPassword: formData.get("oldPassword") as string,
-			newPassword: formData.get("newPassword") as string,
-			confirmPassword: formData.get("confirmPassword") as string,
 		});
 
 		// Find the user with the given email in the database
@@ -35,24 +30,33 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 		});
 		if (!user) throw new Error("Incorrect email or password.");
 
-		// Verify the password using Argon2id
-		const validPassword = await new Argon2id().verify(user.hashedPassword, data.oldPassword);
-		if (!validPassword) {
-			return { message: "Incorrect password." };
-		}
+		// Create a unique random password reset token
+		const secret = generateRandomString(10, alphabet("a-z", "0-9"));
+		const encodedText = new TextEncoder().encode(user.email + Date.now().toString() + secret);
+		const shaArrayBuffer = await sha256(encodedText);
+		const token = encodeHex(shaArrayBuffer);
 
-		if (data.newPassword !== data.confirmPassword) {
-			return { message: "Passwords do not match." };
-		}
+		console.log(token);
 
-		// TODO add a salt to the password hash
-		const hashedPassword = await new Argon2id().hash(data.newPassword);
-		const updatedUser = await prisma.user.update({
-			where: { id: data.id },
+		// Write the token to the database and give it a 15 min expiry
+		const newToken = await prisma.passwordResetToken.create({
 			data: {
-				hashedPassword,
+				userId: user.id,
+				token,
+				expiresAt: new Date(Date.now() + 15 * 60 * 1000),
 			},
 		});
+
+		// Send the user an email with a link to reset their password
+		const emailStatus = await sendEmail({
+			recipients: user.email,
+			userFirstName: user.firstName,
+			emailType: "passwordResetRequest",
+			comment: token,
+		});
+
+		// TODO Sonner...
+
 		return { dialogOpen: false };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
