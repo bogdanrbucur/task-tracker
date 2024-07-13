@@ -75,11 +75,18 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [fix] Saving user errors
 - [x] [feat] User edit avatar change in real-time
 - [x] [fix] Fix user Edit button access
-- [ ] [feat] Add Sonner toast notifications for changes and sent emails
+- [x] [feat] Add Sonner toast notifications for changes and sent emails
   - [x] [feat] For new task email sent
   - [x] [feat] For task modified, if email sent
   - [x] [feat] For task completed, if email sent
-  - [ ] [feat] For task re-opened, if email sent
+  - [x] [feat] For task re-opened, if email sent
+- [ ] [feat] Task cancellation
+  - [ ] [feat] Button in the task view page
+  - [ ] [feat] Pop-up with mandatory comment
+  - [ ] [feat] Task close action
+  - [ ] [feat] Task history entry
+  - [ ] [feat] Email notification to user and manager
+  - [ ] [feat] Sonner toast notification for email sending
 - [ ] [feat] If saving new user as admin, pop-up to confirm the action
 - [ ] [feat] Ability to deactivate other admins
 - [ ] [feat] User name red if the user is inactive
@@ -93,5 +100,4 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [ ] [feat] User password reset email
 - [ ] [feat] User password reset page
 - [ ] [feat] User creation automatic email with page to set password
-- [ ] [feat] Task cancellation
 - [ ] [feat] Automatic database backups
