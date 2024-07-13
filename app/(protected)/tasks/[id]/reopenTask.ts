@@ -6,7 +6,8 @@ import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
 import getUserDetails from "@/app/users/getUserById";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
-import { sendEmail } from "@/app/email/email";
+import { EmailResponse, sendEmail } from "@/app/email/email";
+import { redirect } from "next/navigation";
 
 export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -19,6 +20,7 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
+	let emailStatus: EmailResponse | undefined;
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
@@ -50,9 +52,15 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 			},
 			include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 		});
+		// Check if the task is overdue
+		await checkIfTaskOverdue(reopenedTask.id);
+
+		// Add the changes to the task history
+		const reopenComment = `Task reopened by ${editor.firstName} ${editor.lastName}${data.reopenComment ? `: ${data.reopenComment}` : "."}`;
+		const newChange = await recordTaskHistory(reopenedTask, editor, [reopenComment]);
 
 		// Email the user the task is assigned to
-		await sendEmail({
+		emailStatus = await sendEmail({
 			recipients: reopenedTask.assignedToUser ? reopenedTask.assignedToUser.email : "",
 			emailType: "taskReopened",
 			userFirstName: editor.firstName,
@@ -61,13 +69,11 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 			task: reopenedTask,
 		});
 
-		// Check if the task is overdue
-		await checkIfTaskOverdue(reopenedTask.id);
-
-		const reopenComment = `Task reopened by ${editor.firstName} ${editor.lastName}${data.reopenComment ? `: ${data.reopenComment}` : "."}`;
-
-		// Add the changes to the task history
-		const newChange = await recordTaskHistory(reopenedTask, editor, [reopenComment]);
+		// If email wasn't sent
+		if (!emailStatus) console.log("Task reopened, but user not assigned, no email sent");
+		// If the email sent failed
+		else if (emailStatus && !emailStatus.success) console.log("Task reopened, email error");
+		else console.log("Task reopened, email sent");
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {
@@ -79,5 +85,5 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
-	revalidatePath(`/tasks/${formData.get("taskId")}`);
+	redirect(`/tasks/${formData.get("taskId")}${emailStatus && !emailStatus.success ? "?toastUser=fail" : emailStatus ? "?toastUser=success" : ""}`);
 }

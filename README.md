@@ -92,4 +92,6 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [ ] [feat] User password reset
 - [ ] [feat] User password reset email
 - [ ] [feat] User password reset page
+- [ ] [feat] User creation automatic email with page to set password
+- [ ] [feat] Task cancellation
 - [ ] [feat] Automatic database backups

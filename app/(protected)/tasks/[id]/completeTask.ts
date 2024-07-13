@@ -18,7 +18,6 @@ export default async function completeTask(prevState: any, formData: FormData) {
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
-	let success;
 	let emailStatus: EmailResponse | undefined;
 	try {
 		// Parse the form data using the schema
@@ -51,12 +50,9 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 		});
 
+		// Add the comment to the task history
 		const completeComment = `Task completed by ${editor.firstName} ${editor.lastName}${data.completeComment ? `: ${data.completeComment}` : "."}`;
-
-		// Add the changes to the task history
 		const newChange = await recordTaskHistory(completedTask, editor, [completeComment]);
-
-		if (completedTask) success = true;
 
 		// Only send the email to the manager, if there is a manager
 		if (completedTask.assignedToUser && completedTask.assignedToUser.manager) {
@@ -71,10 +67,10 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			});
 
 			// If email wasn't sent
-			if (!emailStatus) console.log("Task updated, but user not changed, no email sent");
+			if (!emailStatus) console.log("Task completed, but user not assigned, no email sent");
 			// If the email sent failed
-			else if (emailStatus && !emailStatus.success) console.log("Task assigned user changed, email error");
-			else console.log("Task assigned user changed, email sent");
+			else if (emailStatus && !emailStatus.success) console.log("Task completed, email error");
+			else console.log("Task completed, email sent");
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
