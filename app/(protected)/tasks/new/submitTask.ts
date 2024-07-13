@@ -1,12 +1,13 @@
 // server function to add new task
 "use server";
 
+import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/getUserById";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createTask } from "./createTask";
 import { updateTask } from "../[id]/updateTask";
+import { createTask } from "./createTask";
 
 export type NewTask = {
 	title: string;
@@ -33,6 +34,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 	});
 
 	let newTask: Task | null = null;
+	let emailStatus: EmailResponse | undefined;
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
@@ -49,9 +51,22 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		const editingUser = await getUserDetails(data.createdByUserId);
 
 		// If a task ID is provided, update the existing task
-		if (data.id) newTask = await updateTask(data as UpdateTask, editingUser!);
-		// If no task ID is provided, create a new task
-		else newTask = await createTask(data as NewTask, editingUser!);
+		if (data.id) {
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!);
+			newTask = updatedTask;
+			emailStatus = statusTempVar;
+		} else {
+			// If no task ID is provided, create a new task
+			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!);
+			newTask = createdTask;
+			emailStatus = statusTempVar;
+		}
+
+		// If email wasn't sent
+		if (!emailStatus) console.log("Task updated, but user not changed, no email sent");
+		// If the email sent failed
+		else if (emailStatus && !emailStatus.success) console.log("Task assigned user changed, email error");
+		else console.log("Task assigned user changed, email sent");
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {
@@ -60,10 +75,10 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			for (const subError of error.errors) {
 				return { message: subError.message };
 			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
 		}
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
-	redirect(newTask ? `/tasks/${String(newTask.id)}` : "");
+	console.log(emailStatus);
+	redirect(newTask ? `/tasks/${String(newTask.id)}${emailStatus && !emailStatus.success ? "?toastUser=fail" : emailStatus ? "?toastUser=success" : ""}` : "");
 }

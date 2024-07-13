@@ -24,8 +24,8 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 
 	console.log(`Task ${newTask.id} created successfully`);
 
-	// TODO: Send email notification to the assigned user
-	await sendEmail({
+	// Send email notification to the assigned user
+	const emailStatus = await sendEmail({
 		recipients: newTask.assignedToUser ? newTask.assignedToUser.email : "",
 		cc: newTask.assignedToUser && newTask.assignedToUser.manager ? newTask.assignedToUser.manager.email : "",
 		emailType: "taskAssigned",
@@ -34,5 +34,5 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 
 	// Record the task creation in the task history
 	const newChange = await recordTaskHistory(newTask, editingUser);
-	return newTask;
+	return { newTask, emailStatus };
 }

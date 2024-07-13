@@ -1,11 +1,11 @@
 "use server";
 
+import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/getUserById";
 import prisma from "@/prisma/client";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
-import { sendEmail } from "@/app/email/email";
 
 export default async function completeTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -18,6 +18,7 @@ export default async function completeTask(prevState: any, formData: FormData) {
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
+	let emailStatus: EmailResponse | undefined;
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
@@ -49,20 +50,28 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 		});
 
+		// Add the comment to the task history
 		const completeComment = `Task completed by ${editor.firstName} ${editor.lastName}${data.completeComment ? `: ${data.completeComment}` : "."}`;
-
-		// TODO Email the manager
-		await sendEmail({
-			recipients: completedTask.assignedToUser && completedTask.assignedToUser.manager ? completedTask.assignedToUser.manager.email : "",
-			emailType: "taskCompleted",
-			userFirstName: editor.firstName,
-			userLastName: editor.lastName,
-			comment: data.completeComment,
-			task: completedTask,
-		});
-
-		// Add the changes to the task history
 		const newChange = await recordTaskHistory(completedTask, editor, [completeComment]);
+
+		// Only send the email to the manager, if there is a manager
+		if (completedTask.assignedToUser && completedTask.assignedToUser.manager) {
+			// Email the manager
+			emailStatus = await sendEmail({
+				recipients: completedTask.assignedToUser.manager.email,
+				emailType: "taskCompleted",
+				userFirstName: editor.firstName,
+				userLastName: editor.lastName,
+				comment: data.completeComment,
+				task: completedTask,
+			});
+
+			// If email wasn't sent
+			if (!emailStatus) console.log("Task completed, but user not assigned, no email sent");
+			// If the email sent failed
+			else if (emailStatus && !emailStatus.success) console.log("Task completed, email error");
+			else console.log("Task completed, email sent");
+		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {
@@ -74,5 +83,6 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
-	revalidatePath(`/tasks/${formData.get("taskId")}`);
+	console.log(emailStatus);
+	redirect(`/tasks/${formData.get("taskId")}${emailStatus && !emailStatus.success ? "?toastManager=fail" : emailStatus ? "?toastManager=success" : ""}`);
 }

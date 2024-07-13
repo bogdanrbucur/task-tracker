@@ -13,7 +13,7 @@ import { useFormState } from "react-dom";
 import { Toaster, toast } from "sonner";
 import PostCommentButton from "./PostCommentButton";
 import addComment from "./addComment";
-import CommentSkeleton from "./commentSkeleton";
+import CommentSkeleton from "./CommentSkeleton";
 
 const initialState = {
 	message: null,
@@ -37,7 +37,7 @@ type CommentDetails = {
 };
 
 const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string; taskId: number; comments: CommentDetails[]; users: UserExtended[] }) => {
-	const [state, formAction] = useFormState(addComment, initialState);
+	const [formState, formAction] = useFormState(addComment, initialState);
 
 	// Form reference to reset the form after submission
 	const formRef = useRef<HTMLFormElement>(null);
@@ -120,15 +120,15 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 
 	// Watch for the success state to show a toast notification
 	useEffect(() => {
-		if (state?.success && state?.emailSent) {
+		if (formState?.success && formState?.emailSent) {
 			// Reset the form
 			formRef.current?.reset();
 			toast.success(`Email sent to mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
 		}
-		if (state?.message && !state?.emailSent) {
+		if (formState?.message && !formState?.emailSent) {
 			toast.error("Failed to send email.");
 		}
-	}, [state]);
+	}, [formState]);
 
 	return (
 		<div className="space-y-6">
@@ -162,10 +162,10 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 				{userId && (
 					<div className="flex flex-col gap-5">
 						{/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight">Add comment</h4> */}
-						{state?.message && (
+						{formState?.message && (
 							<Alert variant="destructive">
 								<AlertCircle className="h-4 w-4" />
-								<AlertTitle>{state?.message}</AlertTitle>
+								<AlertTitle>{formState?.message}</AlertTitle>
 							</Alert>
 						)}
 						<Textarea name="comment" placeholder="Add a comment..." value={inputValue} onChange={handleInputChange} ref={textInputRef} />

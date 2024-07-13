@@ -8,6 +8,7 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getPermissions } from "@/app/_auth/actions/get-permissions";
 import { UserExtended, prismaExtendedUserSelection } from "@/app/users/getUserById";
 import { UserAvatarNameNormal } from "@/components/AvatarAndName";
+import ClientToast from "@/components/ClientToast";
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,11 +19,20 @@ import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CloseTaskButton } from "./CloseTaskButton";
+import CommentsSection from "./CommentsSection";
 import { CompleteTaskButton } from "./CompleteTaskButton";
 import { ReopenTaskButton } from "./ReopenTaskButton";
-import CommentsSection from "./commentsSection";
 
-export default async function TaskDetailsPage({ params }: { params: { id: string } }) {
+interface Props {
+	params: { id: string };
+	// toast indicates if a toast message should be displayed when loading the page
+	searchParams: {
+		toastUser?: "success" | "fail";
+		toastManager?: "success" | "fail";
+	};
+}
+
+export default async function TaskDetailsPage({ params, searchParams }: Props) {
 	// error handling if id is not a number
 	if (!Number(params.id)) return notFound();
 
@@ -135,6 +145,22 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 					</Card>
 				</div>
 			</div>
+			<ClientToast
+				status={searchParams.toastUser}
+				message={
+					searchParams.toastUser === "success" ? "Email sent to assigned user." : searchParams.toastUser === "fail" ? "Failed to send email to assigned user." : undefined
+				}
+			/>
+			<ClientToast
+				status={searchParams.toastManager}
+				message={
+					searchParams.toastManager === "success"
+						? "Email sent to the manager."
+						: searchParams.toastManager === "fail"
+						? "Failed to send email to the manager."
+						: undefined
+				}
+			/>
 		</Card>
 	);
 }

@@ -1,6 +1,6 @@
 // server function to add new comment
 "use server";
-import { sendEmail } from "@/app/email/email";
+import { EmailResponse, sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -15,8 +15,6 @@ export default async function addComment(prevState: any, formData: FormData) {
 	});
 
 	let success;
-	let emailSent;
-
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
@@ -63,7 +61,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 			const recipients = mentionedUsersExtended.map((user) => user.email);
 
 			// Email the users mentioned in the comment
-			const emailStatus: any = await sendEmail({
+			const emailStatus: EmailResponse = await sendEmail({
 				recipients,
 				cc: "",
 				userFirstName: user!.firstName,
@@ -74,17 +72,15 @@ export default async function addComment(prevState: any, formData: FormData) {
 			});
 
 			// If the email sent failed
-			if (emailStatus.hasOwnProperty("statusCode")) {
+			if (!emailStatus.success) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("Comment added, email error");
-				emailSent = false;
-				return { success, emailSent, message: emailStatus.message };
+				return { success, emailSent: emailStatus.success, message: emailStatus.error };
 				// Else it succeded
 			} else {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("Comment added, email sent");
-				emailSent = true;
-				return { success, emailSent };
+				return { success, emailSent: emailStatus.success };
 			}
 		}
 
