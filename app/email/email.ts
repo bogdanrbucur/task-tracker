@@ -6,6 +6,7 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
+import TaskCancelledEmail from "./templates/TaskCancelled";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -39,7 +40,7 @@ export interface EmailResponse {
 // const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
 
-export type EmailType = "taskAssigned" | "taskDueSoon" | "taskOverdue" | "taskCompleted" | "taskReopened" | "commentMention";
+export type EmailType = "taskAssigned" | "taskDueSoon" | "taskOverdue" | "taskCompleted" | "taskReopened" | "commentMention" | "taskCancelled";
 
 // Resend email
 export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props): Promise<EmailResponse> {
@@ -89,6 +90,16 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				task,
 			});
 			subject = "You were mentioned in a task comment";
+			break;
+		case "taskCancelled":
+			emailTemplate = TaskCancelledEmail({
+				userFirstName: userFirstName!,
+				userLastName: userLastName!,
+				comment: comment!,
+				baseUrl,
+				task: task!,
+			});
+			subject = "Task cancelled";
 			break;
 		default:
 			null;

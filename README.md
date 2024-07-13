@@ -80,13 +80,13 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] For task modified, if email sent
   - [x] [feat] For task completed, if email sent
   - [x] [feat] For task re-opened, if email sent
-- [ ] [feat] Task cancellation
-  - [ ] [feat] Button in the task view page
-  - [ ] [feat] Pop-up with mandatory comment
-  - [ ] [feat] Task close action
-  - [ ] [feat] Task history entry
-  - [ ] [feat] Email notification to user and manager
-  - [ ] [feat] Sonner toast notification for email sending
+- [x] [feat] Task cancellation
+  - [x] [feat] Button in the task view page
+  - [x] [feat] Pop-up with mandatory comment
+  - [x] [feat] Task close action
+  - [x] [feat] Task history entry
+  - [x] [feat] Email notification to user and manager
+  - [x] [feat] Sonner toast notification for email sending
 - [ ] [feat] If saving new user as admin, pop-up to confirm the action
 - [ ] [feat] Ability to deactivate other admins
 - [ ] [feat] User name red if the user is inactive

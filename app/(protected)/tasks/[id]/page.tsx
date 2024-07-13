@@ -22,6 +22,7 @@ import { CloseTaskButton } from "./CloseTaskButton";
 import CommentsSection from "./CommentsSection";
 import { CompleteTaskButton } from "./CompleteTaskButton";
 import { ReopenTaskButton } from "./ReopenTaskButton";
+import { CancelTaskButton } from "./CancelTaskButton";
 
 interface Props {
 	params: { id: string };
@@ -69,6 +70,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 	const canCompleteTask = userPermissions?.isAdmin || user?.id === task?.assignedToUser?.id;
 	const canCloseTask = user?.id === task.assignedToUser?.manager?.id || userPermissions?.isAdmin;
 	const canReopenTask = userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id;
+	const canCancelTask = userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id;
 
 	// Get all active users for the @ mentions
 	const users = await prisma.user.findMany({
@@ -99,6 +101,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								{canReopenTask && (task.statusId === 2 || task.statusId === 3) && <ReopenTaskButton userId={user?.id} taskId={task.id} />}
 								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
 								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
+								{canCancelTask && task.statusId !== 4 && <CancelTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
 						</div>
 						<div className="grid grid-cols-2 lg:grid-cols-4">
