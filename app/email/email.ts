@@ -40,7 +40,7 @@ export interface EmailResponse {
 }
 
 // const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-const baseUrl = "https://i.postimg.cc/c193VXkZ" || "http://localhost:3000";
+const baseUrl = "https://tetrabit.dev" || "http://localhost:3000";
 
 export type EmailType =
 	| "taskAssigned"
@@ -134,7 +134,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 
 	try {
 		const { data, error } = await resend.emails.send({
-			from: "Task Tracker <tasktracker@resend.dev>",
+			from: "Task Tracker <tasks@tasks.tetrabit.dev>",
 			to: recipients,
 			cc: cc,
 			subject,

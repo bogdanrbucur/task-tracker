@@ -23,6 +23,10 @@ A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and 
 
 Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 
+## `.env.local`
+
+`RESEND_API_KEY="re_123"`
+
 ## TODO
 
 - [x] Allow dashboard viewing without login but nothing else
