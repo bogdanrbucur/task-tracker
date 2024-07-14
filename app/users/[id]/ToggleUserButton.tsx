@@ -21,12 +21,12 @@ const initialState = {
 
 export default function ToggleUserButton({
 	userId,
-	active,
+	status,
 	tasksNumber,
 	subordinatesNumber,
 }: {
 	userId: string;
-	active: boolean;
+	status: string;
 	tasksNumber: number;
 	subordinatesNumber: number;
 }) {
@@ -49,8 +49,8 @@ export default function ToggleUserButton({
 		<>
 			<form onSubmit={handleSubmit}>
 				<Button size="sm" className="gap-1">
-					{active ? "Deactivate" : "Activate"}
-					{active ? <UserRoundX size="18" /> : <UserRoundCheck size="18" />}
+					{status === "active" ? "Deactivate" : "Activate"}
+					{status === "active" ? <UserRoundX size="18" /> : <UserRoundCheck size="18" />}
 				</Button>
 			</form>
 			{dialogOpen && (

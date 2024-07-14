@@ -24,7 +24,7 @@ export async function userTasks(userDetails: UserExtended) {
 export function getTeamTasks(userDetails: UserExtended, allTasks: TaskExtended[]) {
 	let teamTasks;
 
-	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.active);
+	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	// If the user has active subordinates, get the tasks assigned to them
 	if (activeSubordinates.length > 0) {
 		const subordinatesIds = activeSubordinates.map((subordinate) => subordinate.id);

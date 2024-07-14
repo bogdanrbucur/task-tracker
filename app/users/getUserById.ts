@@ -15,6 +15,7 @@ export type UserRestricted = {
 	department: Department;
 	email: string;
 	active: boolean;
+	status: string;
 	avatar?: Avatar;
 };
 
@@ -29,6 +30,7 @@ export type UserExtended = {
 	assignedTasks: Task[];
 	manager?: UserRestricted | null;
 	active: boolean;
+	status: string;
 	isAdmin: boolean;
 	avatar?: Avatar;
 };
@@ -42,6 +44,7 @@ export const prismaRestrictedUserSelection = {
 	email: true,
 	avatar: true,
 	active: true,
+	status: true,
 };
 
 export const prismaExtendedUserSelection = {
@@ -55,6 +58,7 @@ export const prismaExtendedUserSelection = {
 	assignedTasks: true,
 	manager: { select: prismaRestrictedUserSelection },
 	active: true,
+	status: true,
 	isAdmin: true,
 	avatar: true,
 };

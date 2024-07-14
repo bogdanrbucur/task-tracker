@@ -30,7 +30,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 		if (!user) throw new Error("Incorrect email or password.");
 
 		// Verify the password using Argon2id
-		const validPassword = await new Argon2id().verify(user.hashedPassword, data.password);
+		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.password);
 		if (!validPassword) throw new Error("Incorrect email or password.");
 
 		// Create a new session for the user. Lucia handles adding it to the database

@@ -13,14 +13,14 @@ export const getPermissions = cache(async (userId: string | undefined): Promise<
 		return { isAdmin: false, isManager: false };
 	}
 
-	const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true, subordinates: { select: { id: true, active: true } } } });
+	const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true, subordinates: { select: { id: true, status: true } } } });
 	// Get all the permissions from the UserPermissions interface and build the response object
 	if (!user) {
 		return { isAdmin: false, isManager: false };
 	}
 
 	let subordinates = user?.subordinates;
-	subordinates = subordinates.filter((s) => s.active);
+	subordinates = subordinates.filter((s) => s.status === "active");
 
 	return { isAdmin: user?.isAdmin ? user?.isAdmin : false, isManager: user?.subordinates.length > 0 ? true : false };
 });

@@ -102,8 +102,12 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Server action to create token and send email
   - [x] [feat] Password reset email
   - [x] [feat] User creation automatic email with page to set password
+  - [ ] [feat] Update user schema to include status active, inactive and unverified and remove status
+  - [ ] [feat] Show the user status in the user view page
+  - [ ] [feat] Give admin the ability to confirm password themselves
+  - [ ] [feat] Give admin the ability to resend welcome email
+  - [ ] [feat] Give admin the ability delete unverified users
   - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Notify the admin?
-  - [ ] [feat] Show the user in yellow if the user has no password
   - [ ] [feat] Sonner toast notification that email is sent
 - [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon

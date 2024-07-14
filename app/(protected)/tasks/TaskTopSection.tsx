@@ -14,7 +14,7 @@ const TaskTopSection = async () => {
 	const canCreateTask = userPermissions?.isAdmin || userPermissions?.isManager;
 	let allUsers = await getUsers();
 	// Filter out inactive users
-	allUsers = allUsers.filter((u) => u.active);
+	allUsers = allUsers.filter((u) => u.status === "active");
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 py-1 md:py-3 ">

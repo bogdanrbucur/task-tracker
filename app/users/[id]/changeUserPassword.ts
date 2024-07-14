@@ -36,7 +36,7 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 		if (!user) throw new Error("Incorrect email or password.");
 
 		// Verify the password using Argon2id
-		const validPassword = await new Argon2id().verify(user.hashedPassword, data.oldPassword);
+		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.oldPassword);
 		if (!validPassword) {
 			return { message: "Incorrect password." };
 		}

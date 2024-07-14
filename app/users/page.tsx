@@ -20,9 +20,19 @@ export default async function UsersPage({ searchParams }: Props) {
 	// Only admins can see all users
 	if (!userPermissions?.isAdmin) return notFound();
 
-	const active = searchParams.active === "false" ? false : searchParams.active === "true" ? true : searchParams.active == undefined ? true : undefined;
+	// Status filtering - hide inactive users by default
+	let status = searchParams.status ? searchParams.status : ["active", "unverified"].join(",");
+	let statuses: string[] | undefined | string = undefined;
+	// If there are statuses selected, remove any leading/trailing whitespace and split the terms into an array
+	if (status) {
+		status = status.trim();
+		statuses = status.split(",");
+	}
+
+	// Sort order
 	const sortOrder = searchParams.sortOrder;
 
+	// Search terms
 	let searchTermsQuery = searchParams.search ? searchParams.search : undefined;
 	let searchTerms: string[] | undefined | string = undefined;
 	// If there are search terms, remove any leading/trailing whitespace and split the terms into an array
@@ -31,10 +41,13 @@ export default async function UsersPage({ searchParams }: Props) {
 		searchTerms = searchTermsQuery.split(" ");
 	}
 
+	console.log(statuses);
+
 	let where: Prisma.UserWhereInput | undefined = undefined;
 	// If there's no search terminology, just filter by status and user
-	if (active !== undefined && !searchTerms) {
-		where = { active: active === undefined ? true : active };
+	if (status !== undefined && !searchTerms) {
+		// If there are statuses selected, filter by them
+		where = { status: { in: statuses } };
 		// If there's a search term, search in firstName, lastName, department, and position
 	} else if (searchTerms) {
 		where = {

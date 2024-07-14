@@ -32,7 +32,7 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	const subordinates = thisUser?.subordinates;
 	let filteredUsers = allUsers!.filter((u) => userPermissions.isAdmin || u.id === thisUser?.id || subordinates?.some((s) => s!.id === u.id));
 	// Filter out inactive users
-	filteredUsers = filteredUsers.filter((u) => u.active);
+	filteredUsers = filteredUsers.filter((u) => u.status === "active");
 
 	return <TaskForm user={user!} users={filteredUsers} task={task} />;
 };

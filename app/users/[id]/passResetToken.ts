@@ -5,8 +5,6 @@ import generatePassChangeToken from "@/app/_auth/actions/generatePassChangeToken
 import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
-import { alphabet, generateRandomString, sha256 } from "oslo/crypto";
-import { encodeHex } from "oslo/encoding";
 import { z } from "zod";
 
 export default async function passResetToken(prevState: any, formData: FormData) {

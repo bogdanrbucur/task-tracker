@@ -17,6 +17,7 @@ import getUserDetails from "../getUserById";
 import ChangePasswordButton from "./ChangePasswordButton";
 import ToggleUserButton from "./ToggleUserButton";
 import ResetPasswordButton from "./ResetPasswordButton";
+import ResendWelcomeEmailButton from "./ResendWelcomeEmailButton";
 
 export const revalidate = 2;
 
@@ -34,6 +35,12 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	// Get the user details
 	const userDetails = await getUserDetails(params.id);
 
+	// Get the hashedPassword prop as well, to determine if the user has a password set
+	const userWithPassword = await prisma.user.findUnique({
+		where: { id: userDetails.id },
+		select: { hashedPassword: true, active: true },
+	});
+
 	// Get the status for each task
 	const statuses = await prisma.status.findMany();
 	userDetails.assignedTasks.forEach((task) => {
@@ -47,7 +54,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 		return 0;
 	});
 
-	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.active);
+	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	// Filter out the tasks with statusId 3 (closed) or 4 (cancelled)
 	userDetails.assignedTasks = userDetails.assignedTasks.filter((task) => task.statusId !== 3 && task.statusId !== 4);
 	const tasksNumber = userDetails.assignedTasks.length;
@@ -71,15 +78,20 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 							</Button>
 						)}
 						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
-						{userPermissions?.isAdmin && user.id !== userDetails.id && <ResetPasswordButton userId={userDetails.id} />}
+						{userPermissions?.isAdmin && user.id !== userDetails.id && userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
+						{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
 						{/* Only admins can deactivate users but cannot deactivate themselves */}
 						{userPermissions.isAdmin && user.id !== userDetails.id && (
-							<ToggleUserButton userId={userDetails.id} active={userDetails.active} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
+							<ToggleUserButton userId={userDetails.id} status={userDetails.status} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
 						)}
 					</div>
 				</div>
 				{/* TODO show if the user has confirmed their email or not and if the link expired */}
-				<div id="userStatus"></div>
+				{userDetails.status !== "active" && (
+					<div id="userStatus" className="text-red-600 dark:text-red-400">
+						{userDetails.status}
+					</div>
+				)}
 			</CardHeader>
 			<CardContent className="fade-in grid gap-6">
 				<div className="grid grid-cols-2 gap-4">

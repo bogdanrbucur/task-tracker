@@ -5,7 +5,7 @@ import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAn
 import { UserExtended } from "./getUserById";
 
 export interface UsersQuery {
-	active: string;
+	status: string;
 	orderBy: keyof UserExtended;
 	sortOrder: "asc" | "desc";
 	page: string;

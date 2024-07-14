@@ -29,7 +29,7 @@ export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestri
 		</div>
 	);
 };
-export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestricted | null }) => {
+export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestricted | null}) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 	// Get the avatar file from the server
@@ -40,7 +40,7 @@ export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestric
 				<AvatarImage src={avatar} alt={initials} />
 				<AvatarFallback>{initials}</AvatarFallback>
 			</Avatar>
-			<small className={`text-sm font-medium leading-none ${!user.active && "text-red-600 dark:text-red-400"}`}>
+			<small className={`text-sm font-medium leading-none`}>
 				{user.firstName} {user.lastName} <p className="text-xs text-muted-foreground">{user.position}</p>
 			</small>
 		</div>
@@ -61,7 +61,7 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 			</Avatar>
 			<div>
 				<h1 className="text-2xl font-bold">
-					{user.firstName} {user.lastName} {user.active ? null : <span className="text-red-600 dark:text-red-400">(Inactive)</span>}
+					{user.firstName} {user.lastName}
 				</h1>
 				<p className="text-muted-foreground">{user.position}</p>
 			</div>

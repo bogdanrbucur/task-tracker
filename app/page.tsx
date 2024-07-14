@@ -42,7 +42,7 @@ export default async function Home() {
 	userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);
 
-	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.active);
+	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	if (activeSubordinates.length > 0) hasSubordinates = true;
 
 	const teamTasks = getTeamTasks(userDetails, allTasks);

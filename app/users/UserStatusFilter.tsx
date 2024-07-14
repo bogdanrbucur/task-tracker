@@ -20,17 +20,24 @@ export default function UserStatusFilter() {
 	const searchParams = useSearchParams();
 	const [showActive, setShowActive] = useState<Checked>(true);
 	const [showInactive, setShowInactive] = useState<Checked>(false);
+	const [showUnverified, setShowUnverified] = useState<Checked>(true);
 
 	const statuses: any[] = [
 		{
 			label: "Active",
-			value: true,
+			value: "active",
 			state: showActive,
 			setter: setShowActive,
 		},
 		{
+			label: "Unverified",
+			value: "unverified",
+			state: showUnverified,
+			setter: setShowUnverified,
+		},
+		{
 			label: "Inactive",
-			value: false,
+			value: "inactive",
 			state: showInactive,
 			setter: setShowInactive,
 		},
@@ -49,7 +56,7 @@ export default function UserStatusFilter() {
 		if (selectedStatuses === "") setShowActive(true);
 
 		// Add the selected statuses to the URL
-		if (selectedStatuses !== "") params.append("active", selectedStatuses);
+		if (selectedStatuses !== "") params.append("status", selectedStatuses);
 
 		// Add the existing searchPramas to the URL
 		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
@@ -57,7 +64,7 @@ export default function UserStatusFilter() {
 
 		const query = selectedStatuses !== "" ? "?" + params.toString() : "";
 		router.push(`/users${query}`);
-	}, [showActive, showInactive]);
+	}, [showActive, showInactive, showUnverified]);
 
 	return (
 		<DropdownMenu>
