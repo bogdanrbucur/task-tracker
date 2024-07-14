@@ -31,7 +31,7 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 
 		const token = await generatePassChangeToken(newUser, 2880);
 
-		// Send the user an email with a link to set their password
+		// Send the user a welcome email with a link to set their password
 		const emailStatus = await sendEmail({
 			recipients: newUser.email,
 			userFirstName: newUser.firstName,

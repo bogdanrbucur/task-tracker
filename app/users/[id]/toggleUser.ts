@@ -25,7 +25,7 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
 			where: { id: data.id },
-			select: { id: true, status: true, subordinates: true, assignedTasks: true },
+			select: { id: true, status: true, subordinates: true, assignedTasks: true, hashedPassword: true },
 		});
 		if (!user) throw new Error("User not found.");
 		if (user.subordinates.length > 0) throw new Error("User has subordinates.");
@@ -34,7 +34,7 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		const updatedUser = await prisma.user.update({
 			where: { id: data.id },
 			data: {
-				status: user.status === "inactive" ? "active" : "inactive",
+				status: user.status === "inactive" && user.hashedPassword ? "active" : user.status === "inactive" && !user.hashedPassword ? "unverified" : "inactive",
 			},
 		});
 		if (updatedUser.status === "active") {

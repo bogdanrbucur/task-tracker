@@ -8,8 +8,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export default async function passResetToken(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log(rawFormData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -29,20 +29,44 @@ export default async function passResetToken(prevState: any, formData: FormData)
 		});
 		if (!user) throw new Error("Incorrect email or password.");
 
-		// Create a unique random password reset token
-		const token = await generatePassChangeToken(user);
+		// If the user is already active, send a normal password reset email
+		if (user.status === "active") {
+			console.log("User is active, so sending a normal password reset email");
+			// Create a unique random password reset token with default validity
+			const token = await generatePassChangeToken(user);
+			// Send the user an email with a link to reset their password
+			const emailStatus = await sendEmail({
+				recipients: user.email,
+				userFirstName: user.firstName,
+				emailType: "passwordResetRequest",
+				comment: token,
+			});
 
-		// Send the user an email with a link to reset their password
-		const emailStatus = await sendEmail({
-			recipients: user.email,
-			userFirstName: user.firstName,
-			emailType: "passwordResetRequest",
-			comment: token,
-		});
+			// TODO Sonner...
+		} else if (user.status === "unverified") {
+			console.log("User is inactive, so sending a welcome email with a password set link");
+			// Create a unique random password reset token with 48 hours validity
+			const token = await generatePassChangeToken(user, 2880);
+			// Send the user a welcome email with a link to set their password
+			const emailStatus = await sendEmail({
+				recipients: user.email,
+				userFirstName: user.firstName,
+				emailType: "newUserRegistration",
+				comment: token,
+			});
 
-		// TODO Sonner...
+			// Update the lastWelcomeEmailSent of the user
+			await prisma.user.update({
+				where: { id: user.id },
+				data: {
+					lastWelcomeEmailSent: new Date(),
+				},
+			});
 
-		return { dialogOpen: false };
+			// TODO Sonner...
+		}
+
+		// return { dialogOpen: false };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

@@ -58,26 +58,26 @@ model Comment {
 }
 
 model User {
-  id             String      @id @default(cuid())
-  firstName      String
-  lastName       String
-  position       String
-  email          String      @unique
-  sessions       Session[]
-  isAdmin        Boolean?    @default(false)
-  createdTasks   Task[]      @relation("CreatedByUser")
-  assignedTasks  Task[]      @relation("AssignedToUser")
-  department     Department? @relation(fields: [departmentId], references: [id])
-  departmentId   Int?
-  hashedPassword String?
-  comments       Comment[]   @relation("UserComment")
-  changes        Change[]    @relation("ChangeUser")
-  managerId      String?
-  manager        User?       @relation("ManagerToUser", fields: [managerId], references: [id])
-  subordinates   User[]      @relation("ManagerToUser")
-  active         Boolean     @default(true)
-  avatar         Avatar?
-  status         String      @default("unconfirmed") // unconfrimed, confirmed, inactive
+  id                   String      @id @default(cuid())
+  firstName            String
+  lastName             String
+  position             String
+  email                String      @unique
+  sessions             Session[]
+  isAdmin              Boolean?    @default(false)
+  createdTasks         Task[]      @relation("CreatedByUser")
+  assignedTasks        Task[]      @relation("AssignedToUser")
+  department           Department? @relation(fields: [departmentId], references: [id])
+  departmentId         Int?
+  hashedPassword       String?
+  comments             Comment[]   @relation("UserComment")
+  changes              Change[]    @relation("ChangeUser")
+  managerId            String?
+  manager              User?       @relation("ManagerToUser", fields: [managerId], references: [id])
+  subordinates         User[]      @relation("ManagerToUser")
+  avatar               Avatar?
+  status               String      @default("unverified") // unverified, confirmed, inactive
+  lastWelcomeEmailSent DateTime?
 }
 
 model Avatar {

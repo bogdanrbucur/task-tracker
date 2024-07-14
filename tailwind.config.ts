@@ -95,7 +95,7 @@ const config = {
 		"bg-yellow-100",
 		"text-yellow-600",
 		"dark:bg-yellow-900/20",
-		"dark:text-yellow-400",
+		"text-yellow-600",
 		"min-w-24",
 		"min-w-28"
 	],

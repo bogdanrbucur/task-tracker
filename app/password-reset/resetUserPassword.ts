@@ -2,7 +2,6 @@
 "use server";
 
 import prisma from "@/prisma/client";
-import { redirect } from "next/navigation";
 import { Argon2id } from "oslo/password";
 import { z } from "zod";
 
@@ -42,6 +41,8 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 			where: { id: data.id },
 			data: {
 				hashedPassword,
+				// Set the user's status to active if it's unverified (first time password set)
+				status: user.status === "unverified" ? "active" : user.status,
 			},
 		});
 
@@ -61,6 +62,4 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 			return { success: false, message: (error as any).message };
 		}
 	}
-	// refresh the page
-	// redirect("/sign-in");
 }

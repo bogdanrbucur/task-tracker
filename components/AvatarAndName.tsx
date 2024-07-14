@@ -29,7 +29,7 @@ export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestri
 		</div>
 	);
 };
-export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestricted | null}) => {
+export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestricted | null }) => {
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 	// Get the avatar file from the server
@@ -41,7 +41,10 @@ export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestric
 				<AvatarFallback>{initials}</AvatarFallback>
 			</Avatar>
 			<small className={`text-sm font-medium leading-none`}>
-				{user.firstName} {user.lastName} <p className="text-xs text-muted-foreground">{user.position}</p>
+				<span className={user.status === "inactive" ? "text-red-600 dark:text-red-400" : user.status === "unverified" ? "text-yellow-600 dark:text-yellow-400" : ""}>
+					{user.firstName} {user.lastName}
+				</span>{" "}
+				<p className="text-xs text-muted-foreground">{user.position}</p>
 			</small>
 		</div>
 	);

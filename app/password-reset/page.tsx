@@ -18,11 +18,11 @@ export default async function PasswordResetPage({ searchParams }: { searchParams
 
 	// Get the user from the database
 	const user = await prisma.user.findUnique({
-		where: { id: dbToken.userId },
+		where: { id: dbToken.userId, status: { in: ["active", "unverified"] } },
 	});
 
 	// If the token is expired, delete it and return a 404
-	if (dbToken.expiresAt < new Date()) {
+	if (dbToken.expiresAt < new Date() || !user) {
 		await prisma.passwordResetToken.delete({
 			where: { id: dbToken.id },
 		});

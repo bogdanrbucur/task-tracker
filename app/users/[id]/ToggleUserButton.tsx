@@ -49,8 +49,8 @@ export default function ToggleUserButton({
 		<>
 			<form onSubmit={handleSubmit}>
 				<Button size="sm" className="gap-1">
-					{status === "active" ? "Deactivate" : "Activate"}
-					{status === "active" ? <UserRoundX size="18" /> : <UserRoundCheck size="18" />}
+					{status === "active" || status === "unverified" ? "Deactivate" : "Activate"}
+					{status === "active" || status === "unverified" ? <UserRoundX size="18" /> : <UserRoundCheck size="18" />}
 				</Button>
 			</form>
 			{dialogOpen && (

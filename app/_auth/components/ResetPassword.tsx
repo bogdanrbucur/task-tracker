@@ -27,7 +27,8 @@ export default function ResetPassword({ userId, firstName }: { userId: string; f
 					<>
 						<CardHeader>
 							<CardTitle>Set your new password</CardTitle>
-							<CardDescription>Hello {firstName}. Please enter your new password.</CardDescription>
+							<CardDescription>Hello {firstName} 👋</CardDescription>
+							<CardDescription>Please enter your new password.</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<form action={formAction} className="flex flex-col gap-y-9">

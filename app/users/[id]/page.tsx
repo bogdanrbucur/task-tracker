@@ -18,6 +18,7 @@ import ChangePasswordButton from "./ChangePasswordButton";
 import ToggleUserButton from "./ToggleUserButton";
 import ResetPasswordButton from "./ResetPasswordButton";
 import ResendWelcomeEmailButton from "./ResendWelcomeEmailButton";
+import { format } from "date-fns";
 
 export const revalidate = 2;
 
@@ -34,12 +35,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 	// Get the user details
 	const userDetails = await getUserDetails(params.id);
-
-	// Get the hashedPassword prop as well, to determine if the user has a password set
-	const userWithPassword = await prisma.user.findUnique({
-		where: { id: userDetails.id },
-		select: { hashedPassword: true, active: true },
-	});
 
 	// Get the status for each task
 	const statuses = await prisma.status.findMany();
@@ -88,8 +83,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 				</div>
 				{/* TODO show if the user has confirmed their email or not and if the link expired */}
 				{userDetails.status !== "active" && (
-					<div id="userStatus" className="text-red-600 dark:text-red-400">
-						{userDetails.status}
+					<div id="userStatus" className={userDetails.status === "inactive" ? "text-red-600 dark:text-red-400" : "text-yellow-600 dark:text-yellow-400"}>
+						{userDetails.status === "unverified" ? `Unverified: last welcome email sent ${format(userDetails.lastWelcomeEmailSent!, "dd MMM yyyy HH:mm")}` : "Inactive"}
 					</div>
 				)}
 			</CardHeader>

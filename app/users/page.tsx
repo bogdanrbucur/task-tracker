@@ -41,8 +41,6 @@ export default async function UsersPage({ searchParams }: Props) {
 		searchTerms = searchTermsQuery.split(" ");
 	}
 
-	console.log(statuses);
-
 	let where: Prisma.UserWhereInput | undefined = undefined;
 	// If there's no search terminology, just filter by status and user
 	if (status !== undefined && !searchTerms) {
