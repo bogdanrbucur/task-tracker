@@ -39,6 +39,14 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 			comment: token,
 		});
 
+		// Update the lastWelcomeEmailSent of the user
+		await prisma.user.update({
+			where: { id: newUser.id },
+			data: {
+				lastWelcomeEmailSent: new Date(),
+			},
+		});
+
 		// const session = await lucia.createSession(newUser.id, {});
 		// const sessionCookie = lucia.createSessionCookie(session.id);
 		// cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);

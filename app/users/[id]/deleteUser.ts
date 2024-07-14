@@ -2,11 +2,11 @@
 "use server";
 
 import prisma from "@/prisma/client";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import fs from "fs-extra";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 
-export default async function toggleUser(prevState: any, formData: FormData) {
+export default async function deleteUser(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// console.log(rawFormData);
 
@@ -30,17 +30,13 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		if (!user) throw new Error("User not found.");
 		if (user.subordinates.length > 0) throw new Error("User has subordinates.");
 		if (user.assignedTasks.length > 0) throw new Error("User has assigned tasks.");
+		if (user.hashedPassword) throw new Error("User was active at some point.");
+		if (user.status !== "inactive") throw new Error("User is not inactive.");
 
-		const updatedUser = await prisma.user.update({
+		const deletedUser = await prisma.user.delete({
 			where: { id: data.id },
-			data: {
-				status: user.status === "inactive" && user.hashedPassword ? "active" : user.status === "inactive" && !user.hashedPassword ? "unverified" : "inactive",
-				active: user.status === "inactive" && user.hashedPassword ? true : user.status === "inactive" && !user.hashedPassword ? false : false,
-			},
 		});
-		if (updatedUser.status === "active") {
-			console.log("User activated.");
-		} else {
+		if (deletedUser) {
 			// Delete the user's avatar
 			await prisma.avatar.deleteMany({
 				where: { userId: data.id },
@@ -50,7 +46,9 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 				fs.unlinkSync(`avatars/${data.id}.jpg`);
 			}
 			// Delete the user's avatar file
-			console.log("User deactivated. Avatar deleted.");
+			console.log("User deleted. Avatar deleted.");
+
+			// TODO return Sonner...
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
@@ -64,5 +62,5 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		}
 	}
 	// refresh the page
-	revalidatePath(`/users/${formData.get("id")}`);
+	redirect(`/users`);
 }

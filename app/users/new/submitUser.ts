@@ -111,7 +111,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			const avatarBuffer = Buffer.from(arrayBuffer);
 			// const extension = avatar.name.split(".").pop();
 			const fileName = `${newUser.id}.jpg`;
-			data.avatarPath = fileName;
+			// data.avatarPath = fileName;
 			try {
 				// First delete the existing avatar if it exists
 				// search for any file in the avatars folder that matches the id
@@ -125,7 +125,12 @@ export default async function submitUser(prevState: any, formData: FormData) {
 				console.log(`Avatar saved to ./avatars/${fileName}`);
 
 				// Update the user with the new avatar path
-				await updateUser(data as UpdateUser, editingUser!);
+				const newAvatar = await prisma.avatar.create({
+					data: {
+						userId: newUser.id,
+						path: fileName,
+					},
+				});
 			} catch (error) {
 				console.log(error);
 			}

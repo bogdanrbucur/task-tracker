@@ -12,6 +12,8 @@ interface Props {
 	searchParams: UsersQuery;
 }
 
+// TODO Sonner toast notification for user deleted
+
 export default async function UsersPage({ searchParams }: Props) {
 	// Check user permissions
 	const { user } = await getAuth();

@@ -3,12 +3,12 @@ import { getAuth } from "@/app/_auth/actions/get-auth";
 import NavBarWelcome from "@/components/NavBarWelcome";
 import { ModeToggle } from "@/components/themeToggle";
 import { Button, buttonVariants } from "@/components/ui/button";
+import Image from "next/image";
 import Link from "next/link";
 import { getPermissions } from "./_auth/actions/get-permissions";
 import { signOut } from "./_auth/actions/sign-out";
-import getUserDetails from "./users/getUserById";
-import Image from "next/image";
 import { AdminMenu } from "./AdminMenu";
+import getUserDetails from "./users/getUserById";
 
 const Navbar = async () => {
 	// Check user permissions
@@ -44,7 +44,7 @@ const Navbar = async () => {
 					</form>
 				)}
 				{!user && (
-					<Link href="/sign-in" className={buttonVariants({ variant: "outline" })}>
+					<Link href="/sign-in" className={buttonVariants({ variant: "outline", size: "sm" })}>
 						Sign In
 					</Link>
 				)}

@@ -17,6 +17,7 @@ import ToggleUserButton from "./ToggleUserButton";
 import ResetPasswordButton from "./ResetPasswordButton";
 import ResendWelcomeEmailButton from "./ResendWelcomeEmailButton";
 import { format } from "date-fns";
+import DeleteUserButton from "./DeleteUserButton";
 
 export const revalidate = 2;
 
@@ -32,6 +33,13 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 	// Get the user details
 	const userDetails = await getUserDetails(params.id);
+	if (!userDetails) return notFound();
+
+	// Get the user with the hashed password to determine if the user was ever active
+	const userWithPassword = await prisma.user.findUnique({
+		where: { id: userDetails.id },
+		select: { hashedPassword: true, status: true },
+	});
 
 	// Get the status for each task
 	const statuses = await prisma.status.findMany();
@@ -76,6 +84,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						{userPermissions.isAdmin && user.id !== userDetails.id && (
 							<ToggleUserButton userId={userDetails.id} status={userDetails.status} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
 						)}
+						{/* Can only delete a user if they were never active (don't have a password) and are inactive */}
+						{userPermissions.isAdmin && !userWithPassword?.hashedPassword && userWithPassword?.status === "inactive" && <DeleteUserButton userId={userDetails.id} />}
 					</div>
 				</div>
 				{/* TODO show if the user has confirmed their email or not and if the link expired */}

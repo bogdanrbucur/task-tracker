@@ -108,7 +108,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] User creation should set the status to unverified
   - [x] [feat] When user sets the password, set the status to active
   - [x] [feat] Give admin the ability to resend welcome email
-  - [ ] [feat] Give admin the ability delete unverified users
+  - [x] [feat] Give admin the ability delete unverified users
   - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Notify the admin?
   - [ ] [feat] Sonner toast notification that emails are sent
   - [ ] [feat] MAYBE. Give admin the ability to confirm password themselves
