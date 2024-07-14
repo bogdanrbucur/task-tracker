@@ -33,8 +33,7 @@ export async function POST(req: NextRequest) {
 		});
 	});
 
-	// TODO Check for due today tasks...
-	//
+	// Check for due today tasks...
 	const dueSoonTasks = await prisma.task.findMany({
 		where: {
 			AND: [{ statusId: 1 }, { completedOn: null }, { dueSoonReminderSent: false }, { dueDate: { gte: subDays(new Date(), dueSoonDays) } }],
@@ -59,6 +58,9 @@ export async function POST(req: NextRequest) {
 			data: { dueSoonReminderSent: true },
 		});
 	});
+
+	// TODO check for expired password reset tokens
+	//
 
 	return NextResponse.json({ ok: true });
 }
