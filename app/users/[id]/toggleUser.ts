@@ -35,6 +35,7 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 			where: { id: data.id },
 			data: {
 				status: user.status === "inactive" && user.hashedPassword ? "active" : user.status === "inactive" && !user.hashedPassword ? "unverified" : "inactive",
+				active: user.status === "inactive" && user.hashedPassword ? true : user.status === "inactive" && !user.hashedPassword ? false : false,
 			},
 		});
 		if (updatedUser.status === "active") {

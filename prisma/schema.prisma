@@ -78,6 +78,7 @@ model User {
   avatar               Avatar?
   status               String      @default("unverified") // unverified, confirmed, inactive
   lastWelcomeEmailSent DateTime?
+  active               Boolean     @default(true)
 }
 
 model Avatar {

@@ -43,6 +43,7 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 				hashedPassword,
 				// Set the user's status to active if it's unverified (first time password set)
 				status: user.status === "unverified" ? "active" : user.status,
+				active: true,
 			},
 		});
 

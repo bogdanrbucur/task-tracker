@@ -1,7 +1,5 @@
 /**
  * v0 by Vercel.
- * @see https://v0.dev/t/HlYD3A9Kfdx
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import { getAuth } from "@/app/_auth/actions/get-auth";
 import { getPermissions } from "@/app/_auth/actions/get-permissions";
@@ -31,7 +29,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	if (!user) return notFound();
 
 	const userPermissions = await getPermissions(user?.id);
-	// if (!userPermissions.isAdmin && params.id !== user?.id) return notFound();
 
 	// Get the user details
 	const userDetails = await getUserDetails(params.id);
