@@ -26,6 +26,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 ## `.env.local`
 
 `RESEND_API_KEY="re_123"`
+`BASE_URL="https://example.com"`
 
 ## TODO
 

@@ -6,8 +6,8 @@ const nextConfig = {
 	},
 	experimental: {
 		serverActions: {
-			allowedForwardedHosts: ['localhost:3000', '127.0.0.1:3000'],
-			allowedOrigins: ['tetrabit.dev']
+ 			allowedForwardedHosts: ['localhost:3000', '127.0.0.1:3000'],
+			allowedOrigins: ['tasks.tetrabit.dev']
 		},
 	}
 };

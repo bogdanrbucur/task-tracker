@@ -2,13 +2,13 @@ import { Task } from "@prisma/client";
 import { Resend } from "resend";
 import CommentMentionEmail from "./templates/CommentMention";
 import NewTaskEmail from "./templates/NewTaskAssigned";
+import NewUserRegistered from "./templates/NewUserRegistered";
+import PasswordResetEmail from "./templates/PasswordResetRequest";
+import TaskCancelledEmail from "./templates/TaskCancelled";
 import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
-import TaskCancelledEmail from "./templates/TaskCancelled";
-import PasswordResetEmail from "./templates/PasswordResetRequest";
-import NewUserRegistered from "./templates/NewUserRegistered";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -39,8 +39,7 @@ export interface EmailResponse {
 	error: string | null;
 }
 
-// const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-const baseUrl = "https://tetrabit.dev" || "http://localhost:3000";
+const baseUrl = process.env.BASE_URL!;
 
 export type EmailType =
 	| "taskAssigned"
