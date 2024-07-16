@@ -74,7 +74,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 
 	// Get all active users for the @ mentions
 	const users = await prisma.user.findMany({
-		where: { active: true },
+		where: { status: "active" },
 		select: prismaExtendedUserSelection,
 	});
 

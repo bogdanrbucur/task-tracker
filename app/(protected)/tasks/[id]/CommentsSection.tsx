@@ -1,5 +1,6 @@
 "use client";
 import useCommentsKeyboardPress from "@/app/_hooks/useCommentsKeyboardPress";
+import useCommentsMentionedUsers from "@/app/_hooks/useCommentsMentionedUsers";
 import useMentionsListPosition from "@/app/_hooks/useMentionsListPosition";
 import { UserExtended } from "@/app/users/getUserById";
 import { UserAvatarNameComment } from "@/components/AvatarAndName";
@@ -11,9 +12,9 @@ import { AlertCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import { Toaster, toast } from "sonner";
-import PostCommentButton from "./PostCommentButton";
 import addComment from "./addComment";
 import CommentSkeleton from "./CommentSkeleton";
+import PostCommentButton from "./PostCommentButton";
 
 const initialState = {
 	message: null,
@@ -98,25 +99,8 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 
 	// To determine the position of the mentionList based on the text cursor (caret position)
 	useMentionsListPosition(isMentioning, textInputRef, mentionsListRef, formRef);
-
-	// TODO move to a custom hook
-	// Hook to watch if the comment section contains a user mention to add/remove the user from the form payload
-	useEffect(() => {
-		// Check if the inptuValue contains a mention of a user, from all the users
-		const mentionedUsers = users.filter((user) => inputValue.includes(`@${user.firstName} ${user.lastName}`));
-
-		// Remove users which are not in mentionedUsers
-		const newMentionedUsersIds = mentionedUsersIds.filter((id) => mentionedUsers.map((user) => user.id).includes(id));
-		setMentionedUsersIds(newMentionedUsersIds);
-		const newMentionedUserNames = mentionedUserNames.filter((name) => mentionedUsers.map((user) => `${user.firstName} ${user.lastName}`).includes(name));
-		setMentionedUserNames(newMentionedUserNames);
-
-		// Fir each mentioned user, add their id to the arrays, if not already there
-		mentionedUsers.forEach((user) => {
-			if (!mentionedUsersIds.includes(user.id)) setMentionedUsersIds([...mentionedUsersIds, user.id]);
-			if (!mentionedUserNames.includes(`${user.firstName} ${user.lastName}`)) setMentionedUserNames([...mentionedUserNames, `${user.firstName} ${user.lastName}`]);
-		});
-	}, [inputValue]);
+	// Watch if the comment section contains a user mention to add/remove the user from the form payload
+	useCommentsMentionedUsers(users, inputValue, mentionedUsersIds, setMentionedUsersIds, mentionedUserNames, setMentionedUserNames);
 
 	// Watch for the success state to show a toast notification
 	useEffect(() => {
