@@ -114,13 +114,15 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] When user sets the password, set the status to active
   - [x] [feat] Give admin the ability to resend welcome email
   - [x] [feat] Give admin the ability delete unverified users
-  - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Notify the admin?
-  - [ ] [feat] Sonner toast notification that emails are sent
+  - [x] [feat] Sonner toast notification that emails are sent
+  - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Delete expired tokens
+  - [ ] [feat] Update the user schema to record the user who created the user
+  - [ ] [feat] In dailyTasks, check for users without password and notify the admin
   - [ ] [feat] MAYBE. Give admin the ability to confirm password themselves
 - [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon
 - [ ] [feat] Add a proper 404 page
-- [ ] [feat] Greeting should only say good morning after 5 AM
+- [x] [feat] Greeting should only say good morning after 5 AM
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages

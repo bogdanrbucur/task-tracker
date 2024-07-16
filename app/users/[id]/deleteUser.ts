@@ -48,7 +48,9 @@ export default async function deleteUser(prevState: any, formData: FormData) {
 			// Delete the user's avatar file
 			console.log("User deleted. Avatar deleted.");
 
-			// TODO return Sonner...
+			return { message: null, emailSent: "success" };
+		} else {
+			return { message: null, emailSent: "fail" };
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

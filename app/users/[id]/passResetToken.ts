@@ -42,7 +42,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 				comment: token,
 			});
 
-			return { emailSent: emailStatus.success, message: null };
+			return { emailSent: emailStatus.success ? "success" : "fail", message: null };
 		} else if (user.status === "unverified") {
 			console.log("User is inactive, so sending a welcome email with a password set link");
 			// Create a unique random password reset token with 48 hours validity
@@ -63,7 +63,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 				},
 			});
 
-			return { emailSent: emailStatus.success, message: null };
+			return { emailSent: emailStatus.success ? "success" : "fail", message: null };
 		}
 
 		// return { dialogOpen: false };

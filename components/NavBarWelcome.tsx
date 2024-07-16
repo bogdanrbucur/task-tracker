@@ -16,7 +16,7 @@ if (date.getMonth() === 11 && date.getDate() === 25) occasion = "christmas";
 // if it's new year
 else if (date.getMonth() === 0 && date.getDate() === 1) occasion = "new year";
 else {
-	if (hours < 11) {
+	if (hours > 5 && hours < 11) {
 		// if it's friday
 		if (day === 5) occasion = "friday morning";
 		else occasion = "morning";
@@ -24,10 +24,14 @@ else {
 		// if it's friday
 		if (day === 5) occasion = "friday afternoon";
 		else occasion = "afternoon";
-	} else {
+	} else if (hours >= 17 && hours < 17) {
 		// if it's friday
 		if (day === 5) occasion = "friday evening";
 		else occasion = "evening";
+	} else {
+		// if it's friday
+		if (day === 5) occasion = "friday night";
+		else occasion = "night";
 	}
 }
 switch (occasion) {
@@ -55,6 +59,12 @@ switch (occasion) {
 	case "evening":
 		timeOfDay = { greeting: "Good evening", emoji: "🌛" };
 		break;
+	case "night":
+		timeOfDay = { greeting: "Starry night", emoji: "✨" };
+		break;
+	case "friday night":
+		timeOfDay = { greeting: "Starry night", emoji: "✨" };
+		break;
 
 	default:
 		break;
@@ -63,8 +73,6 @@ switch (occasion) {
 const NavBarWelcome = ({ userProps }: { userProps: UserExtended | undefined }) => {
 	if (!userProps) return null;
 
-	// TODO click on the user's name to go to their profile
-	//
 	return (
 		<div className="text-sm md:text-base">
 			{timeOfDay.greeting}{" "}

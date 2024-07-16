@@ -17,8 +17,8 @@ export default function ResetPasswordButton({ userId }: { userId: string }) {
 	// Watch for the success state to show a toast notification
 	useEffect(() => {
 		console.log(formState);
-		if (!formState?.message && formState?.emailSent) toast.success("Password reset email sent to user.");
-		if (!formState?.emailSent) toast.error("Failed to send password reset email.");
+		if (!formState?.message && formState?.emailSent === "success") toast.success("Password reset email sent.");
+		if (formState?.emailSent === "fail") toast.error("Failed to send password reset email.");
 	}, [formState]);
 
 	return (

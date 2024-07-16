@@ -51,10 +51,6 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 		return updatedUser;
 	} catch (error) {
 		console.log(error);
-		// TODO: add error feedback yourself
-		// https://www.robinwieruch.de/next-forms/
-		// TODO: add error handling if user email is already taken
-		// The Road to Next
 	}
 	redirect("/");
 }

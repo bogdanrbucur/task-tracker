@@ -103,7 +103,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			newUser = tempUsr ?? null;
 		}
 
-		// TODO save it after the user is created, so that we can use the user ID
 		// Save the avatar locally
 		if (newUser && data.avatar && data.avatar?.size > 0) {
 			const avatar = formData.get("avatar") as File;
