@@ -96,7 +96,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Ability to deactivate other admins
 - [x] [feat] User name red if the user is inactive
 - [x] [feat] Populate user's avatar in the edit page, if available
-- [ ] [feat] User password reset
+- [x] [feat] User password reset
   - [x] [feat] Token schema
   - [x] [feat] Password reset button for admins
   - [x] [feat] Password reset action to generate token and send email
@@ -115,14 +115,14 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Give admin the ability to resend welcome email
   - [x] [feat] Give admin the ability delete unverified users
   - [x] [feat] Sonner toast notification that emails are sent
-  - [ ] [feat] In dailyTasks, check for expired tokens and users without password. Delete expired tokens
-  - [ ] [feat] Update the user schema to record the user who created the user
-  - [ ] [feat] In dailyTasks, check for users without password and notify the admin
+  - [x] [feat] In dailyTasks, check for expired tokens and users without password. Delete expired tokens
+  - [x] [feat] Update the user schema to record the user who created the user
+  - [x] [feat] In dailyTasks, check for users without password and notify the admin
   - [ ] [feat] MAYBE. Give admin the ability to confirm password themselves
+- [x] [feat] Greeting should only say good morning after 5 AM
 - [ ] [chore] Implement secret key for calling dailyTasks API
 - [ ] [feat] Add a favicon
 - [ ] [feat] Add a proper 404 page
-- [x] [feat] Greeting should only say good morning after 5 AM
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages

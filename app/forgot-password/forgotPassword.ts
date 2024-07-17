@@ -2,7 +2,7 @@
 "use server";
 
 import prisma from "@/prisma/client";
-import { redirect, RedirectType } from "next/navigation";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import generatePassChangeToken from "../_auth/actions/generatePassChangeToken";
 import { sendEmail } from "../email/email";
@@ -31,10 +31,10 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		const user = await prisma.user.findUnique({
 			where: { email: data.email, active: true },
 		});
+
 		if (!user) {
 			console.log(`No active user found with email address ${data.email}`);
-			redirect("/");
-			return;
+			return { success: true };
 		}
 
 		// Create a unique random password reset token
@@ -47,17 +47,21 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 			emailType: "passwordResetRequest",
 			comment: token,
 		});
+
+		console.log(`Password reset email sent to ${user.email}`);
+		return { success: true };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {
 			for (const subError of error.errors) {
+				console.log("Password reset request error:", subError.message);
 				return { success: false, message: subError.message };
 			}
 		} else {
 			// Handle other errors
+			console.log("Password reset request error:", error);
 			return { success: false, message: (error as any).message };
 		}
 	}
-	// refresh the page
 	redirect("/");
 }

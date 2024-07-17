@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 		console.log(`${tokens.length} expired password reset tokens found`);
 
 		for (const token of tokens) {
-			// await prisma.passwordResetToken.delete({ where: { id: token.id } });
+			await prisma.passwordResetToken.delete({ where: { id: token.id } });
 			usersWithExpiredTokens.add(token.userId);
 		}
 	} catch (err) {
@@ -91,9 +91,8 @@ export async function POST(req: NextRequest) {
 
 	console.log("Unverified users found: ", allUnverifiedUsers.length);
 	console.log("Unverified users with expired tokens found: ", unverifiedUsersWithExpiredTokens.length);
-	console.log(unverifiedUsersWithExpiredTokens);
 
-	// Email the user creator that their user has not verified their account
+	// Email the user creator that the user has not verified their account
 	for (const user of unverifiedUsersWithExpiredTokens) {
 		await sendEmail({
 			recipients: user.createdByUser.email,
