@@ -2,16 +2,14 @@
 "use server";
 
 import prisma from "@/prisma/client";
-import { redirect } from "next/navigation";
-import { alphabet, generateRandomString, sha256 } from "oslo/crypto";
-import { encodeHex } from "oslo/encoding";
+import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
-import { sendEmail } from "../email/email";
 import generatePassChangeToken from "../_auth/actions/generatePassChangeToken";
+import { sendEmail } from "../email/email";
 
 export default async function forgotUserPassword(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log(rawFormData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -27,11 +25,17 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 
 		if (!data.email) return;
 
+		console.log(`Password reset request received for email address ${data.email}`);
+
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
-			where: { email: data.email },
+			where: { email: data.email, active: true },
 		});
-		if (!user) return;
+		if (!user) {
+			console.log(`No active user found with email address ${data.email}`);
+			redirect("/");
+			return;
+		}
 
 		// Create a unique random password reset token
 		const token = await generatePassChangeToken(user);

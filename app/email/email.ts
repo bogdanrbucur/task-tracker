@@ -9,6 +9,7 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
+import NewUserNotConfirmedEmail from "./templates/NewUserNotConfirmed";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -50,7 +51,8 @@ export type EmailType =
 	| "commentMention"
 	| "taskCancelled"
 	| "passwordResetRequest"
-	| "newUserRegistration";
+	| "newUserRegistration"
+	| "newUserNotConfirmed";
 
 // Resend email
 export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props): Promise<EmailResponse> {
@@ -126,6 +128,15 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				token: comment!,
 			});
 			subject = "New account created";
+			break;
+		case "newUserNotConfirmed":
+			emailTemplate = NewUserNotConfirmedEmail({
+				baseUrl,
+				firstName: userFirstName!,
+				lastName: userLastName!,
+				userId: comment!,
+			});
+			subject = "Newly registered user not confirmed";
 			break;
 		default:
 			null;

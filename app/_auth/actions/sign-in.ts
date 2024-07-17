@@ -25,7 +25,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
-			where: { email: data.email },
+			where: { email: data.email, active: true },
 		});
 		if (!user) throw new Error("Incorrect email or password.");
 

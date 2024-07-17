@@ -74,24 +74,35 @@ export async function POST(req: NextRequest) {
 		console.log(`${tokens.length} expired password reset tokens found`);
 
 		for (const token of tokens) {
-			await prisma.passwordResetToken.delete({ where: { id: token.id } });
+			// await prisma.passwordResetToken.delete({ where: { id: token.id } });
 			usersWithExpiredTokens.add(token.userId);
 		}
 	} catch (err) {
 		console.log(err);
 	}
 
-	// TODO Filter users with expired tokens and keep only the unverified ones
+	// Filter users with expired tokens and keep only the unverified ones
 	const allUnverifiedUsers = await prisma.user.findMany({
 		where: { status: "unverified" },
+		include: { createdByUser: true },
 	});
 
-	const unverifiedUsersWithExpiredTokens = usersWithExpiredTokens.forEach((userId) => {
-		allUnverifiedUsers.find((user) => user.id === userId)?.id;
-	});
+	const unverifiedUsersWithExpiredTokens = allUnverifiedUsers.map((u) => (usersWithExpiredTokens.has(u.id) ? u : null)).filter((u) => u !== null);
 
-	// console.log("Unverified users found: ", allUnverifiedUsers.length);
-	// console.log("Unverified users with expired tokens found: ", unverifiedUsersWithExpiredTokens.length);
+	console.log("Unverified users found: ", allUnverifiedUsers.length);
+	console.log("Unverified users with expired tokens found: ", unverifiedUsersWithExpiredTokens.length);
+	console.log(unverifiedUsersWithExpiredTokens);
+
+	// Email the user creator that their user has not verified their account
+	for (const user of unverifiedUsersWithExpiredTokens) {
+		await sendEmail({
+			recipients: user.createdByUser.email,
+			emailType: "newUserNotConfirmed",
+			userFirstName: user.firstName,
+			userLastName: user.lastName,
+			comment: user.id,
+		});
+	}
 
 	return NextResponse.json({ ok: true });
 }

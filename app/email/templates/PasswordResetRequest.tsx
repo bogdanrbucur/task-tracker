@@ -14,9 +14,6 @@ export const PasswordResetEmail = ({ baseUrl, firstName, token }: PasswordResetE
 			<Head />
 			<Preview>{previewText}</Preview>
 			<Tailwind>
-				<head>
-					<style>.dark:text-red-400, color: #f87171; .dark:text-orange-400, color: #f59e0b;</style>
-				</head>
 				<Body className="bg-white my-auto mx-auto font-sans px-2">
 					<Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
 						<Section className="mt-[32px]">

@@ -1,6 +1,5 @@
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
-import * as React from "react";
 import { EmailTask } from "../email";
 
 interface TaskOverdueEmailProps {

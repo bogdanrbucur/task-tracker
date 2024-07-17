@@ -11,7 +11,7 @@ import forgotUserPassword from "./forgotPassword";
 const initialState = {};
 
 export default function ForgotPasswordForm() {
-	const [state, formAction] = useFormState(forgotUserPassword, initialState);
+	const [formState, formAction] = useFormState(forgotUserPassword, initialState);
 
 	return (
 		<div className="fade-in flex flex-col items-center justify-center h-screen -mt-36">

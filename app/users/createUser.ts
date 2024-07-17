@@ -13,19 +13,16 @@ import { sendEmail } from "../email/email";
 
 export default async function createUser(data: NewUser, editingUser: UserExtended) {
 	try {
-		// TODO implement salt
-		// const hashedPassword = await new Argon2id().hash(data.password!);
-
 		const newUser = await prisma.user.create({
 			data: {
 				firstName: data.firstName,
 				lastName: data.lastName,
 				email: data.email,
-				// hashedPassword,
 				position: data.position,
 				departmentId: data.departmentId ? Number(data.departmentId) : null,
 				managerId: data.managerId ? data.managerId : null,
 				isAdmin: data.isAdmin ? true : false,
+				createdByUserId: editingUser.id,
 			},
 		});
 
@@ -55,6 +52,4 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 		console.log(error);
 		return { error };
 	}
-
-	redirect("/");
 }

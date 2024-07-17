@@ -78,7 +78,10 @@ model User {
   avatar               Avatar?
   status               String      @default("unverified") // unverified, confirmed, inactive
   lastWelcomeEmailSent DateTime?
-  active               Boolean     @default(true)
+  active               Boolean     @default(false)
+  createdByUserId      String
+  createdByUser        User        @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  createdUsers         User[]      @relation("CreatedByUser")
 }
 
 model Avatar {
