@@ -60,12 +60,34 @@ export default async function UsersPage({ searchParams }: Props) {
 		};
 	}
 
-	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
+	let orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
+
+	// if orderBy === "manager", order by manager's firstName prop
+	let newOrderBy: Prisma.UserOrderByWithRelationInput | undefined = undefined;
+	if (searchParams.orderBy === "manager") {
+		newOrderBy = {
+			manager: {
+				firstName: sortOrder, // sortOrder is either 'asc' or 'desc'
+			},
+		};
+		orderBy = undefined;
+	}
+
+	// TODO fix sort by number of tasks
+	// if (searchParams.orderBy === "assignedTasks") {
+	// 	newOrderBy = {
+	// 		assignedTasks: sortOrder,
+	// 	};
+	// 	orderBy = undefined;
+	// }
+
+	console.log("orderBy", orderBy);
+
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;
 	const users = await prisma.user.findMany({
 		where,
-		orderBy,
+		orderBy: orderBy ? orderBy : newOrderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
 		select: prismaExtendedUserSelection,

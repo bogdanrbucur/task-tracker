@@ -123,7 +123,8 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Greeting should only say good morning after 5 AM
 - [x] [chore] Implement secret key for calling dailyTasks API
 - [x] [feat] Add a proper 404 page
-- [ ] [feat] Add a favicon
+- [x] [feat] Add a favicon
+- [ ] [feat] Fix users page headers links
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages
