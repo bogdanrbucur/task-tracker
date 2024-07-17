@@ -27,6 +27,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 
 `RESEND_API_KEY="re_123"`
 `BASE_URL="https://example.com"`
+`DAILY_TASKS_TOKEN="ff238d8c2b7da7a72f83de4757fd33f7357fe079ad7886ddc707f09a184b0f70"`
 
 ## TODO
 
@@ -120,9 +121,9 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] In dailyTasks, check for users without password and notify the admin
   - [ ] [feat] MAYBE. Give admin the ability to confirm password themselves
 - [x] [feat] Greeting should only say good morning after 5 AM
-- [ ] [chore] Implement secret key for calling dailyTasks API
+- [x] [chore] Implement secret key for calling dailyTasks API
+- [x] [feat] Add a proper 404 page
 - [ ] [feat] Add a favicon
-- [ ] [feat] Add a proper 404 page
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Links from User tasks to tasks filtered by user
 - [ ] [feat] Excel export tasks, but with all pages
