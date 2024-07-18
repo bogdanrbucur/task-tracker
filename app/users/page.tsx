@@ -73,16 +73,6 @@ export default async function UsersPage({ searchParams }: Props) {
 		orderBy = undefined;
 	}
 
-	// TODO fix sort by number of tasks
-	// if (searchParams.orderBy === "assignedTasks") {
-	// 	newOrderBy = {
-	// 		assignedTasks: sortOrder,
-	// 	};
-	// 	orderBy = undefined;
-	// }
-
-	console.log("orderBy", orderBy);
-
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;
 	const users = await prisma.user.findMany({

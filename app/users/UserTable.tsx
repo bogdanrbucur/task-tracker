@@ -26,14 +26,19 @@ const UserTable = ({ searchParams, users }: Props) => {
 				<TableRow>
 					{columns.map((column) => (
 						<TableHead key={column.label} className={column.className}>
+							{/* Column is clickable unless the column is assignedTasks */}
 							{/* to send multiple query parameters, spread existing query parameter object and add new prop */}
-							<NextLink
-								href={{
-									query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
-								}}
-							>
-								{column.label}
-							</NextLink>
+							{column.value !== "assignedTasks" ? (
+								<NextLink
+									href={{
+										query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
+									}}
+								>
+									{column.label}
+								</NextLink>
+							) : (
+								column.label
+							)}
 							{column.value === searchParams.orderBy && sortOrder === "asc" ? (
 								<ArrowUpIcon className="inline" />
 							) : column.value === searchParams.orderBy && sortOrder === "desc" ? (
@@ -65,7 +70,9 @@ const UserTable = ({ searchParams, users }: Props) => {
 							)}
 						</TableCell>
 						<TableCell className="hidden md:table-cell py-1.5">
-							{user.assignedTasks ? user.assignedTasks.filter((task) => task.statusId === 1 || task.statusId === 2 || task.statusId === 5).length : ""}
+							<Link href={`/tasks?status=1%2C5%2C2&user=${user.id}`}>
+								{user.assignedTasks ? user.assignedTasks.filter((task) => task.statusId === 1 || task.statusId === 2 || task.statusId === 5).length : 0}
+							</Link>
 						</TableCell>
 					</TableRow>
 				))}

@@ -1,5 +1,4 @@
 import { UserExtended } from "@/app/users/getUserById";
-import { time } from "console";
 import Link from "next/link";
 
 // determine the time of day: morning, noon or evening
@@ -24,7 +23,7 @@ else {
 		// if it's friday
 		if (day === 5) occasion = "friday afternoon";
 		else occasion = "afternoon";
-	} else if (hours >= 17 && hours < 17) {
+	} else if ((hours >= 17 && hours <= 23) || hours === 23) {
 		// if it's friday
 		if (day === 5) occasion = "friday evening";
 		else occasion = "evening";
@@ -65,7 +64,6 @@ switch (occasion) {
 	case "friday night":
 		timeOfDay = { greeting: "Starry night", emoji: "✨" };
 		break;
-
 	default:
 		break;
 }

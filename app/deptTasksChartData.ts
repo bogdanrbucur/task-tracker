@@ -25,7 +25,7 @@ export default function departmentTasks(tasks: TaskExtended[]) {
 				overdue: task.statusId === 5 ? 1 : 0,
 				completed: task.statusId === 2 ? 1 : 0,
 				value: 1,
-				url: `/tasks?dept=${task.department.id}&status=1%2C5%2C2`,
+				url: `/tasks?status=1%2C5%2C2&dept=${task.department.id}`,
 			});
 		} else {
 			deptTasks.find((s) => s.name === task.department!.name)!.value++;
