@@ -125,12 +125,13 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Add a proper 404 page
 - [x] [feat] Add a favicon
 - [x] [fix] Fix users page headers links
-- [ ] [feat] Links from User tasks to tasks filtered by user
+- [x] [fix] Tasks date sorting
+- [x] [feat] Links from User tasks to tasks filtered by user
 - [ ] [fix] Links to tasks page reordering URL params
-- [ ] [fix] Tasks date sorting
 - [ ] [feat] Links from Departments users to users filtered by department
 - [ ] [feat] Excel export tasks, but with all pages
 - [ ] [feat] Server-side logging
+- [ ] [feat] Departments delete
 - [ ] [feat] Make all pages responsive
 - [ ] [feat] Restructure the files/folders
 - [ ] [feat] Enforce password complexity

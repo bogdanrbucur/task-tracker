@@ -20,16 +20,16 @@ export function TaskSearchFilter() {
 		timeoutId.current = setTimeout(() => {
 			const params = new URLSearchParams();
 			// Add the existing searchPramas to the URL
-			if (searchParams.get("status")) params.append("status", searchParams.get("status")!);
-			if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
-			if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
+			if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 			if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
+			if (searchParams.get("status")) params.append("status", searchParams.get("status")!);
+			if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
+			if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
 			
 			// Add the selected search to the URL
 			if (search !== "") params.append("search", search);
 			if (search === "") params.delete("search");
 			
-			if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 
 			const query = params.toString() ? "?" + params.toString() : "";
 			router.push(`/tasks${query}`);

@@ -26,19 +26,14 @@ const UserTable = ({ searchParams, users }: Props) => {
 				<TableRow>
 					{columns.map((column) => (
 						<TableHead key={column.label} className={column.className}>
-							{/* Column is clickable unless the column is assignedTasks */}
 							{/* to send multiple query parameters, spread existing query parameter object and add new prop */}
-							{column.value !== "assignedTasks" ? (
-								<NextLink
-									href={{
-										query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
-									}}
-								>
-									{column.label}
-								</NextLink>
-							) : (
-								column.label
-							)}
+							<NextLink
+								href={{
+									query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
+								}}
+							>
+								{column.label}
+							</NextLink>
 							{column.value === searchParams.orderBy && sortOrder === "asc" ? (
 								<ArrowUpIcon className="inline" />
 							) : column.value === searchParams.orderBy && sortOrder === "desc" ? (

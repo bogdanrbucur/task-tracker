@@ -72,6 +72,24 @@ export default async function UsersPage({ searchParams }: Props) {
 		};
 		orderBy = undefined;
 	}
+	// if orderBy === "assignedTasks", order by number of open tasks
+	if (searchParams.orderBy === "assignedTasks") {
+		newOrderBy = {
+			assignedTasks: {
+				_count: sortOrder,
+			},
+		};
+		orderBy = undefined;
+	}
+	// if orderBy === "department", order by name of open department
+	if (searchParams.orderBy === "department") {
+		newOrderBy = {
+			department: {
+				name: sortOrder,
+			},
+		};
+		orderBy = undefined;
+	}
 
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;

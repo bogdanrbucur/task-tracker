@@ -90,14 +90,12 @@ export default function TaskStatusFilter() {
 			.map((status) => status.value)
 			.join(",");
 
-		// Add the selected statuses to the URL
-		if (selectedStatuses !== "") params.append("status", selectedStatuses);
-
 		// Add the existing searchPramas to the URL
 		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
 		if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
-		if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
+		if (selectedStatuses !== "") params.append("status", selectedStatuses);
 		if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
+		if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
 		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
 
 		const query = selectedStatuses !== "" ? "?" + params.toString() : "";

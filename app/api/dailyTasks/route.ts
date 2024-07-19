@@ -108,6 +108,7 @@ export async function POST(req: NextRequest) {
 
 	// Email the user creator that the user has not verified their account
 	for (const user of unverifiedUsersWithExpiredTokens) {
+		if (!user) continue;
 		await sendEmail({
 			recipients: user.createdByUser.email,
 			emailType: "newUserNotConfirmed",
