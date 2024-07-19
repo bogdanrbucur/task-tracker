@@ -12,8 +12,10 @@ import { useEffect, useState } from "react";
 export function TaskUserFilter({ users }: { users: UserExtended[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	// Get the existing user from the URL
+	const existingUser = searchParams.get("user");
 	const [open, setOpen] = useState(false);
-	const [userId, setUserId] = useState("");
+	const [userId, setUserId] = useState(existingUser ?? "");
 
 	// Update the URL when the selected userId changes
 	useEffect(() => {
@@ -27,7 +29,6 @@ export function TaskUserFilter({ users }: { users: UserExtended[] }) {
 		if (userId !== "") params.append("user", userId);
 		if (userId === "") params.delete("user");
 		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
-
 
 		const query = params.toString() ? "?" + params.toString() : "";
 		router.push(`/tasks${query}`);

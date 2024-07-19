@@ -95,8 +95,6 @@ export default async function TasksPage({ searchParams }: Props) {
 						],
 					})),
 				},
-				// statuses ? { statusId: { in: statuses } } : undefined,
-				// taskUser ? { assignedToUserId: taskUser } : undefined,
 			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
 	}
