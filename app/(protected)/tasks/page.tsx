@@ -116,6 +116,19 @@ export default async function TasksPage({ searchParams }: Props) {
 		},
 	});
 
+	// TODO use in Excel export
+	const excelExportQuery = {
+		where,
+		orderBy,
+		include: {
+			status: true,
+			createdByUser: true,
+			assignedToUser: {
+				select: prismaExtendedUserSelection,
+			},
+		},
+	};
+
 	const taskCount = await prisma.task.count({ where });
 
 	return (

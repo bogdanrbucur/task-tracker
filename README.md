@@ -128,7 +128,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [fix] Tasks date sorting
 - [x] [feat] Links from User tasks to tasks filtered by user
 - [x] [fix] Links to tasks page reordering URL params
-- [ ] [feat] Links from Departments users to users filtered by department
+- [x] [feat] Nicer looking @mention menu, with (department)
 - [ ] [feat] Excel export tasks, but with all pages
 - [ ] [feat] Server-side logging
 - [ ] [feat] Departments delete
