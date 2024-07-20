@@ -161,13 +161,15 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 								{filteredUsers.map((user, index) => (
 									<li
 										key={user.id}
-										className={`cursor-pointer mx-1 px-4 py-1.5 rounded-sm text-sm ${
+										className={`cursor-pointer mx-1 px-4 py-1.5 rounded-sm text-sm flex items-center gap-2 ${
 											index === highlightedIndex ? "bg-gray-100 dark:bg-neutral-800" : "hover:bg-gray-100 dark:hover:bg-neutral-800"
 										}`}
 										onClick={() => handleUserSelect(user)}
 									>
-										{user.firstName} {user.lastName}{" "}
-										<span className="text-xs text-gray-500 dark:text-gray-400"> {user.department ? `(${user.department.name})` : ""}</span>
+										<span>
+											{user.firstName} {user.lastName}
+										</span>
+										<span className="text-xs text-gray-500 dark:text-gray-400">{user.position}</span>
 									</li>
 								))}
 							</ul>

@@ -18,7 +18,9 @@ const NewTaskPage = async () => {
 
 	// Filter the users to include only the logged in user and their subordinates, unless they are admin, in which case all users are included
 	const subordinates = thisUser?.subordinates;
-	const filteredUsers = allUsers!.filter((u) => userPermissions.isAdmin || u.id === thisUser?.id || subordinates?.some((s) => s!.id === u.id));
+	let filteredUsers = allUsers!.filter((u) => userPermissions.isAdmin || u.id === thisUser?.id || subordinates?.some((s) => s!.id === u.id));
+	// But keep only active users
+	filteredUsers = filteredUsers.filter((u) => u.status === "active");
 
 	return <TaskForm users={filteredUsers} user={user!} />;
 };

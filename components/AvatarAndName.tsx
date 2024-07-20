@@ -75,7 +75,7 @@ export const UserAvatarNameComment = ({ user }: { user: CommentUser | null }) =>
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 	// Get the avatar file from the server
-	const avatar = user.avatar ? `/avatars/${user.id}` : undefined;
+	const avatar = user.avatar ? `/api/avatars/${user.id}` : undefined;
 
 	return (
 		<Avatar>
