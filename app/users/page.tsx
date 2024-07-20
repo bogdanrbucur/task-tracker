@@ -2,11 +2,11 @@ import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
-import { getAuth } from "../_auth/actions/get-auth";
-import { getPermissions } from "../_auth/actions/get-permissions";
-import UserTable, { UsersQuery, columnNames } from "./UserTable";
-import UsersTopSection from "./UsersTopSection";
-import { UserExtended, prismaExtendedUserSelection } from "./getUserById";
+import { getAuth } from "../../actions/auth/get-auth";
+import { getPermissions } from "../../actions/auth/get-permissions";
+import { UserExtended, prismaExtendedUserSelection } from "./_actions/getUserById";
+import UserTable, { UsersQuery, columnNames } from "./_components/UserTable";
+import UsersTopSection from "./_components/UsersTopSection";
 
 interface Props {
 	searchParams: UsersQuery;

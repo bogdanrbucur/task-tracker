@@ -1,15 +1,15 @@
 // server function to add new task
 "use server";
 
-import createUser from "@/app/users/createUser";
-import getUserDetails from "@/app/users/getUserById";
+import createUser from "@/app/users/_actions/createUser";
+import getUserDetails from "@/app/users/_actions/getUserById";
 import { resizeAndSaveImage } from "@/lib/utilityFunctions";
 import { User } from "@prisma/client";
 import fs from "fs-extra";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import updateUser from "../[id]/updateUser";
+import updateUser from "../[id]/_actions/updateUser";
 import prisma from "@/prisma/client";
 
 export type NewUser = {

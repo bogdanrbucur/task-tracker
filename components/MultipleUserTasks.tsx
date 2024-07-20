@@ -1,5 +1,5 @@
 import { TaskExtended } from "@/app/(protected)/tasks/page";
-import { UserExtended } from "@/app/users/getUserById";
+import { UserExtended } from "@/app/users/_actions/getUserById";
 import StatusBadge from "@/components/StatusBadge";
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
 import { cn } from "@/lib/utils";

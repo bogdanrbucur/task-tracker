@@ -1,6 +1,6 @@
 "use client";
-import { CommentUser } from "@/app/(protected)/tasks/[id]/CommentsSection";
-import { UserExtended, UserRestricted } from "@/app/users/getUserById";
+import { CommentUser } from "@/app/(protected)/tasks/[id]/_components/CommentsSection";
+import { UserExtended, UserRestricted } from "@/app/users/_actions/getUserById";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
@@ -11,7 +11,7 @@ export const UserAvatarNameNormal = ({ user }: { user: UserExtended | UserRestri
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 	// Get the avatar file from the server
-	const avatar = user.avatar ? `/avatars/${user.id}` : undefined;
+	const avatar = user.avatar ? `/api/avatars/${user.id}` : undefined;
 	return (
 		<div className="flex items-center gap-4">
 			<Link href={`/users/${user.id}`}>
@@ -33,7 +33,7 @@ export const UserAvatarNameSmall = ({ user }: { user: UserExtended | UserRestric
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 	// Get the avatar file from the server
-	const avatar = user.avatar ? `/avatars/${user.id}` : undefined;
+	const avatar = user.avatar ? `/api/avatars/${user.id}` : undefined;
 	return (
 		<div className="flex items-center gap-2">
 			<Avatar>
@@ -54,7 +54,7 @@ export const UserAvatarNameLarge = ({ user }: { user: UserExtended | null }) => 
 	if (!user) return null;
 	const initials = user.firstName.slice(0, 1).toUpperCase() + user.lastName?.slice(0, 1).toUpperCase();
 	// Get the avatar file from the server
-	const avatar = user.avatar ? `/avatars/${user.id}` : undefined;
+	const avatar = user.avatar ? `/api/avatars/${user.id}` : undefined;
 
 	return (
 		<div className="flex items-center gap-4">

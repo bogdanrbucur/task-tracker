@@ -1,6 +1,6 @@
 // layout file for authenticated pages
 
-import { getAuth } from "@/app/_auth/actions/get-auth";
+import { getAuth } from "@/actions/auth/get-auth";
 import { redirect } from "next/navigation";
 
 export default async function AuthenticatedLayout({

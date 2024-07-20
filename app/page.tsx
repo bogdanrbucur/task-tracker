@@ -1,15 +1,15 @@
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { TaskExtended } from "./(protected)/tasks/page";
-import DepartmentsChart from "./DepartmentsChart";
-import MyTasks from "./MyTasks";
-import StatusChart from "./StatusChart";
-import TeamTasks from "./TeamTasks";
-import { getAuth } from "./_auth/actions/get-auth";
+import { getAuth } from "../actions/auth/get-auth";
+import DepartmentsChart from "./_components/DepartmentsChart";
+import MyTasks from "./_components/MyTasks";
+import StatusChart from "./_components/StatusChart";
+import TeamTasks from "./_components/TeamTasks";
 import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
 import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
-import getUserDetails, { prismaExtendedUserSelection } from "./users/getUserById";
-import { getTeamTasks, userTasks } from "./users/userAndTeamTasks";
+import getUserDetails, { prismaExtendedUserSelection } from "./users/_actions/getUserById";
+import { getTeamTasks, userTasks } from "./users/_actions/userAndTeamTasks";
 
 export type StatusColors = {
 	inprogress: string;

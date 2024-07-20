@@ -1,10 +1,10 @@
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
-import { getAuth } from "../_auth/actions/get-auth";
-import { getPermissions } from "../_auth/actions/get-permissions";
-import DepartmentsTable, { DepartmentExpanded, DepartmentsQuery, columnNames } from "./DeptTable";
-import DepartmentsTopSection from "./DeptTopSection";
+import DepartmentsTable, { DepartmentExpanded, DepartmentsQuery, columnNames } from "./_components/DeptTable";
+import DepartmentsTopSection from "./_components/DeptTopSection";
 
 export const revalidate = 5;
 

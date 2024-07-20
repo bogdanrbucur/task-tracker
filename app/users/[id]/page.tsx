@@ -1,8 +1,8 @@
 /**
  * v0 by Vercel.
  */
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getPermissions } from "@/app/_auth/actions/get-permissions";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
 import { UserAvatarNameLarge, UserAvatarNameNormal } from "@/components/AvatarAndName";
 import SingleUserTasks from "@/components/SingleUserTasks";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,12 @@ import { format } from "date-fns";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import getUserDetails from "../getUserById";
-import ChangePasswordButton from "./ChangePasswordButton";
-import DeleteUserButton from "./DeleteUserButton";
-import ResendWelcomeEmailButton from "./ResendWelcomeEmailButton";
-import ResetPasswordButton from "./ResetPasswordButton";
-import ToggleUserButton from "./ToggleUserButton";
+import getUserDetails from "../_actions/getUserById";
+import ChangePasswordButton from "./_components/ChangePasswordButton";
+import DeleteUserButton from "./_components/DeleteUserButton";
+import ResendWelcomeEmailButton from "./_components/ResendWelcomeEmailButton";
+import ResetPasswordButton from "./_components/ResetPasswordButton";
+import ToggleUserButton from "./_components/ToggleUserButton";
 
 export const revalidate = 2;
 

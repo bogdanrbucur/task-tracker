@@ -1,11 +1,11 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
-import Navbar from "./Navbar";
+import Navbar from "./_components/Navbar";
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
-import Footer from "./Footer";
+import Footer from "./_components/Footer";
 
 const fontSans = FontSans({
 	subsets: ["latin"],

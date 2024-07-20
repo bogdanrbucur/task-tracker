@@ -3,10 +3,10 @@
  * @see https://v0.dev/t/JrUA9HgbhjF
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import TaskHistory from "@/app/(protected)/tasks/[id]/TaskHistory";
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getPermissions } from "@/app/_auth/actions/get-permissions";
-import { UserExtended, prismaExtendedUserSelection } from "@/app/users/getUserById";
+import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
+import { UserExtended, prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameNormal } from "@/components/AvatarAndName";
 import ClientToast from "@/components/ClientToast";
 import StatusBadge from "@/components/StatusBadge";
@@ -18,11 +18,11 @@ import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CancelTaskButton } from "./CancelTaskButton";
-import { CloseTaskButton } from "./CloseTaskButton";
-import CommentsSection from "./CommentsSection";
-import { CompleteTaskButton } from "./CompleteTaskButton";
-import { ReopenTaskButton } from "./ReopenTaskButton";
+import { CancelTaskButton } from "./_components/CancelTaskButton";
+import { CloseTaskButton } from "./_components/CloseTaskButton";
+import CommentsSection from "./_components/CommentsSection";
+import { CompleteTaskButton } from "./_components/CompleteTaskButton";
+import { ReopenTaskButton } from "./_components/ReopenTaskButton";
 
 interface Props {
 	params: { id: string };

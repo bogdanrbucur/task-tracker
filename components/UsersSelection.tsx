@@ -1,5 +1,5 @@
 "use client";
-import { UserExtended, UserRestricted } from "@/app/users/getUserById";
+import { UserExtended, UserRestricted } from "@/app/users/_actions/getUserById";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";

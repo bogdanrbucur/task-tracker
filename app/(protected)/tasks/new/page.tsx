@@ -1,9 +1,9 @@
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getPermissions } from "@/app/_auth/actions/get-permissions";
-import getUsers from "@/app/users/getUsers";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
+import getUserDetails from "@/app/users/_actions/getUserById";
+import getUsers from "@/app/users/_actions/getUsers";
 import { notFound } from "next/navigation";
-import TaskForm from "../[id]/TaskForm";
-import getUserDetails from "@/app/users/getUserById";
+import TaskForm from "../[id]/_components/TaskForm";
 
 const NewTaskPage = async () => {
 	// Check user permissions

@@ -1,12 +1,12 @@
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app/users/getUserById";
+import { getAuth } from "@/actions/auth/get-auth";
+import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { Department, Prisma, Status, Task, User } from "@prisma/client";
 import { notFound } from "next/navigation";
-import TaskTable, { columnNames } from "./TaskTable";
-import TaskTopSection from "./TaskTopSection";
+import TaskTable, { columnNames } from "./_components/TaskTable";
+import TaskTopSection from "./_components/TaskTopSection";
 
 export interface TaskExtended extends Task {
 	assignedToUser?: UserExtended;

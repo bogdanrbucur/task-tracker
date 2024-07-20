@@ -1,5 +1,5 @@
 import prisma from "@/prisma/client";
-import ResetPassword from "../_auth/components/ResetPassword";
+import ResetPassword from "./_components/ResetPassword";
 import { notFound } from "next/navigation";
 
 export default async function PasswordResetPage({ searchParams }: { searchParams: { token: string } }) {

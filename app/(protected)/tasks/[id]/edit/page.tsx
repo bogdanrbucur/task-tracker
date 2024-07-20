@@ -1,10 +1,10 @@
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getPermissions } from "@/app/_auth/actions/get-permissions";
-import getUserDetails from "@/app/users/getUserById";
-import getUsers from "@/app/users/getUsers";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
+import getUserDetails from "@/app/users/_actions/getUserById";
+import getUsers from "@/app/users/_actions/getUsers";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
-import TaskForm from "../TaskForm";
+import TaskForm from "../_components/TaskForm";
 
 const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Check user permissions

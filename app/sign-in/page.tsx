@@ -1,6 +1,6 @@
-import SignInForm from "@/app/_auth/components/SignIn";
+import { getAuth } from "@/actions/auth/get-auth";
 import { redirect } from "next/navigation";
-import { getAuth } from "../_auth/actions/get-auth";
+import SignInForm from "./_components/SignIn";
 
 export default async function SignInPage() {
 	// If the user is signed in, redirect to the dashboard

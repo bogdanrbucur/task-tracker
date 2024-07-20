@@ -1,4 +1,4 @@
-import { UserExtended } from "@/app/users/getUserById";
+import { UserExtended } from "@/app/users/_actions/getUserById";
 import Link from "next/link";
 
 // determine the time of day: morning, noon or evening

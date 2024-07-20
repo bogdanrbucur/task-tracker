@@ -1,11 +1,11 @@
 // src/app/sign-up/page.tsx
 
-import { getAuth } from "@/app/_auth/actions/get-auth";
-import { getPermissions } from "@/app/_auth/actions/get-permissions";
-import UserForm from "@/app/users/[id]/UserForm";
-import { notFound } from "next/navigation";
-import getUsers from "../getUsers";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
+import UserForm from "@/app/users/[id]/_components/UserForm";
 import prisma from "@/prisma/client";
+import { notFound } from "next/navigation";
+import getUsers from "../_actions/getUsers";
 
 const SignUpPage = async () => {
 	// Check user permissions

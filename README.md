@@ -129,10 +129,10 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Links from User tasks to tasks filtered by user
 - [x] [fix] Links to tasks page reordering URL params
 - [x] [feat] Nicer looking @mention menu, with (department)
+- [x] [feat] Restructure the files/folders
 - [ ] [feat] Excel export tasks, but with all pages
 - [ ] [feat] Server-side logging
 - [ ] [feat] Departments delete
 - [ ] [feat] Make all pages responsive
-- [ ] [feat] Restructure the files/folders
 - [ ] [feat] Enforce password complexity
 - [ ] [feat] Automatic database backups
