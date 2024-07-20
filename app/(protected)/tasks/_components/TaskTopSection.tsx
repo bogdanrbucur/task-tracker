@@ -6,6 +6,8 @@ import Link from "next/link";
 import { TaskSearchFilter } from "./TaskSearchFilter";
 import TaskStatusFilter from "./TaskStatusFilter";
 import { TaskUserFilter } from "./TaskUserFilter";
+import { Prisma } from "@prisma/client";
+import ExcelExportButton from "./ExcelExportButton";
 
 const TaskTopSection = async () => {
 	const { user } = await getAuth();
@@ -24,6 +26,7 @@ const TaskTopSection = async () => {
 			</div>
 			<div className="flex space-x-3 justify-between md:justify-end">
 				<TaskSearchFilter />
+				<ExcelExportButton />
 				{canCreateTask && (
 					<Button asChild size="sm">
 						<Link href="/tasks/new" className="space-x-5">

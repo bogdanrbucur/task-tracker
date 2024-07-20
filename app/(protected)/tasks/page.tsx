@@ -7,6 +7,7 @@ import { Department, Prisma, Status, Task, User } from "@prisma/client";
 import { notFound } from "next/navigation";
 import TaskTable, { columnNames } from "./_components/TaskTable";
 import TaskTopSection from "./_components/TaskTopSection";
+import { setExportQuery } from "./_actions/getTasksForExport";
 
 export interface TaskExtended extends Task {
 	assignedToUser?: UserExtended;
@@ -30,6 +31,8 @@ export interface TasksQuery {
 interface Props {
 	searchParams: TasksQuery;
 }
+
+export let excelExportQuery: any;
 
 export default async function TasksPage({ searchParams }: Props) {
 	// Check user permissions
@@ -116,20 +119,11 @@ export default async function TasksPage({ searchParams }: Props) {
 		},
 	});
 
-	// TODO use in Excel export
-	const excelExportQuery = {
-		where,
-		orderBy,
-		include: {
-			status: true,
-			createdByUser: true,
-			assignedToUser: {
-				select: prismaExtendedUserSelection,
-			},
-		},
-	};
+	await setExportQuery(where, orderBy);
 
 	const taskCount = await prisma.task.count({ where });
+
+	console.log(taskCount);
 
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
