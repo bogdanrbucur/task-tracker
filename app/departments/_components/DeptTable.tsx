@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Department } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as NextLink } from "next/link";
+import DeleteDeptButton from "./DeleteDeptButton";
 import EditDeptButton from "./EditDeptButton";
 
 export interface DepartmentsQuery {
@@ -29,13 +30,16 @@ const DepartmentsTable = ({ searchParams, departments }: Props) => {
 					{columns.map((column) => (
 						<TableHead key={column.label} className={column.className}>
 							{column.value ? (
-							<NextLink
-								href={{
-									query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
-								}}
-							>
-								{column.label}
-							</NextLink>) : column.label}
+								<NextLink
+									href={{
+										query: { ...searchParams, orderBy: column.value, sortOrder: sortOrder === "asc" ? "desc" : "asc" },
+									}}
+								>
+									{column.label}
+								</NextLink>
+							) : (
+								column.label
+							)}
 							{column.value === searchParams.orderBy && sortOrder === "asc" ? (
 								<ArrowUpIcon className="inline" />
 							) : column.value === searchParams.orderBy && sortOrder === "desc" ? (
@@ -50,8 +54,9 @@ const DepartmentsTable = ({ searchParams, departments }: Props) => {
 					<TableRow key={dept.id}>
 						<TableCell className="py-1.5">{dept.name}</TableCell>
 						<TableCell className="py-1.5">{dept.users.length}</TableCell>
-						<TableCell className="py-1.5">
+						<TableCell className="py-1.5 space-x-2">
 							<EditDeptButton dept={dept} />
+							<DeleteDeptButton dept={dept} />
 						</TableCell>
 					</TableRow>
 				))}

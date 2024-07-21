@@ -134,7 +134,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Excel export tasks, but with all pages
 - [x] [fix] Do not allow cancelling closed tasks
 - [x] [feat] Server-side logging
-- [ ] [feat] Departments delete
+- [x] [feat] Departments delete
 - [ ] [feat] Make all pages responsive
 - [ ] [feat] Enforce password complexity
 - [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?

@@ -1,31 +1,29 @@
 "use client";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Department } from "@prisma/client";
-import { AlertCircle, SquarePen } from "lucide-react";
+import { AlertCircle, CircleX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import {
 	AlertDialog,
 	AlertDialogCancel,
 	AlertDialogContent,
+	AlertDialogDescription,
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "../../../components/ui/alert-dialog";
 import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
-import editDept from "../_actions/editDept";
+import deleteDept from "../_actions/deleteDept";
 const initialState = {
 	message: null,
 	dialogOpen: undefined,
 	success: undefined,
 };
 
-export default function EditDeptButton({ dept }: { dept?: Department }) {
-	const [state, formAction] = useFormState(editDept, initialState);
-	const isNewDept = !dept;
+export default function DeleteDeptButton({ dept }: { dept: Department }) {
+	const [state, formAction] = useFormState(deleteDept, initialState);
 
 	// Crappy state workaround to keep the dialog open
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,23 +44,23 @@ export default function EditDeptButton({ dept }: { dept?: Department }) {
 		<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<AlertDialogTrigger asChild>
 				<Button size="sm" className="gap-1" onClick={() => setDialogOpen(true)}>
-					{isNewDept ? "New Department" : "Rename"}
-					{isNewDept ? null : <SquarePen size="18" />}
+					Delete <CircleX size="18" />
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<form action={formAction} className="space-y-3">
 					<AlertDialogHeader>
-						<AlertDialogTitle>{isNewDept ? "Create department" : "Rename department"}</AlertDialogTitle>
+						<AlertDialogTitle>Delete department</AlertDialogTitle>
 					</AlertDialogHeader>
+					<AlertDialogDescription>
+						Are you sure you wish to delete <strong>{dept.name}</strong> department?
+					</AlertDialogDescription>
 					{state?.message && (
 						<Alert variant="destructive" className="mt-2">
 							<AlertCircle className="h-4 w-4" />
 							<AlertTitle>{state?.message}</AlertTitle>
 						</Alert>
 					)}
-					<Label htmlFor="deptName">{isNewDept ? "Department name" : "Current name"}</Label>
-					<Input name="deptName" type="text" defaultValue={dept?.name} required />
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<Button type="submit">Confirm</Button>

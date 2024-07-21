@@ -6,7 +6,8 @@ import { notFound } from "next/navigation";
 import DepartmentsTable, { DepartmentExpanded, DepartmentsQuery, columnNames } from "./_components/DeptTable";
 import DepartmentsTopSection from "./_components/DeptTopSection";
 
-export const revalidate = 5;
+// export const revalidate = 5;
+
 
 interface Props {
 	searchParams: DepartmentsQuery;
