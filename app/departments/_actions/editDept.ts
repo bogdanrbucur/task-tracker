@@ -1,7 +1,9 @@
 // server function to add new task
 "use server";
 
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -37,6 +39,8 @@ export default async function editDept(prevState: any, formData: FormData) {
 					name: data.deptName,
 				},
 			});
+			console.log(`Department renamed from ${dept.name} to ${updatedDept.name}`);
+			log(`Department renamed from ${dept.name} to ${updatedDept.name}`, `./logs/${logDate()}`);
 		} else {
 			// Create a new department
 			const newDept = await prisma.department.create({
@@ -44,6 +48,8 @@ export default async function editDept(prevState: any, formData: FormData) {
 					name: data.deptName,
 				},
 			});
+			console.log(`New department created: ${newDept.name}`);
+			log(`New department created: ${newDept.name}`, `./logs/${logDate()}`);
 		}
 		return { dialogOpen: false, success: true };
 	} catch (error) {
