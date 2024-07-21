@@ -5,6 +5,8 @@ import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import fs from "fs-extra";
+import log from "log-to-file";
+import { logDate } from "@/lib/utilityFunctions";
 
 export default async function toggleUser(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
@@ -39,7 +41,8 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 			},
 		});
 		if (updatedUser.status === "active") {
-			console.log("User activated.");
+			console.log(`User  ${updatedUser.email} activated.`);
+			log(`User  ${updatedUser.email} activated.`, `./logs/${logDate()}`);
 		} else {
 			// Delete the user's avatar
 			await prisma.avatar.deleteMany({
@@ -50,7 +53,8 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 				fs.unlinkSync(`avatars/${data.id}.jpg`);
 			}
 			// Delete the user's avatar file
-			console.log("User deactivated. Avatar deleted.");
+			console.log(`User ${updatedUser.email} deactivated. Avatar deleted.`);
+			log(`User ${updatedUser.email} deactivated. Avatar deleted.`, `./logs/${logDate()}`);
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

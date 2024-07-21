@@ -5,6 +5,8 @@ import prisma from "@/prisma/client";
 import fs from "fs-extra";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import log from "log-to-file";
+import { logDate } from "@/lib/utilityFunctions";
 
 export default async function deleteUser(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
@@ -46,7 +48,8 @@ export default async function deleteUser(prevState: any, formData: FormData) {
 				fs.unlinkSync(`avatars/${data.id}.jpg`);
 			}
 			// Delete the user's avatar file
-			console.log("User deleted. Avatar deleted.");
+			console.log(`User ${deletedUser.email} deleted. Avatar deleted.`);
+			log(`User ${deletedUser.email} deleted. Avatar deleted.`, `./logs/${logDate()}`);
 
 			return { message: null, emailSent: "success" };
 		} else {

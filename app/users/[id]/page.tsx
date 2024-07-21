@@ -86,7 +86,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						{userPermissions.isAdmin && !userWithPassword?.hashedPassword && userWithPassword?.status === "inactive" && <DeleteUserButton userId={userDetails.id} />}
 					</div>
 				</div>
-				{/* TODO show if the user has confirmed their email or not and if the link expired */}
+				{/* show if the user has confirmed their email or not and if the link expired */}
 				{userDetails.status !== "active" && (
 					<div id="userStatus" className={userDetails.status === "inactive" ? "text-red-600 dark:text-red-400" : "text-yellow-600 dark:text-yellow-400"}>
 						{userDetails.status === "unverified" ? `Unverified: last welcome email sent ${format(userDetails.lastWelcomeEmailSent!, "dd MMM yyyy HH:mm")}` : "Inactive"}

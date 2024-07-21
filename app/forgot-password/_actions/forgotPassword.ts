@@ -1,11 +1,13 @@
 // server function to add new task
 "use server";
 
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import log from "log-to-file";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
 import { sendEmail } from "../../email/email";
+import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
 
 export default async function forgotUserPassword(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
@@ -26,6 +28,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		if (!data.email) return;
 
 		console.log(`Password reset request received for email address ${data.email}`);
+		log(`Password reset request received for email address ${data.email}`, `./logs/${logDate()}`);
 
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
@@ -34,6 +37,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 
 		if (!user) {
 			console.log(`No active user found with email address ${data.email}`);
+			log(`No active user found with email address ${data.email}`, `./logs/${logDate()}`);
 			return { success: true };
 		}
 
@@ -48,7 +52,6 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 			comment: token,
 		});
 
-		console.log(`Password reset email sent to ${user.email}`);
 		return { success: true };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

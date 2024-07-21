@@ -5,6 +5,7 @@ import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
+import log from "log-to-file";
 
 export default async function closeTask(formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());

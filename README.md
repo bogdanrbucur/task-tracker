@@ -131,10 +131,11 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Nicer looking @mention menu, with (department)
 - [x] [feat] Restructure the files/folders
 - [x] [fix] New task can be assigned to inactive users
-- [ ] [feat] Excel export tasks, but with all pages
-- [ ] [fix] Do not allow cancelling closed tasks
-- [ ] [feat] Server-side logging
+- [x] [feat] Excel export tasks, but with all pages
+- [x] [fix] Do not allow cancelling closed tasks
+- [x] [feat] Server-side logging
 - [ ] [feat] Departments delete
 - [ ] [feat] Make all pages responsive
 - [ ] [feat] Enforce password complexity
+- [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
 - [ ] [feat] Automatic database backups

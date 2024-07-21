@@ -1,15 +1,11 @@
 // server function to register new user
 "use server";
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { Argon2id } from "oslo/password";
-import { lucia } from "@/lib/lucia";
-import prisma from "@/prisma/client";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { NewUser } from "@/app/users/new/submitUser";
-import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
+import prisma from "@/prisma/client";
 import { sendEmail } from "../../email/email";
+import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
 
 export default async function createUser(data: NewUser, editingUser: UserExtended) {
 	try {

@@ -1,7 +1,10 @@
+import { logDate } from "@/lib/utilityFunctions";
 import { Task } from "@prisma/client";
+import log from "log-to-file";
 import { Resend } from "resend";
 import CommentMentionEmail from "./templates/CommentMention";
 import NewTaskEmail from "./templates/NewTaskAssigned";
+import NewUserNotConfirmedEmail from "./templates/NewUserNotConfirmed";
 import NewUserRegistered from "./templates/NewUserRegistered";
 import PasswordResetEmail from "./templates/PasswordResetRequest";
 import TaskCancelledEmail from "./templates/TaskCancelled";
@@ -9,7 +12,6 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
-import NewUserNotConfirmedEmail from "./templates/NewUserNotConfirmed";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -58,7 +60,9 @@ export type EmailType =
 export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props): Promise<EmailResponse> {
 	// Choose the email template based on the emailType
 
-	console.log(`Sending email of type ${emailType} to ${recipients}...`);
+	console.log(`Sending ${emailType} email to ${recipients}...`);
+	log(`Sending ${emailType} email to ${recipients}...`, `./logs/${logDate()}`);
+
 	let emailTemplate;
 	let subject = "";
 	switch (emailType) {
@@ -153,11 +157,13 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 		});
 
 		if (error) {
-			console.log(error);
+			console.log(`Email not sent: ${error.message}`);
+			log(`Email not sent: ${error.message}`, `./logs/${logDate()}`);
 			return { success: false, error: error.message };
 		}
 
-		console.log(data);
+		console.log(`Email sent succesfully: ${JSON.stringify(data)}`);
+		log(`Email sent succesfully: ${JSON.stringify(data)}`, `./logs/${logDate()}`);
 		return { success: true, error: null };
 	} catch (error: any) {
 		console.log(error);

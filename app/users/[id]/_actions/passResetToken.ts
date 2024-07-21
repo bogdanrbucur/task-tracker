@@ -6,6 +6,8 @@ import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import log from "log-to-file";
+import { logDate } from "@/lib/utilityFunctions";
 
 export default async function passResetToken(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
@@ -29,9 +31,13 @@ export default async function passResetToken(prevState: any, formData: FormData)
 		});
 		if (!user) throw new Error("Incorrect email or password.");
 
+		console.log(`Password reset requested for user ${user.email}`);
+		log(`Password reset requested for user ${user.email}`, `./logs/${logDate()}`);
+
 		// If the user is already active, send a normal password reset email
 		if (user.status === "active") {
-			console.log("User is active, so sending a normal password reset email");
+			console.log("User is active, sending password reset email");
+			log("User is active, sending password reset email", `./logs/${logDate()}`);
 			// Create a unique random password reset token with default validity
 			const token = await generatePassChangeToken(user);
 			// Send the user an email with a link to reset their password
@@ -44,7 +50,8 @@ export default async function passResetToken(prevState: any, formData: FormData)
 
 			return { emailSent: emailStatus.success ? "success" : "fail", message: null };
 		} else if (user.status === "unverified") {
-			console.log("User is inactive, so sending a welcome email with a password set link");
+			console.log("User is inactive, sending welcome email with a password set link");
+			log("User is inactive, sending welcome email with a password set link", `./logs/${logDate()}`);
 			// Create a unique random password reset token with 48 hours validity
 			const token = await generatePassChangeToken(user, 2880);
 			// Send the user a welcome email with a link to set their password

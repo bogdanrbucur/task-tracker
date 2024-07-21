@@ -1,6 +1,8 @@
 import getUserDetails from "@/app/users/_actions/getUserById";
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
+import log from "log-to-file";
 import { Editor } from "../../new/_actions/submitTask";
 
 export async function recordTaskHistory(task: Task, editingUser: Editor, changes?: string[]) {
@@ -20,7 +22,8 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 					changes: change,
 				},
 			});
-			console.log("New change recorded:", newChange);
+			console.log(`Task ${newChange.taskId} changed: ${newChange.changes}`);
+			log(`Task ${newChange.taskId} changed: ${newChange.changes}`, `./logs/${logDate()}`);
 		}
 		return;
 	}
@@ -35,6 +38,7 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 		},
 	});
 
-	console.log("New change recorded:", newChange);
+	console.log(`New task ${newChange.taskId}: ${newChange.changes}`);
+	log(`New task ${newChange.taskId}: ${newChange.changes}`, `./logs/${logDate()}`);
 	return newChange;
 }

@@ -2,7 +2,9 @@
 "use server";
 
 import { lucia } from "@/lib/lucia";
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import log from "log-to-file";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Argon2id } from "oslo/password";
@@ -27,11 +29,19 @@ export default async function signIn(prevState: any, formData: FormData) {
 		const user = await prisma.user.findUnique({
 			where: { email: data.email, active: true },
 		});
-		if (!user) throw new Error("Incorrect email or password.");
+		if (!user) {
+			console.log(`${data.email} attempting to login, but user does not exist.`);
+			log(`${data.email} attempting to login, but user does not exist.`, `./logs/${logDate()}`);
+			throw new Error("Incorrect email or password.");
+		}
 
 		// Verify the password using Argon2id
 		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.password);
-		if (!validPassword) throw new Error("Incorrect email or password.");
+		if (!validPassword) {
+			console.log(`Valid user ${data.email} attempting to login with wrong password.`);
+			log(`Valid user ${data.email} attempting to login with wrong password.`, `./logs/${logDate()}`);
+			throw new Error("Incorrect email or password.");
+		}
 
 		// Create a new session for the user. Lucia handles adding it to the database
 		const session = await lucia.createSession(user.id, {});
@@ -39,6 +49,9 @@ export default async function signIn(prevState: any, formData: FormData) {
 		// Create a session cookie and set it in the response headers
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+
+		console.log(`User ${data.email} succesfully logged in and issued session ${sessionCookie.value}.`);
+		log(`User ${data.email} succesfully logged in and issued session ${sessionCookie.value}.`, `./logs/${logDate()}`);
 	} catch (error) {
 		// Handle Zod validation errors
 		if (error instanceof z.ZodError) {

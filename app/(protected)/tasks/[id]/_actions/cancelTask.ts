@@ -2,7 +2,9 @@
 
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import log from "log-to-file";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
@@ -65,10 +67,18 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 		});
 
 		// If email wasn't sent
-		if (!emailStatus) console.log("Task cancelled, but user not assigned, no email sent");
+		if (!emailStatus) {
+			console.log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`);
+			log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`, `./logs/${logDate()}`);
+		}
 		// If the email sent failed
-		else if (emailStatus && !emailStatus.success) console.log("Task cancelled, email error");
-		else console.log("Task cancelled, email sent");
+		else if (emailStatus && !emailStatus.success) {
+			console.log("Task cancelled, email error");
+			log("Task cancelled, email error", `./logs/${logDate()}`);
+		} else {
+			console.log("Task cancelled, email sent");
+			log("Task cancelled, email sent", `./logs/${logDate()}`);
+		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

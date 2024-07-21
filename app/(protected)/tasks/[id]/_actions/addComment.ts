@@ -1,7 +1,9 @@
 // server function to add new comment
 "use server";
 import { EmailResponse, sendEmail } from "@/app/email/email";
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -38,6 +40,14 @@ export default async function addComment(prevState: any, formData: FormData) {
 		});
 
 		if (newComment) success = true;
+		
+		// Get the user who commented
+		const user = await prisma.user.findUnique({
+			where: { id: data.userId },
+		});
+
+		console.log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`);
+		log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`, `./logs/${logDate()}`);
 
 		// If there are users mentioned in the comment
 		if (mentionedUsersArray && mentionedUsersArray.length > 0) {
@@ -50,11 +60,6 @@ export default async function addComment(prevState: any, formData: FormData) {
 			// Get the users mentioned in the comment
 			const mentionedUsersExtended = await prisma.user.findMany({
 				where: { id: { in: mentionedUsersArray! } },
-			});
-
-			// Get the user who commented
-			const user = await prisma.user.findUnique({
-				where: { id: data.userId },
 			});
 
 			// Build the array of email addresses
@@ -74,17 +79,17 @@ export default async function addComment(prevState: any, formData: FormData) {
 			// If the email sent failed
 			if (!emailStatus.success) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				console.log("Comment added, email error");
+				console.log("User was mentioned in comment, but email failed.");
+				log("User was mentioned in comment, but email failed.", `./logs/${logDate()}`);
 				return { success, emailSent: emailStatus.success, message: emailStatus.error };
 				// Else it succeded
 			} else {
+				console.log("User was mentioned in comment, email sent.");
+				log("User was mentioned in comment, email sent.", `./logs/${logDate()}`);
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				console.log("Comment added, email sent");
 				return { success, emailSent: emailStatus.success };
 			}
 		}
-
-		// console.log("New comment added: ", newComment);
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {

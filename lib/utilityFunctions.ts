@@ -70,3 +70,9 @@ export async function checkIfTaskOverdue(taskId: number) {
 		});
 	}
 }
+
+// Get today in YYYY.MM.DD.log
+export function logDate() {
+	let logDate: any = new Date();
+	return `${logDate.getFullYear()}.${String(logDate.getMonth() + 1).padStart(2, "0")}.${String(logDate.getDate()).padStart(2, "0")}.log`;
+}

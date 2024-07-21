@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Argon2id } from "oslo/password";
 import { z } from "zod";
+import log from "log-to-file";
+import { logDate } from "@/lib/utilityFunctions";
 
 export default async function changeUserPassword(prevState: any, formData: FormData) {
 	const rawFormData = Object.fromEntries(formData.entries());
@@ -53,6 +55,10 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 				hashedPassword,
 			},
 		});
+
+		console.log(`User ${updatedUser.email} changed their password.`);
+		log(`User ${updatedUser.email} changed their password.`, `./logs/${logDate()}`);
+		
 		return { dialogOpen: false };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

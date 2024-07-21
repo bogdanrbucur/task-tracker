@@ -123,8 +123,6 @@ export default async function TasksPage({ searchParams }: Props) {
 
 	const taskCount = await prisma.task.count({ where });
 
-	console.log(taskCount);
-
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
 			<div className="fade-in container p-2 md:px-7">

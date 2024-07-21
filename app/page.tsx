@@ -1,7 +1,10 @@
 import { Card } from "@/components/ui/card";
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { TaskExtended } from "./(protected)/tasks/page";
+import fs from "fs-extra";
+import log from "log-to-file";
 import { getAuth } from "../actions/auth/get-auth";
+import { TaskExtended } from "./(protected)/tasks/page";
 import DepartmentsChart from "./_components/DepartmentsChart";
 import MyTasks from "./_components/MyTasks";
 import StatusChart from "./_components/StatusChart";
@@ -17,6 +20,13 @@ export type StatusColors = {
 	overdue: string;
 };
 const statusColors: StatusColors = { inprogress: "#3b82f6", completed: "#16a34a", overdue: "#dc2626" };
+
+// If ./logs folder doesn't exist, create it
+try {
+	fs.ensureDirSync(`./logs`);
+} catch (err) {
+	console.error(err);
+}
 
 export default async function Home() {
 	// Check user permissions
@@ -41,6 +51,9 @@ export default async function Home() {
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);
+
+	console.log(`User ${userDetails.email} accessed the home page.`);
+	log(`User ${userDetails.email} accessed the home page.`, `./logs/${logDate()}`);
 
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	if (activeSubordinates.length > 0) hasSubordinates = true;

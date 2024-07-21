@@ -3,14 +3,15 @@
 
 import createUser from "@/app/users/_actions/createUser";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { resizeAndSaveImage } from "@/lib/utilityFunctions";
+import { logDate, resizeAndSaveImage } from "@/lib/utilityFunctions";
+import prisma from "@/prisma/client";
 import { User } from "@prisma/client";
 import fs from "fs-extra";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import updateUser from "../[id]/_actions/updateUser";
-import prisma from "@/prisma/client";
+import log from "log-to-file";
 
 export type NewUser = {
 	firstName: string;
@@ -95,12 +96,32 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		// If a user ID is provided, update the existing user
 		if (data.id) {
 			newUser = await updateUser(data as UpdateUser, editingUser!);
+
+			console.log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
+			console.log(`OLD USER: ${data.firstName} ${data.lastName} / ${data.email}, dept: ${data.departmentId}, manager: ${data.managerId}, admin: ${data.isAdmin}`);
+			console.log(
+				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`
+			);
+			log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `./logs/${logDate()}`);
+			log(
+				`OLD USER: ${data.firstName} ${data.lastName} / ${data.email}, dept: ${data.departmentId}, manager: ${data.managerId}, admin: ${data.isAdmin}`,
+				`./logs/${logDate()}`
+			);
+			log(
+				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`,
+				`./logs/${logDate()}`
+			);
 		}
 		// If no user ID is provided, create a new user
 		else {
 			const { newUser: tempUsr, emailStatus, error } = await createUser(data as NewUser, editingUser);
 			if (error instanceof Error) throw new Error(error.message);
 			newUser = tempUsr ?? null;
+
+			if (newUser) {
+				console.log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
+				log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `./logs/${logDate()}`);
+			}
 		}
 
 		// Save the avatar locally
