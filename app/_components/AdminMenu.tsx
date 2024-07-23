@@ -20,9 +20,9 @@ export function AdminMenu() {
 		<NavigationMenu>
 			<NavigationMenuList>
 				<NavigationMenuItem>
-					<NavigationMenuTrigger>Admin</NavigationMenuTrigger>
+					<NavigationMenuTrigger className="px-1 md:px-4">Admin</NavigationMenuTrigger>
 					<NavigationMenuContent>
-						<ul className="grid gap-1 md:gap-3 p-3 md:w-[350px]">
+						<ul className="grid gap-1 md:gap-3 p-1 md:p-2 md:w-[350px]">
 							<ListItem href="/users" title="Users">
 								Manage users, roles, and permissions.
 							</ListItem>

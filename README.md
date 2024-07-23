@@ -136,6 +136,14 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [feat] Server-side logging
 - [x] [feat] Departments delete
 - [ ] [feat] Make all pages responsive
+  - [x] [feat] Dashboard
+  - [x] [feat] Departments
+  - [x] [feat] Users list
+  - [ ] [feat] Users view
+  - [ ] [feat] Task list
+  - [ ] [feat] Task view
+  - [ ] [feat] Task edit
+  - [ ] [feat] User edit
 - [ ] [feat] Enforce password complexity
 - [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
 - [ ] [feat] Automatic database backups

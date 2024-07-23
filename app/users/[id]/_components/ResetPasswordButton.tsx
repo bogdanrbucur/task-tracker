@@ -25,7 +25,7 @@ export default function ResetPasswordButton({ userId }: { userId: string }) {
 		<form action={formAction}>
 			<Toaster richColors />
 			<Button type="submit" size="sm" className="gap-1">
-				Password Reset Email
+				Reset Password
 				<KeySquare size="18" />
 			</Button>
 			<input type="hidden" name="id" value={userId} />

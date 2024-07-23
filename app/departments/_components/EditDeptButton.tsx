@@ -45,7 +45,7 @@ export default function EditDeptButton({ dept }: { dept?: Department }) {
 	return (
 		<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<AlertDialogTrigger asChild>
-				<Button size="sm" className="gap-1" onClick={() => setDialogOpen(true)}>
+				<Button size="sm" className="gap-1 min-w-24 max-w-32" onClick={() => setDialogOpen(true)}>
 					{isNewDept ? "New Department" : "Rename"}
 					{isNewDept ? null : <SquarePen size="18" />}
 				</Button>

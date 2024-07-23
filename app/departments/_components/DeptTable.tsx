@@ -54,7 +54,7 @@ const DepartmentsTable = ({ searchParams, departments }: Props) => {
 					<TableRow key={dept.id}>
 						<TableCell className="py-1.5">{dept.name}</TableCell>
 						<TableCell className="py-1.5">{dept.users.length}</TableCell>
-						<TableCell className="py-1.5 space-x-2">
+						<TableCell className="grid grid-cols-1 md:grid-cols-2 py-1.5 gap-1 md:gap-2">
 							<EditDeptButton dept={dept} />
 							<DeleteDeptButton dept={dept} />
 						</TableCell>

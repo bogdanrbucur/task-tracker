@@ -72,7 +72,7 @@ const NavBarWelcome = ({ userProps }: { userProps: UserExtended | undefined }) =
 	if (!userProps) return null;
 
 	return (
-		<div className="text-sm md:text-base">
+		<div className="text-xs text-center md:text-base">
 			{timeOfDay.greeting}{" "}
 			<Link className="hover:text-gray-500" href={`/users/${userProps.id}`}>
 				{userProps.firstName}

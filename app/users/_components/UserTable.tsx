@@ -81,7 +81,7 @@ export default UserTable;
 const columns: { label: string; value: keyof UserExtended; className?: string }[] = [
 	{ label: "Name", value: "firstName", className: "py-1.5" },
 	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5" },
-	{ label: "Manager", value: "manager", className: "hidden md:table-cell py-1.5" },
+	{ label: "Manager", value: "manager", className: "md:table-cell py-1.5" },
 	{ label: "Open Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5" },
 ];
 

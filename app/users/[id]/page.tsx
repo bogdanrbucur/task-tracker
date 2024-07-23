@@ -64,11 +64,11 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
 			<CardHeader>
-				<div className="fade-in flex items-center justify-between gap-4">
+				<div className="fade-in grid grid-cols-1 md:grid-cols-2 gap-4">
 					<UserAvatarNameLarge user={userDetails} />
-					<div className="flex gap-2">
+					<div className="flex gap-1 md:gap-2 items-center justify-center md:justify-end">
 						{canEdit && (
-							<Button asChild size="sm">
+							<Button asChild size="sm" className="w-auto">
 								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
 									Edit
 									<SquarePen size="18" />

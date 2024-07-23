@@ -27,11 +27,11 @@ export default function DepartmentsChart({ data, statusColors, isGuest }: Props)
 		const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, inprogress, overdue, completed } = props;
 		const sin = Math.sin(-RADIAN * midAngle);
 		const cos = Math.cos(-RADIAN * midAngle);
-		const sx = cx + (outerRadius + 10) * cos;
+		const sx = cx + (outerRadius + 0) * cos;
 		const sy = cy + (outerRadius + 10) * sin;
 		const mx = cx + (outerRadius + 30) * cos;
 		const my = cy + (outerRadius + 30) * sin;
-		const ex = mx + (cos >= 0 ? 1 : -1) * 25;
+		const ex = mx + (cos >= 0 ? 1 : -1) * 40;
 		const ey = my;
 		const textAnchor = cos >= 0 ? "start" : "end";
 

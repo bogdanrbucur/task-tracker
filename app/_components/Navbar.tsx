@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import getUserDetails from "../users/_actions/getUserById";
 import { AdminMenu } from "./AdminMenu";
+import { cn } from "@/lib/utils";
 
 const Navbar = async () => {
 	// Check user permissions
@@ -23,22 +24,24 @@ const Navbar = async () => {
 
 	return (
 		<nav className="container mx-auto flex justify-between space-x-1 px-3 py-2 md:space-x-3 md:px-3 ">
-			<section className="flex space-x-1 md:space-x-3">
+			<section className="flex space-x-1 md:space-x-3 items-center">
 				<Link href="/" className="flex items-center">
 					<Image src="/logo.png" alt="logo" width="100" height="50" />
 				</Link>
 				{user && (
-					<Link href="/tasks?status=1%2C5%2C2" className={buttonVariants({ variant: "ghost" })}>
+					<Link href="/tasks?status=1%2C5%2C2" className={cn(buttonVariants({ variant: "ghost" }), "px-1 md:px-4")}>
 						Tasks
 					</Link>
 				)}
 				{userPermissions?.isAdmin && <AdminMenu />}
 			</section>
 			<div className="flex items-center space-x-1 md:space-x-3">
-				<NavBarWelcome userProps={userProps} />
+				<span className="hidden md:block">
+					<NavBarWelcome userProps={userProps} />
+				</span>
 				{user && (
 					<form action={signOut}>
-						<Button variant="outline" type="submit" size="sm">
+						<Button variant="outline" type="submit" size="sm" className="px-1 md:px-4">
 							Sign Out
 						</Button>
 					</form>
