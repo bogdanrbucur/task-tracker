@@ -56,10 +56,14 @@ export default async function signIn(prevState: any, formData: FormData) {
 		// Handle Zod validation errors
 		if (error instanceof z.ZodError) {
 			for (const subError of error.errors) {
+				console.log(subError.message);
+				log(subError.message, `./logs/${logDate()}`);
 				return { message: subError.message };
 			}
 		} else {
 			// Handle other errors
+			console.log((error as any).message);
+			log((error as any).message, `./logs/${logDate()}`);
 			return { message: (error as any).message };
 		}
 	}

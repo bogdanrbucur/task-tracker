@@ -6,23 +6,25 @@ A web application to create, assign and manage tasks.
 
 ### Light and dark mode
 
-[gif of mode switching]
+![dark-mode](./readme/dark-mode.gif)
 
 ### Personalized user dashboard
 
-[ss of dashboard]
+<img src="./readme/image.png" alt="dashboard" width="750" height="480">
 
 ### Tasks comments system with user @mentions
 
-[gif of writting comment with @mentions]
+![comments](./readme/comments.gif)
 
 ### Email notifications for important events
 
+![comments](./readme/toast.gif)
 [gif of email toast and screenshot of email]
 
 ### Secure user management
 
-[ss of unverified user and ss of welcome page]
+<img src="./readme/user-page.png" alt="user">
+<img src="./readme/welcome.png" alt="dashboard" width="280" height="300">
 
 ### Powerful filtering and search
 
@@ -94,9 +96,10 @@ Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
 1. `npx prisma migrate dev --name init` and `npx prisma migrate --name change` for every new change
 2. `npx prisma generate` to generate the client
 
-#### To access and modify the database
+#### Directly accessing the database
 
-`npx prisma studio` to open the studio
+1. `npx prisma studio` to open the studio
+2. To generate a password hash to insert in the database, change the `pass` const in `./lib/hashpass.js` and run `node ./lib/hashpass.js` to get the hash printed to the console
 
 ## Roadmap
 
