@@ -1,55 +1,67 @@
-# Task Tracker
+# 📋 Task Tracker
 
-A web application to create, assign and manage tasks.
+A web app to create, assign and manage tasks. Users can create tasks, assign them to other users, comment on tasks, close tasks, and more. Managers can see their subordinates' tasks and statistics. Administrators can create and manage users.
 
-## Features
+## 💎 Features
 
-### Light and dark mode
+### 🌛 Light and dark mode
 
-Defaults to the user's system preference.
+Defaults to the user's system preference and preference is saved in local storage.
 
 ![dark-mode](./readme/dark-mode.gif)
 
-### Personalized user dashboard
+### 📈 Personalized user dashboard
 
 Users see their pending tasks and tasks to review if they are managers, as well as company-wide statistics.
 
 <img src="./readme/image.png" alt="dashboard" width="750" height="480">
 
-### Tasks comments system with user @mentions
+### 💬 Tasks comments system with user @mentions
 
-Mention users in comments to notify them.
+Mention users in comments to notify them by email.
 
 ![comments](./readme/comments.gif)
 
-### Email notifications for important events
+### 📩 Email notifications for important events
 
-Assigned tasks, due soon tasks, overdue tasks, completed tasks and re-opened tasks email notifications.
+Assigned tasks, due soon tasks, overdue tasks and more email notifications.
 
 ![comments](./readme/toast.gif)
 
-### Secure user management
+### 🔒 Secure user management
 
-Creating accounts, resetting passwords, deactivating users and more.
+Create and modify users and send password reset emails.
 <img src="./readme/user-page.png" alt="user">
 
-Users receive welcome and password reset emails.
+Users receive welcome and password reset emails and set their own passwords.
 
 <img src="./readme/welcome-email.png" alt="welcome-email" width="400" height="500">
 
-Users must set their own passwords. Administrators cannot set or ever see user's passwords.
+Administrators cannot set or ever see users' passwords which are hashed using [Argon2id](https://en.wikipedia.org/wiki/Argon2), an [industry-recognized](https://pages.nist.gov/800-63-4/sp800-63b.html) hashing algorithm, thus enforcing nonrepudiation.
 
 <img src="./readme/welcome.png" alt="dashboard" width="280" height="300">
 
-### Powerful filtering and search
+### 🔍 Powerful filtering and search
 
-[gif of searching for user and status]
+![search](./readme/search.gif)
 
-### Tasks Excel export
+### 📃 Tasks Excel export
 
-[gif of searching for something, exporting and opening Excel]
+![excel](./readme/excel.gif)
 
-## Tech stack
+### 📱 Responsive design
+
+All features available mobile devices.
+
+![mobile](./readme/mobile.png)
+
+### 📅 Task history
+
+See all changes made to tasks, enforcing accountability.
+
+![history](./readme/history.png)
+
+## 🚀 Tech stack
 
 - Metaframework: [Next.js](https://nextjs.org/)
 - Database: [SQLite](https://www.sqlite.org/index.html)
@@ -59,7 +71,7 @@ Users must set their own passwords. Administrators cannot set or ever see user's
 - Authentication: [Lucia](https://lucia-auth.com/) and [Oslo](https://oslo.js.org/). Thanks to [Robin Wieruch](https://www.robinwieruch.de/) for his [excellent tutorial](https://www.robinwieruch.de/next-authentication/)
 - Email: [Resend](https://resend.com/)
 
-## Installation and setup
+## 🛠️ Installation and setup
 
 1. Install [Node.js](https://nodejs.org/en/)
 2. Clone the repo `git clone`
@@ -116,123 +128,7 @@ Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
 1. `npx prisma studio` to open the studio
 2. To generate a password hash to insert in the database, change the `pass` const in `./lib/hashpass.js` and run `node ./lib/hashpass.js` to get the hash printed to the console
 
-## Roadmap
+## Todo
 
-- [x] Allow dashboard viewing without login but nothing else
-- [x] Display Sign In button in navbar if user is not siggned in
-- [x] Make a proper Sign In page and form validation
-- [x] Task view page
-- [x] Add Due Date to the Task model
-- [x] Task creation page. Access only with rights.
-- [x] Add history to the Task model and implement it in the Task view page. Every change should be recorded.
-- [x] Task edit page if the user has rights. Cancel option only with rights. Close task only with rights.
-- [x] Greeting in upper right corner of the navbar for the user
-- [x] Implement comments system for tasks
-- [x] Implement close task system with pop-up and optional comment
-- [x] Implement Completed On and Closed On fields in the Task model and view page
-- [x] Revamp permission system:
-- [x] guest: view dashboard;
-- [x] user: view dashboard, all tasks, complete his tasks, view his user and change his password
-- [x] manager (has active subordinates): create tasks, edit tasks (only for his subordinates and themselves), close his subordinates' tasks, view his subordinates' users, can export tasks to Excel;
-- [x] admin: can create/edit users.
-- [x] Implement Complete task system with pop-up and mandatory comment
-- [x] Nicer alert dialogs
-- [x] Implement Re-Open task system with pop-up and mandatory comment
-- [x] User view page
-- [x] User creation page
-- [x] User password change if that user is viewing the page
-- [x] User password change pop-up
-- [x] Restrict normal users from editing department, manager, email and position
-- [x] Avatar saved as BLOB and displayed in the user view page
-- [x] Dates colors that make sense: due date red if overdue. Completed date red if overdue. In all pages
-- [x] Comment users with avatars
-- [x] Provision to deactivate users. Delete the avatar file from local storage when deactivating a user
-- [x] Tasks and Users table filters
-- [x] Replace the React Icon logo with an actual generic .png
-- [x] Make a Department admin page
-- [x] Make an admin menu with dropdowns for Users and Departments
-- [x] Overdue flag for each task
-- [x] Overdue status filter for tasks
-- [x] Overdue checking when editing a task
-- [x] Design a dashboard with statistics on top, my pending tasks and tasks to review for managers
-- [x] Footer: Proudly made in RO by me
-- [x] Scheduled function to check for overdue tasks and send due soon and overdue emails
-- [x] [feat] Comments @ mentions
-- [x] [feat] Email notifications for:
-  - [x] [feat] Task assigned
-  - [x] [feat] Task due soon
-  - [x] [feat] Task overdue to user and manager
-  - [x] [feat] Task completed
-  - [x] [feat] Task re-opened
-  - [x] [feat] @comment mentions
-- [x] [fix] Saving user errors
-- [x] [feat] User edit avatar change in real-time
-- [x] [fix] Fix user Edit button access
-- [x] [feat] Add Sonner toast notifications for changes and sent emails
-  - [x] [feat] For new task email sent
-  - [x] [feat] For task modified, if email sent
-  - [x] [feat] For task completed, if email sent
-  - [x] [feat] For task re-opened, if email sent
-- [x] [feat] Task cancellation
-  - [x] [feat] Button in the task view page
-  - [x] [feat] Pop-up with mandatory comment
-  - [x] [feat] Task close action
-  - [x] [feat] Task history entry
-  - [x] [feat] Email notification to user and manager
-  - [x] [feat] Sonner toast notification for email sending
-- [x] [feat] If saving new user as admin, highlight it will be admin
-- [x] [feat] Ability to deactivate other admins
-- [x] [feat] User name red if the user is inactive
-- [x] [feat] Populate user's avatar in the edit page, if available
-- [x] [feat] User password reset
-  - [x] [feat] Token schema
-  - [x] [feat] Password reset button for admins
-  - [x] [feat] Password reset action to generate token and send email
-  - [x] [feat] Password reset page to validate token and set new password
-  - [x] [feat] Email template for password reset
-  - [x] [feat] Email template for new user created
-  - [x] [feat] Forgot password link in the login page with email input
-  - [x] [feat] Server action to create token and send email
-  - [x] [feat] Password reset email
-  - [x] [feat] User creation automatic email with page to set password
-  - [x] [feat] Update user schema to include status active, inactive and unverified and remove status
-  - [x] [feat] Show the user status in the user view page
-  - [x] [feat] Activate/deactivate user should set the appropriate status
-  - [x] [feat] User creation should set the status to unverified
-  - [x] [feat] When user sets the password, set the status to active
-  - [x] [feat] Give admin the ability to resend welcome email
-  - [x] [feat] Give admin the ability delete unverified users
-  - [x] [feat] Sonner toast notification that emails are sent
-  - [x] [feat] In dailyTasks, check for expired tokens and users without password. Delete expired tokens
-  - [x] [feat] Update the user schema to record the user who created the user
-  - [x] [feat] In dailyTasks, check for users without password and notify the admin
-  - [ ] [feat] MAYBE. Give admin the ability to confirm password themselves
-- [x] [feat] Greeting should only say good morning after 5 AM
-- [x] [chore] Implement secret key for calling dailyTasks API
-- [x] [feat] Add a proper 404 page
-- [x] [feat] Add a favicon
-- [x] [fix] Fix users page headers links
-- [x] [fix] Tasks date sorting
-- [x] [feat] Links from User tasks to tasks filtered by user
-- [x] [fix] Links to tasks page reordering URL params
-- [x] [feat] Nicer looking @mention menu, with (department)
-- [x] [feat] Restructure the files/folders
-- [x] [fix] New task can be assigned to inactive users
-- [x] [feat] Excel export tasks, but with all pages
-- [x] [fix] Do not allow cancelling closed tasks
-- [x] [feat] Server-side logging
-- [x] [feat] Departments delete
-- [x] [feat] Make all pages responsive
-  - [x] [feat] Dashboard
-  - [x] [feat] Departments
-  - [x] [feat] Users list
-  - [x] [feat] Users view
-  - [x] [feat] Task list
-  - [x] [feat] Task view
-  - [x] [feat] Task edit
-  - [x] [feat] User edit
-- [x] [fix] Failed to send email when comment is too short
-- [x] [feat] Enforce password complexity
-- [x] [fix] Avatar not populating while editing user
-- [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
 - [ ] [feat] Automatic database backups
+- [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
