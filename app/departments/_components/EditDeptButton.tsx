@@ -36,7 +36,6 @@ export default function EditDeptButton({ dept }: { dept?: Department }) {
 	// Listen for changes in the success state
 	useEffect(() => {
 		if (state?.success) {
-			// TODO perhaps call a function to update the department list instead of a full page reload, but how?
 			// If the operation was successful, perform a full page reload
 			window.location.reload();
 		}

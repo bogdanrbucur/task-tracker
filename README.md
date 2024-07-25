@@ -145,6 +145,6 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] Task edit
   - [x] [feat] User edit
 - [x] [fix] Failed to send email when comment is too short
-- [ ] [feat] Enforce password complexity
+- [x] [feat] Enforce password complexity
 - [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
 - [ ] [feat] Automatic database backups

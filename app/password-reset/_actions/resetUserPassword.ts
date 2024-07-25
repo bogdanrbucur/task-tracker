@@ -9,11 +9,18 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 	const rawFormData = Object.fromEntries(formData.entries());
 	console.log(rawFormData);
 
+	const passwordSchema = z
+		.string()
+		.min(8, { message: "Password must be at least 8 characters long." })
+		.regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+		.regex(/[!@#$%^&*(),.?":{}|<>]/, { message: "Password must contain at least one special character." })
+		.regex(/\d/, { message: "Password must contain at least one number." });
+
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		id: z.string().length(25, { message: "Invalid user ID." }),
-		newPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }),
-		confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }),
+		newPassword: passwordSchema,
+		confirmPassword: passwordSchema,
 	});
 
 	try {
@@ -35,7 +42,7 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 			return { message: "Passwords do not match." };
 		}
 
-		// TODO add a salt to the password hash
+		// Randomly generated salt for the password hashing, no need to provide one
 		const hashedPassword = await new Argon2id().hash(data.newPassword);
 		const updatedUser = await prisma.user.update({
 			where: { id: data.id },

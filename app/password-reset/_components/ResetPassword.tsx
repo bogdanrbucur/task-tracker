@@ -1,15 +1,13 @@
 // Client form component to change user password
 "use client";
 
-import resetUserPassword from "@/app/password-reset/resetUserPassword";
+import resetUserPassword from "@/app/password-reset/_actions/resetUserPassword";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import { useFormState } from "react-dom";
 
 const initialState = {
