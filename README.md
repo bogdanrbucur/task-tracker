@@ -6,24 +6,39 @@ A web application to create, assign and manage tasks.
 
 ### Light and dark mode
 
+Defaults to the user's system preference.
+
 ![dark-mode](./readme/dark-mode.gif)
 
 ### Personalized user dashboard
+
+Users see their pending tasks and tasks to review if they are managers, as well as company-wide statistics.
 
 <img src="./readme/image.png" alt="dashboard" width="750" height="480">
 
 ### Tasks comments system with user @mentions
 
+Mention users in comments to notify them.
+
 ![comments](./readme/comments.gif)
 
 ### Email notifications for important events
 
+Assigned tasks, due soon tasks, overdue tasks, completed tasks and re-opened tasks email notifications.
+
 ![comments](./readme/toast.gif)
-[gif of email toast and screenshot of email]
 
 ### Secure user management
 
+Creating accounts, resetting passwords, deactivating users and more.
 <img src="./readme/user-page.png" alt="user">
+
+Users receive welcome and password reset emails.
+
+<img src="./readme/welcome-email.png" alt="welcome-email" width="400" height="500">
+
+Users must set their own passwords. Administrators cannot set or ever see user's passwords.
+
 <img src="./readme/welcome.png" alt="dashboard" width="280" height="300">
 
 ### Powerful filtering and search
