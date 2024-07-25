@@ -103,6 +103,47 @@ Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tas
 6. `npm run build` to build the app
 7. `npm run start` to run the app in production mode on port 3000
 
+### Automatic start
+
+#### Linux - systemd
+
+1. Create a service file `/etc/systemd/system/task-tracker.service` with the following content:
+
+```ini
+[Unit]
+Description=Task Tracker
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+Restart=always
+Restart=on-failure
+RestartSec=10
+WorkingDirectory=/path/to/app/task-tracker/
+StandardOutput=/var/log/task-tracker.log
+StandardError=/var/log/task-tracker.log
+ExecStart=/usr/bin/npm start
+
+[Install]
+WantedBy=multi-user.target
+```
+
+2. Create the log file with `sudo touch /var/log/task-tracker.log`
+3. Ensure the logfile has the user permissions with `sudo chmod 644 /var/log/task-tracker.log`
+4. Restart the systemctl background process with `sudo systemctl daemon-reload`
+5. Start the service with `sudo systemctl start task-tracker`
+6. Enable the service to start at boot with `sudo systemctl enable task-tracker`
+7. Check the status with `sudo systemctl status task-tracker`
+
+#### Windows - Task Scheduler
+
+Create a basic start that will run at start-up with the following settings:
+
+Program/script: "Powershell"
+Add arguments (optional): `cd "C:\path\to\script\" | npm start`
+
 ### Scheduled daily tasks
 
 Schedule to run `npm run daily` to run all the daily tasks, just after midnight. This will clear unused password reset tokens and check for overdue and due soon tasks and send the email notifications.
