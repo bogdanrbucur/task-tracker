@@ -53,6 +53,9 @@ export async function POST(req: NextRequest) {
 			where: { id: task.id },
 			data: { statusId: 5 },
 		});
+
+		// Wait for 1 second to avoid rate limiting
+		await new Promise((resolve) => setTimeout(resolve, 1200));
 	}
 
 	// Check for due today tasks...
