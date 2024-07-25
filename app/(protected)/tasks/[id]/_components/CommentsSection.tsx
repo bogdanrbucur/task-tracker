@@ -109,7 +109,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 			formRef.current?.reset();
 			toast.success(`Email sent to mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
 		}
-		if (formState?.message && !formState?.emailSent) {
+		if (formState?.success && formState?.message && !formState?.emailSent) {
 			toast.error("Failed to send email.");
 		}
 	}, [formState]);

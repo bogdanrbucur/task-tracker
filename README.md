@@ -135,15 +135,16 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 - [x] [fix] Do not allow cancelling closed tasks
 - [x] [feat] Server-side logging
 - [x] [feat] Departments delete
-- [ ] [feat] Make all pages responsive
+- [x] [feat] Make all pages responsive
   - [x] [feat] Dashboard
   - [x] [feat] Departments
   - [x] [feat] Users list
-  - [ ] [feat] Users view
-  - [ ] [feat] Task list
-  - [ ] [feat] Task view
-  - [ ] [feat] Task edit
-  - [ ] [feat] User edit
+  - [x] [feat] Users view
+  - [x] [feat] Task list
+  - [x] [feat] Task view
+  - [x] [feat] Task edit
+  - [x] [feat] User edit
+- [x] [fix] Failed to send email when comment is too short
 - [ ] [feat] Enforce password complexity
 - [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
 - [ ] [feat] Automatic database backups

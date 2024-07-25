@@ -66,7 +66,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 			<CardHeader>
 				<div className="fade-in grid grid-cols-1 md:grid-cols-2 gap-4">
 					<UserAvatarNameLarge user={userDetails} />
-					<div className="flex gap-1 md:gap-2 items-center justify-center md:justify-end">
+					<div className="flex gap-2 md:gap-2 items-center justify-center md:justify-end">
 						{canEdit && (
 							<Button asChild size="sm" className="w-auto">
 								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">

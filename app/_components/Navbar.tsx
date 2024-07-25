@@ -24,7 +24,7 @@ const Navbar = async () => {
 
 	return (
 		<nav className="container mx-auto flex justify-between space-x-1 px-3 py-2 md:space-x-3 md:px-3 ">
-			<section className="flex space-x-1 md:space-x-3 items-center">
+			<section className="flex space-x-2 md:space-x-3 items-center">
 				<Link href="/" className="flex items-center">
 					<Image src="/logo.png" alt="logo" width="100" height="50" />
 				</Link>
@@ -41,7 +41,7 @@ const Navbar = async () => {
 				</span>
 				{user && (
 					<form action={signOut}>
-						<Button variant="outline" type="submit" size="sm" className="px-1 md:px-4">
+						<Button variant="outline" type="submit" size="sm" className="px-2 md:px-4">
 							Sign Out
 						</Button>
 					</form>

@@ -94,35 +94,33 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 							<input type="hidden" name="managerId" value={managerId ?? ""} />
 						</div>
 					</div>
-					<div className="space-y-2 flex justify-between">
-						<div>
-							<Label htmlFor="avatar">Avatar</Label>
-							<div className="flex items-center gap-4">
-								<Avatar className="h-16 w-16">
-									<AvatarImage alt="Avatar" src={imageUrl || ""} />
-									<AvatarFallback>JD</AvatarFallback>
-								</Avatar>
-								<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} />
-							</div>
+					<div className="space-y-2">
+						<Label htmlFor="avatar">Avatar</Label>
+						<div className="flex items-center gap-4">
+							<Avatar className="h-16 w-16 md:h-20 md:w-20">
+								<AvatarImage alt="Avatar" src={imageUrl || ""} />
+								<AvatarFallback>JD</AvatarFallback>
+							</Avatar>
+							<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} className="" />
 						</div>
-
-						{/* Do not allow admins to un-make themselves admins */}
-						{editor !== user?.id && (
-							<div>
-								<div className="flex items-center space-x-2 justify-start pl-3">
-									<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} onCheckedChange={onIsAdminCheckboxChange} />
-									<div>
-										<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-											Admin user
-										</label>
-									</div>
-								</div>
-								<p className={`text-xs ${isAdminChecked ? "text-red-600 dark:text-red-400" : "text-muted-foreground"} pl-3`}>
-									User will have full control over tasks and users, including other administrators.
-								</p>
-							</div>
-						)}
 					</div>
+					{/* Do not allow admins to un-make themselves admins */}
+					{editor !== user?.id && (
+						<div>
+							<div className="flex items-center space-x-2 justify-start pl-3">
+								<Checkbox name="isAdmin" defaultChecked={user ? user.isAdmin : false} onCheckedChange={onIsAdminCheckboxChange} />
+								<div>
+									<label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+										Admin user
+									</label>
+								</div>
+							</div>
+							<p className={`text-xs ${isAdminChecked ? "text-red-600 dark:text-red-400" : "text-muted-foreground"} pl-3`}>
+								User will have full control over all tasks and all users, including other administrators.
+							</p>
+						</div>
+					)}
+
 					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
