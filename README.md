@@ -2,6 +2,8 @@
 
 A web app to create, assign and manage tasks, built with the latest web technologies.
 
+See a live deployment running on my Raspberry Pi [here](https://tasks.tetrabit.dev).
+
 ## 💎 Features
 
 ### 🚀 Intuitive tasks workflow

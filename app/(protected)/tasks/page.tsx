@@ -32,8 +32,6 @@ interface Props {
 	searchParams: TasksQuery;
 }
 
-export let excelExportQuery: any;
-
 export default async function TasksPage({ searchParams }: Props) {
 	// Check user permissions
 	const { user } = await getAuth();
