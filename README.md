@@ -1,8 +1,18 @@
 # 📋 Task Tracker
 
-A web app to create, assign and manage tasks. Users can create tasks, assign them to other users, comment on tasks, close tasks, and more. Managers can see their subordinates' tasks and statistics. Administrators can create and manage users.
+A web app to create, assign and manage tasks, built with the latest web technologies.
 
 ## 💎 Features
+
+### 🚀 Intuitive tasks workflow
+
+- Managers can create and edit tasks for themselves and their subordinates
+- Users are notified when new tasks are assigned to them, when they are due soon or overdue
+- Using comments, users can ask questions, provide updates and mention other users
+- Upon task completion, users mark tasks as Completed and add their remarks
+- Managers are notified of Completed tasks, review them and Close the tasks
+- Administrators can make any change to any tasks
+- All changes are logged and can be viewed by anyone for full transparency
 
 ### 🌛 Light and dark mode
 
@@ -28,7 +38,7 @@ Assigned tasks, due soon tasks, overdue tasks and more email notifications.
 
 ![comments](./readme/toast.gif)
 
-### 🔒 Secure user management
+### 🔑 Secure user management
 
 Create and modify users and send password reset emails.
 <img src="./readme/user-page.png" alt="user">
@@ -51,7 +61,7 @@ Administrators cannot set or ever see users' passwords which are hashed using [A
 
 ### 📱 Responsive design
 
-All features available mobile devices.
+All features available on mobile devices.
 
 ![mobile](./readme/mobile.png)
 
@@ -61,7 +71,7 @@ See all changes made to tasks, enforcing accountability.
 
 ![history](./readme/history.png)
 
-## 🚀 Tech stack
+## 💾 Tech stack
 
 - Metaframework: [Next.js](https://nextjs.org/)
 - Database: [SQLite](https://www.sqlite.org/index.html)
