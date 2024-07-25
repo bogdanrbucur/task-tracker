@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
 	// Read the body in JSON format and check that it contains the correct secret
 	try {
 		const body = await req.json();
-		console.log(`Daily task API called with token ${body.token}`);
-		log(`Daily task API called with token ${body.token}`, `./logs/${logDate()}`);
+		console.log(`Daily task API called with body ${body}`);
+		log(`Daily task API called with body ${body}`, `./logs/${logDate()}`);
 		if (body.token !== process.env.DAILY_TASKS_TOKEN) {
 			console.log("Token is invalid");
 			log("Token is invalid", `./logs/${logDate()}`);
