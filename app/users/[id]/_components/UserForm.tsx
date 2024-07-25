@@ -36,9 +36,10 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const editingSelf = editor === user?.id;
 
 	// Get the avatar file from the server
-	const avatar = user?.avatar ? `/avatars/${user.id}` : undefined;
+	const avatar = user?.avatar ? `/api/avatars/${user.id}` : undefined;
 	useEffect(() => {
 		if (avatar) setImageUrl(avatar);
+		console.log(imageUrl);
 	}, [avatar]);
 
 	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +102,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 								<AvatarImage alt="Avatar" src={imageUrl || ""} />
 								<AvatarFallback>JD</AvatarFallback>
 							</Avatar>
-							<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} className="" />
+							<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} />
 						</div>
 					</div>
 					{/* Do not allow admins to un-make themselves admins */}

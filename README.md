@@ -1,35 +1,104 @@
 # Task Tracker
 
-A task tracker application built with Next.js, Prisma, SQLite, Lucia, Oslo, and shadcn-ui. Work in progress...
+A web application to create, assign and manage tasks.
 
-## Setup Primsa with SQLite
+## Features
+
+### Light and dark mode
+
+[gif of mode switching]
+
+### Personalized user dashboard
+
+[ss of dashboard]
+
+### Tasks comments system with user @mentions
+
+[gif of writting comment with @mentions]
+
+### Email notifications for important events
+
+[gif of email toast and screenshot of email]
+
+### Secure user management
+
+[ss of unverified user and ss of welcome page]
+
+### Powerful filtering and search
+
+[gif of searching for user and status]
+
+### Tasks Excel export
+
+[gif of searching for something, exporting and opening Excel]
+
+## Tech stack
+
+- Metaframework: [Next.js](https://nextjs.org/)
+- Database: [SQLite](https://www.sqlite.org/index.html)
+- ORM: [Prisma](https://www.prisma.io/)
+- UI components: [shadcn-ui](https://ui.shadcn.com/)
+- CSS framework: [Tailwind CSS](https://tailwindcss.com/)
+- Authentication: [Lucia](https://lucia-auth.com/) and [Oslo](https://oslo.js.org/). Thanks to [Robin Wieruch](https://www.robinwieruch.de/) for his [excellent tutorial](https://www.robinwieruch.de/next-authentication/)
+- Email: [Resend](https://resend.com/)
+
+## Installation and setup
+
+1. Install [Node.js](https://nodejs.org/en/)
+2. Clone the repo `git clone`
+3. `npm install` to install all dependencies
+4. Create a `.env.local` file with the following content:
+
+```env
+`RESEND_API_KEY="re_123"`
+`BASE_URL="https://example.com"`
+`DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"`
+```
+
+Enter your Resend API key and your base URL.
+Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tasks API so it cannot be executed remotely.
+
+5. `npm run dev` to run in dev mode
+6. `npm run build` to build the app
+7. `npm run start` to run the app in production mode on port 3000
+
+### Scheduled daily tasks
+
+Schedule to run `npm run daily` to run all the daily tasks, just after midnight. This will clear unused password reset tokens and check for overdue and due soon tasks and send the email notifications.
+
+#### Linux
+
+You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 01:00, add the following line to your crontab by running `crontab -e`:
+
+```bsh
+0 1 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run daily
+```
+
+#### Windows
+
+You can use Task Scheduler to run the script at a specific interval. Create a new basic task with the following settings:
+
+Program/script: "Powershell"
+Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
+
+### Using Primsa with SQLite
+
+#### First-time setup. Unnecessary if you clone the repo
 
 1. `npm install prisma --save-dev`
 2. `npx prisma init --datasource-provider sqlite`
 3. Configure `./prisma/schema.prisma` to setup some models
-4. `npx prisma migrate dev --name init` and `npx prisma migrate --name change` for every new change
-5. `npx prisma generate` to generate the client
-6. `npx prisma studio` to open the studio
 
-## Setup shadcn-ui
+#### When making schema changes
 
-[Follow instructions](https://ui.shadcn.com/docs/installation/next).
+1. `npx prisma migrate dev --name init` and `npx prisma migrate --name change` for every new change
+2. `npx prisma generate` to generate the client
 
-## Setup authentication and authorization with Lucia and Oslo
+#### To access and modify the database
 
-[Follow instructions](https://www.robinwieruch.de/next-authentication/).
+`npx prisma studio` to open the studio
 
-## Scheduled daily tasks
-
-Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
-
-## `.env.local`
-
-`RESEND_API_KEY="re_123"`
-`BASE_URL="https://example.com"`
-`DAILY_TASKS_TOKEN="ff238d8c2b7da7a72f83de4757fd33f7357fe079ad7886ddc707f09a184b0f70"`
-
-## TODO
+## Roadmap
 
 - [x] Allow dashboard viewing without login but nothing else
 - [x] Display Sign In button in navbar if user is not siggned in
@@ -146,5 +215,6 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
   - [x] [feat] User edit
 - [x] [fix] Failed to send email when comment is too short
 - [x] [feat] Enforce password complexity
+- [x] [fix] Avatar not populating while editing user
 - [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
 - [ ] [feat] Automatic database backups
