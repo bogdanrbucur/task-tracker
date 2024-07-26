@@ -48,6 +48,11 @@ export default async function Home() {
 	const deptTasksChartData = departmentTasks(activeTasks);
 	const statusTasksChartData = statusTasks(activeTasks);
 
+	if (!user) {
+		console.log("A guest visitor accessed the home page.");
+		log("A guest visitor accessed the home page.", `./logs/${logDate()}`);
+	}
+
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);

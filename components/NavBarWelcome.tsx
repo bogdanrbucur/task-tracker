@@ -1,10 +1,16 @@
+"use client";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-// determine the time of day: morning, noon or evening
+const NavBarWelcome = ({ userProps }: { userProps: UserExtended }) => {
+	const [timeOfDay, setTimeOfDay] = useState<{ greeting: string; emoji: string }>({ greeting: "", emoji: "" });
+
+	// useEffect ensures that the time of day is determined every render
+	useEffect(() => {
+	// determine the time of day: morning, noon or evening
 const date = new Date();
 const hours = date.getHours();
-let timeOfDay: { greeting: string; emoji: string } = { greeting: "", emoji: "" };
 let occasion = "";
 
 // get the day of the week
@@ -35,41 +41,38 @@ else {
 }
 switch (occasion) {
 	case "christmas":
-		timeOfDay = { greeting: "Merry Christmas", emoji: "🎄" };
+		setTimeOfDay({ greeting: "Merry Christmas", emoji: "🎄" });
 		break;
 	case "new year":
-		timeOfDay = { greeting: "Happy New Year", emoji: "🎆" };
+		setTimeOfDay({ greeting: "Happy New Year", emoji: "🎆" });
 		break;
 	case "friday morning":
-		timeOfDay = { greeting: "Happy Friday", emoji: "🎉" };
+		setTimeOfDay({ greeting: "Happy Friday", emoji: "🎉" });
 		break;
 	case "friday afternoon":
-		timeOfDay = { greeting: "Happy Friday", emoji: "🎉" };
+		setTimeOfDay({ greeting: "Happy Friday", emoji: "🎉" });
 		break;
 	case "friday evening":
-		timeOfDay = { greeting: "Happy Friday", emoji: "🎉" };
+		setTimeOfDay({ greeting: "Happy Friday", emoji: "🎉" });
 		break;
 	case "morning":
-		timeOfDay = { greeting: "Good morning", emoji: "🌞" };
+		setTimeOfDay({ greeting: "Good morning", emoji: "☕" });
 		break;
 	case "afternoon":
-		timeOfDay = { greeting: "Good day", emoji: "🌞" };
+		setTimeOfDay({ greeting: "Good day", emoji: "🌞" });
 		break;
 	case "evening":
-		timeOfDay = { greeting: "Good evening", emoji: "🌛" };
+		setTimeOfDay({ greeting: "Good evening", emoji: "🌛" });
 		break;
 	case "night":
-		timeOfDay = { greeting: "Starry night", emoji: "✨" };
+		setTimeOfDay({ greeting: "Starry night", emoji: "✨" });
 		break;
 	case "friday night":
-		timeOfDay = { greeting: "Starry night", emoji: "✨" };
+		setTimeOfDay({ greeting: "Starry night", emoji: "✨" });
 		break;
 	default:
 		break;
-}
-
-const NavBarWelcome = ({ userProps }: { userProps: UserExtended | undefined }) => {
-	if (!userProps) return null;
+}},[]);
 
 	return (
 		<div className="text-xs text-center md:text-base">

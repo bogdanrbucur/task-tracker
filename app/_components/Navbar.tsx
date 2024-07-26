@@ -1,15 +1,16 @@
-// "use client";
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import { signOut } from "@/actions/auth/sign-out";
 import NavBarWelcome from "@/components/NavBarWelcome";
 import { ModeToggle } from "@/components/themeToggle";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import getUserDetails from "../users/_actions/getUserById";
 import { AdminMenu } from "./AdminMenu";
-import { cn } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 const Navbar = async () => {
 	// Check user permissions
@@ -36,9 +37,11 @@ const Navbar = async () => {
 				{userPermissions?.isAdmin && <AdminMenu />}
 			</section>
 			<div className="flex items-center space-x-1 md:space-x-3">
-				<span className="hidden md:block">
-					<NavBarWelcome userProps={userProps} />
-				</span>
+				{user && (
+					<span className="hidden md:block">
+						<NavBarWelcome userProps={userProps!} />
+					</span>
+				)}
 				{user && (
 					<form action={signOut}>
 						<Button variant="outline" type="submit" size="sm" className="px-2 md:px-4">
