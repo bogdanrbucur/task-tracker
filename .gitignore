@@ -37,3 +37,6 @@ next-env.d.ts
 
 # Logging
 /logs/*
+
+# Loader.io
+/public/*.txt
