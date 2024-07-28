@@ -1,17 +1,18 @@
 // server function to add new task
 "use server";
 
+import { getAuth } from "@/actions/auth/get-auth";
 import createUser from "@/app/users/_actions/createUser";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import { logDate, resizeAndSaveImage } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { User } from "@prisma/client";
 import fs from "fs-extra";
+import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import updateUser from "../[id]/_actions/updateUser";
-import log from "log-to-file";
 
 export type NewUser = {
 	firstName: string;
@@ -38,8 +39,12 @@ export type UpdateUser = NewUser & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
 
 export default async function submitUser(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log(rawFormData);
+
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	if (!agent) return { message: "You do not have permission to perform this action." };
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -74,6 +79,13 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			// avatarBuffer: undefined as Buffer | undefined,
 		});
 
+		// If no user ID is provided, means a new user is being created
+		// Check if the editor is admin in this case
+		if (!data.id) {
+			const editor = await getUserDetails(agent.id);
+			if (!editor.isAdmin) return { message: "You do not have permission to perform this action." };
+		}
+
 		// If the user edited themselves, they cannot change their email or position
 		// The client will not send them to the server, so need to fill them in here
 		if (data.id === data.editor) {
@@ -85,8 +97,8 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		}
 
 		// Check the size of the avatar and reject if it's too large
-		if (data.avatar && data.avatar.size > 4194304) {
-			return { message: "Avatar file is too large. Maximum size is 4 MB." };
+		if (data.avatar && data.avatar.size > 5242880) {
+			return { message: "Avatar file is too large. Maximum size is 5 MB." };
 		}
 
 		// Get the created by user object by the ID
@@ -95,16 +107,19 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		// TODO clean-up... this is a mess
 		// If a user ID is provided, update the existing user
 		if (data.id) {
+			const oldUser = await getUserDetails(data.id);
 			newUser = await updateUser(data as UpdateUser, editingUser!);
 
 			console.log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
-			console.log(`OLD USER: ${data.firstName} ${data.lastName} / ${data.email}, dept: ${data.departmentId}, manager: ${data.managerId}, admin: ${data.isAdmin}`);
+			console.log(
+				`OLD USER: ${oldUser.firstName} ${oldUser.lastName} / ${oldUser.email}, dept: ${oldUser.department?.id}, manager: ${oldUser.manager?.id}, admin: ${oldUser.isAdmin}`
+			);
 			console.log(
 				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`
 			);
 			log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `./logs/${logDate()}`);
 			log(
-				`OLD USER: ${data.firstName} ${data.lastName} / ${data.email}, dept: ${data.departmentId}, manager: ${data.managerId}, admin: ${data.isAdmin}`,
+				`OLD USER: ${oldUser.firstName} ${oldUser.lastName} / ${oldUser.email}, dept: ${oldUser.department?.id}, manager: ${oldUser.manager?.id}, admin: ${oldUser.isAdmin}`,
 				`./logs/${logDate()}`
 			);
 			log(

@@ -1,17 +1,12 @@
 // server function to register new user
 "use server";
 
-import { getAuth } from "@/actions/auth/get-auth";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { UpdateUser } from "@/app/users/new/submitUser";
 import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
 
 export default async function updateUser(data: UpdateUser, editingUser: UserExtended) {
-		// Check user permissions
-		const { user: agent } = await getAuth();
-		if (!agent) return { message: "You do not have permission to perform this action." };
-	
 	try {
 		const updatedUser = await prisma.user.update({
 			where: { id: data.id },
