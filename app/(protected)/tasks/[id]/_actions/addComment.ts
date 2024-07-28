@@ -1,5 +1,6 @@
 // server function to add new comment
 "use server";
+import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
@@ -8,6 +9,10 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export default async function addComment(prevState: any, formData: FormData) {
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	if (!agent) return { message: "You do not have permission to perform this action." };
+
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		taskId: z.string(),
@@ -40,7 +45,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 		});
 
 		if (newComment) success = true;
-		
+
 		// Get the user who commented
 		const user = await prisma.user.findUnique({
 			where: { id: data.userId },

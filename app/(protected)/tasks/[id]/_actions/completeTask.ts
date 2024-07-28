@@ -6,10 +6,15 @@ import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
+import { getAuth } from "@/actions/auth/get-auth";
 
 export default async function completeTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
 	// console.log(rawData);
+
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	if (!agent) return { message: "You do not have permission to perform this action." };
 
 	// Define the Zod schema for the form data
 	const schema = z.object({

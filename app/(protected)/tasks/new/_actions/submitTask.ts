@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { updateTask } from "../../[id]/_actions/updateTask";
 import { createTask } from "./createTask";
+import { getAuth } from "@/actions/auth/get-auth";
 
 export type NewTask = {
 	title: string;
@@ -22,6 +23,10 @@ export type Editor = { firstName: string; lastName: string; id: string };
 export default async function submitTask(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// console.log(rawFormData);
+
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	if (!agent) return { message: "You do not have permission to perform this action." };
 
 	// Define the Zod schema for the form data
 	const schema = z.object({

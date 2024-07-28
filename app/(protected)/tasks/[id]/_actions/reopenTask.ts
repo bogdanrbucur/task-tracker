@@ -1,5 +1,6 @@
 "use server";
 
+import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
@@ -11,6 +12,10 @@ import { recordTaskHistory } from "./recordTaskHistory";
 export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
 	// console.log(rawData);
+
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	if (!agent) return { message: "You do not have permission to perform this action." };
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
