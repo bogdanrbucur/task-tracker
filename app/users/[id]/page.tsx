@@ -63,30 +63,30 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
-			<CardHeader>
+			<CardHeader className="px-3 md:px-6">
 				<div className="fade-in grid grid-cols-1 md:grid-cols-2 gap-4">
 					<UserAvatarNameLarge user={userDetails} />
 					<div className="grid grid-rows-2 md:flex gap-2 items-center justify-start md:justify-end">
 						<div className="flex gap-2 justify-start">
-						{canEdit && (
-							<Button asChild size="sm" className="w-auto">
-								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
-									Edit
-									<SquarePen size="18" />
-								</Link>
-							</Button>
-						)}
-						{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
+							{canEdit && (
+								<Button asChild size="sm" className="w-auto">
+									<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
+										Edit
+										<SquarePen size="18" />
+									</Link>
+								</Button>
+							)}
+							{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
 						</div>
 						<div className="flex gap-2 justify-start">
-						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
-						{userPermissions?.isAdmin && user.id !== userDetails.id && userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
-						{/* Only admins can deactivate users but cannot deactivate themselves */}
-						{userPermissions.isAdmin && user.id !== userDetails.id && (
-							<ToggleUserButton userId={userDetails.id} status={userDetails.status} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
-						)}
-						{/* Can only delete a user if they were never active (don't have a password) and are inactive */}
-						{userPermissions.isAdmin && !userWithPassword?.hashedPassword && userWithPassword?.status === "inactive" && <DeleteUserButton userId={userDetails.id} />}
+							{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
+							{userPermissions?.isAdmin && user.id !== userDetails.id && userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
+							{/* Only admins can deactivate users but cannot deactivate themselves */}
+							{userPermissions.isAdmin && user.id !== userDetails.id && (
+								<ToggleUserButton userId={userDetails.id} status={userDetails.status} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
+							)}
+							{/* Can only delete a user if they were never active (don't have a password) and are inactive */}
+							{userPermissions.isAdmin && !userWithPassword?.hashedPassword && userWithPassword?.status === "inactive" && <DeleteUserButton userId={userDetails.id} />}
 						</div>
 					</div>
 				</div>
@@ -97,8 +97,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					</div>
 				)}
 			</CardHeader>
-			<CardContent className="fade-in grid gap-6">
-				<div className="grid grid-cols-2 gap-4">
+			<CardContent className="fade-in grid gap-2 md:gap-6 px-3 md:px-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department</h4> <p>{userDetails.department?.name}</p>
 					</div>
@@ -111,7 +111,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 				{activeSubordinates.length > 0 && (
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Subordinates</h4>
-						<div className="grid grid-cols-2 gap-4">
+						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 							{activeSubordinates.map((subordinate) => (
 								<UserAvatarNameNormal user={subordinate} key={subordinate.id} />
 							))}

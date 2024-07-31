@@ -13,9 +13,9 @@ const MobileTaskTabelCell = ({ task, viewableUsers }: { task: TaskExtended; view
 			{/* Make the title clickable and dynamically build the URL to the issue page */}
 			<Link href={`/tasks/${task.id}`}>{task.title}</Link>
 			{/* visible on mobile but hidden on medium devices and higher */}
-			<div className="flex md:hidden items-center justify-between pr-0">
-				<div className="grid grid-cols-2 w-5/6">
-					<div className="spacep-y-1">
+			<div className="md:hidden px-0">
+				<div className="flex justify-between py-1">
+					<div>
 						{task.assignedToUser && viewableUsers?.includes(task.assignedToUser.id) ? (
 							<Link href={`/users/${task.assignedToUserId}`}>
 								<UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
@@ -24,20 +24,21 @@ const MobileTaskTabelCell = ({ task, viewableUsers }: { task: TaskExtended; view
 							task.assignedToUser && <UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 						)}
 					</div>
-					<div id="dates" className="block md:hidden">
-						<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
-							Due on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
-						</div>
-						{task.completedOn && (
-							<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
-								Completed on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.completedOn)}</div>
-							</div>
-						)}
+					<div className="py-1">
+						<StatusBadge statusObj={task.status} size="xs" />
 					</div>
 				</div>
-				<StatusBadge statusObj={task.status} size="xs" />
+				<div id="dates">
+					<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
+						Due on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
+					</div>
+					{task.completedOn && (
+						<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
+							Completed on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.completedOn)}</div>
+						</div>
+					)}
+				</div>
 			</div>
-			<div className="block md:hidden"></div>
 		</TableCell>
 	);
 };

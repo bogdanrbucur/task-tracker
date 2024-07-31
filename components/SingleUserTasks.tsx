@@ -10,9 +10,11 @@ function SingleUserTasks({ tasks }: { tasks: Task[] }) {
 		<div className="grid pr-2 gap-2">
 			{tasks.map((task) => (
 				<div key={task.id}>
+					<Link href={`/tasks/${task.id}`}>
+						<h4 className="text-sm md:text-base">{task.title}</h4>
+					</Link>
 					<div className="flex items-center justify-between">
-						<Link href={`/tasks/${task.id}`}>
-							<h4 className="text-sm md:text-base">{task.title}</h4>
+						<div>
 							<div className="text-xs text-gray-500 dark:text-gray-400 flex gap-x-1">
 								Due on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.dueDate)}</div>
 							</div>
@@ -21,7 +23,7 @@ function SingleUserTasks({ tasks }: { tasks: Task[] }) {
 									Completed on <div className={cn(dueColor(task), "text-xs")}>{formatDate(task.completedOn)}</div>
 								</div>
 							)}
-						</Link>
+						</div>
 						{/* @ts-ignore */}
 						<StatusBadge statusObj={task.status} size="xs" />
 					</div>
