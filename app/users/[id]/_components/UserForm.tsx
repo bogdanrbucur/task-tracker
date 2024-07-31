@@ -56,8 +56,8 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const onIsAdminCheckboxChange = (checked: boolean) => setIsAdminChecked(checked);
 
 	return (
-		<Card className="container w-full max-w-2xl">
-			<div className="fade-in container mx-auto px-4 py-6">
+		<Card className="container w-full max-w-2xl px-3 py-2 md:px-8 md:py-6">
+			<div className="fade-in container mx-auto p-0">
 				<h1 className="mb-8 text-3xl font-bold">{user ? "Edit User" : "New User"}</h1>
 				<form className="space-y-4 md:space-y-6" action={formAction}>
 					<div className="grid grid-cols-2 gap-4">

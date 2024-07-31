@@ -21,7 +21,7 @@ const UserTable = ({ searchParams, users }: Props) => {
 	const sortOrder = searchParams.sortOrder;
 
 	return (
-		<Table>
+		<Table >
 			<TableHeader>
 				<TableRow>
 					{columns.map((column) => (

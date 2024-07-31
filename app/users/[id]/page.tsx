@@ -66,7 +66,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 			<CardHeader>
 				<div className="fade-in grid grid-cols-1 md:grid-cols-2 gap-4">
 					<UserAvatarNameLarge user={userDetails} />
-					<div className="flex gap-2 md:gap-2 items-center justify-center md:justify-end">
+					<div className="grid grid-rows-2 md:flex gap-2 items-center justify-start md:justify-end">
+						<div className="flex gap-2 justify-start">
 						{canEdit && (
 							<Button asChild size="sm" className="w-auto">
 								<Link href={`/users/${userDetails.id}/edit`} className="gap-1">
@@ -75,15 +76,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 								</Link>
 							</Button>
 						)}
+						{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
+						</div>
+						<div className="flex gap-2 justify-start">
 						{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
 						{userPermissions?.isAdmin && user.id !== userDetails.id && userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
-						{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
 						{/* Only admins can deactivate users but cannot deactivate themselves */}
 						{userPermissions.isAdmin && user.id !== userDetails.id && (
 							<ToggleUserButton userId={userDetails.id} status={userDetails.status} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
 						)}
 						{/* Can only delete a user if they were never active (don't have a password) and are inactive */}
 						{userPermissions.isAdmin && !userWithPassword?.hashedPassword && userWithPassword?.status === "inactive" && <DeleteUserButton userId={userDetails.id} />}
+						</div>
 					</div>
 				</div>
 				{/* show if the user has confirmed their email or not and if the link expired */}

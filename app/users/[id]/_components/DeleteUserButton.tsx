@@ -44,7 +44,7 @@ export default function DeleteUserButton({ userId }: { userId: string }) {
 		<>
 			<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
 				<AlertDialogTrigger asChild>
-					<Button size="sm" className="gap-1" onClick={() => setDialogOpen(true)}>
+					<Button size="sm" className="gap-1 bg-red-400" onClick={() => setDialogOpen(true)}>
 						Delete
 						<UserRoundX size="18" />
 					</Button>

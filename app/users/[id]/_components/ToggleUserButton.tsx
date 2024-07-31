@@ -48,7 +48,7 @@ export default function ToggleUserButton({
 	return (
 		<>
 			<form onSubmit={handleSubmit}>
-				<Button size="sm" className="gap-1">
+				<Button size="sm" className={`gap-1 ${status === "active" || status === "unverified" ? "bg-red-400" : "bg-green-400"}`}>
 					{status === "active" || status === "unverified" ? "Deactivate" : "Activate"}
 					{status === "active" || status === "unverified" ? <UserRoundX size="18" /> : <UserRoundCheck size="18" />}
 				</Button>
