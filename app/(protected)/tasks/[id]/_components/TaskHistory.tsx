@@ -4,14 +4,14 @@ import { CardContent } from "../../../../../components/ui/card";
 
 const TaskHistory = ({ changes }: { changes: Change[] }) => {
 	return (
-		<CardContent className="space-y-4">
+		<CardContent className="space-y-4 px-3 md:px-6 pb-3 md:pb-6">
 			{changes.map((change) => (
 				<div key={change.id} className="space-y-1.5">
 					<div className="flex items-center gap-2">
 						<ClockIcon />
 						<div className="text-xs text-gray-500 dark:text-gray-400">{format(change.time, "dd MMM yyyy HH:mm")}</div>
 					</div>
-					<div className="text-sm text-gray-500 dark:text-gray-400">{change.changes}</div>
+					<div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{change.changes}</div>
 				</div>
 			))}
 		</CardContent>

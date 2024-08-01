@@ -3,9 +3,9 @@
  * @see https://v0.dev/t/JrUA9HgbhjF
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
+import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
 import { UserExtended, prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameNormal } from "@/components/AvatarAndName";
 import ClientToast from "@/components/ClientToast";
@@ -79,17 +79,19 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 	});
 
 	return (
-		<Card className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+		<Card className="container mx-auto px-4 py-4 md:px-6 md:py-10">
 			<div className="fade-in grid gap-6 md:grid-cols-[2fr_1fr]">
 				<div>
 					<div className="space-y-4">
 						<div>
-							<h1 className="text-2xl font-bold">{task.title}</h1>
-							<p className="text-gray-500 dark:text-gray-400 whitespace-pre-wrap">{task.description}</p>
+							<h1 className="text-xl md:text-2xl font-bold">{task.title}</h1>
+							<p className="text-gray-500 dark:text-gray-400 whitespace-pre-wrap text-sm md:text-base">{task.description}</p>
 						</div>
-						<div className="flex items-center gap-4 justify-between">
-							<StatusBadge statusObj={task.status} size="sm" />
-							<div className="flex gap-4">
+						<div className="grid grid-cols-1 md:flex items-center gap-4 justify-between">
+							<div>
+								<StatusBadge statusObj={task.status} size="xs md:sm" />
+							</div>
+							<div className="flex gap-2">
 								{canEditTask && (task.statusId === 1 || task.statusId === 5) && (
 									<Button asChild size="sm">
 										<Link href={`/tasks/${task.id}/edit`} className="gap-1">
@@ -104,13 +106,13 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								{canCancelTask && task.statusId !== 4 && task.statusId !== 3 && <CancelTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
 						</div>
-						<div className="grid grid-cols-2 lg:grid-cols-4">
-							<div id="assignedTo" className="mb-2">
-								<div className="mb-2">Assigned to:</div>
+						<div className="grid grid-cols-2 lg:grid-cols-4 text-sm lg:text-base">
+							<div id="assignedTo" className="mb-1 md:mb-2">
+								<div className="mb-1 md:mb-2">Assigned to:</div>
 								<UserAvatarNameNormal user={task.assignedToUser as UserExtended} />
 							</div>
-							<div id="dueOn" className="mb-2">
-								<div className="mb-2">Due on:</div>
+							<div id="dueOn" className="mb-1 md:mb-2">
+								<div className="mb-1 md:mb-2">Due on:</div>
 								<div className="flex items-center">
 									<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
 									<div className={dueColor(task)}>{formatDate(task.dueDate)}</div>
@@ -118,7 +120,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 							</div>
 							{task.completedOn && (
 								<div id="completedOn">
-									<div className="mb-2">Completed on:</div>
+									<div className="mb-1 md:mb-2">Completed on:</div>
 									<div className="flex items-center">
 										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
 										<div className={completedColor(task)}>{formatDate(task.completedOn)}</div>
@@ -127,7 +129,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 							)}
 							{task.closedOn && (
 								<div id="closedOn">
-									<div className="mb-2">Closed on:</div>
+									<div className="mb-1 md:mb-2">Closed on:</div>
 									<div className="flex items-center">
 										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
 										<div>{formatDate(task.closedOn)}</div>
@@ -136,12 +138,12 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 							)}
 						</div>
 					</div>
-					<Separator className="my-6" />
+					<Separator className="my-3 md:my-6" />
 					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} users={users as UserExtended[]} />
 				</div>
 				<div className="space-y-6">
-					<Card>
-						<CardHeader>
+					<Card >
+						<CardHeader className="px-3 md:px-6 py-3 md:py-6">
 							<CardTitle>Task History</CardTitle>
 						</CardHeader>
 						<TaskHistory changes={task.changes} />

@@ -25,10 +25,10 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	const [formState, formAction] = useFormState(submitTask, initialState);
 
 	return (
-		<Card className="container mx-auto max-w-4xl px-4 md:px-6">
-			<div className="container mx-auto max-w-4xl px-4 py-6">
-				<h1 className="mb-8 text-3xl font-bold">{task ? "Edit Task" : "New Task"}</h1>
-				<form className="space-y-4 md:space-y-6" action={formAction}>
+		<Card className="container mx-auto max-w-4xl px-3 py-3 md:px-8 md:py-6">
+			<div className="container mx-auto max-w-4xl p-0">
+				<h1 className="mb-4 md:mb-8 text-2xl md:text-3xl font-bold">{task ? "Edit Task" : "New Task"}</h1>
+				<form className="space-y-3 md:space-y-6" action={formAction}>
 					<div className="space-y-2">
 						<Label htmlFor="title">Title</Label>
 						<Input name="title" placeholder="Enter task title" defaultValue={task ? task.title : undefined} required />
@@ -37,7 +37,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						<Label htmlFor="description">Description</Label>
 						<Textarea name="description" rows={8} placeholder="Enter task description" defaultValue={task ? task.description : undefined} />
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						<div className="flex md:justify-start">
 							<div className="flex flex-col space-y-3 w-60">
 								<Label htmlFor="dueDate">Due Date</Label>
