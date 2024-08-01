@@ -26,7 +26,7 @@ export function CancelTaskButton({ userId, taskId }: { userId: string | undefine
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
-				<Button size="sm" className="gap-1">
+				<Button size="sm" className="gap-1 bg-red-400">
 					Cancel
 					<CircleX size="18" />
 				</Button>

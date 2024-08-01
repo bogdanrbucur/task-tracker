@@ -70,7 +70,7 @@ export default async function Home() {
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
 				{/* Guests see the charts in mobile view as well, so if user is logged in, isGuest=true */}
 				<StatusChart data={statusTasksChartData} colors={statusColors} isGuest={!user && true} />
-				<div className="fade-in enter- row-span-2 flex flex-col h-full ">
+				<div className="fade-in row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>
