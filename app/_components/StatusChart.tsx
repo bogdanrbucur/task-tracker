@@ -48,7 +48,7 @@ export default function StatusChart({ data, colors, isGuest }: Props) {
 						style={{ outline: "none" }}
 					>
 						{data.map((entry, index) => (
-							<Cell key={`cell-${index}`} fill={colors[entry.slug as keyof StatusColors]} />
+							<Cell key={`cell-${index}`} fill={`hsl(var(--chart-${entry.slug}))`} />
 						))}
 					</Pie>
 					<Legend iconSize={10} iconType="circle" formatter={customLegend} />
