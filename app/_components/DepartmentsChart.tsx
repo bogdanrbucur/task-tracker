@@ -5,7 +5,16 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector } from "rechar
 import { DeptTaskChartData } from "../deptTasksChartData";
 import { StatusColors } from "../page";
 
-const COLORS = ["hsl(var(--chart-purple))", "hsl(var(--chart-lime))", "hsl(var(--chart-pink))", "hsl(var(--chart-orange))", "hsl(var(--chart-indigo))", "hsl(var(--chart-cyan))", "hsl(var(--chart-slate))", "hsl(var(--chart-teal))"];
+const COLORS = [
+	"hsl(var(--chart-purple))",
+	"hsl(var(--chart-lime))",
+	"hsl(var(--chart-pink))",
+	"hsl(var(--chart-orange))",
+	"hsl(var(--chart-indigo))",
+	"hsl(var(--chart-cyan))",
+	"hsl(var(--chart-slate))",
+	"hsl(var(--chart-teal))",
+];
 
 interface Props {
 	data: DeptTaskChartData[];
@@ -56,7 +65,14 @@ export default function DepartmentsChart({ data, statusColors, isGuest }: Props)
 					textAnchor={textAnchor}
 				>{`${inprogress} In Progress`}</text>
 				<text className="text-sm" fill={"hsl(var(--chart-overdue))"} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={5} textAnchor={textAnchor}>{`${overdue} Overdue`}</text>
-				<text className="text-sm" fill={"hsl(var(--chart-completed))"} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={20} textAnchor={textAnchor}>{`${completed} Completed`}</text>
+				<text
+					className="text-sm"
+					fill={"hsl(var(--chart-completed))"}
+					x={ex + (cos >= 0 ? 1 : -1) * 12}
+					y={ey}
+					dy={20}
+					textAnchor={textAnchor}
+				>{`${completed} Completed`}</text>
 			</g>
 		);
 	};
@@ -88,7 +104,7 @@ export default function DepartmentsChart({ data, statusColors, isGuest }: Props)
 						style={{ outline: "none" }}
 					>
 						{data.map((entry, index) => (
-							<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+							<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
 						))}
 					</Pie>
 					<Legend iconSize={10} iconType="circle" formatter={customLegend} />
