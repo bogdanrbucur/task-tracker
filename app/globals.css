@@ -27,8 +27,14 @@
 		--chart-inprogress: 221.2 83.2% 53.3%;
 		--chart-completed: 142.1 76.2% 36.3%;
 		--chart-overdue: 0 72.2% 50.6%;
-		--chart-1: 43 74% 66%;
-		--chart-2: 27 87% 67%;
+		--chart-slate: 215.3 19.3% 34.5%;
+		--chart-orange: 24.6 95% 53.1%;
+		--chart-lime: 84.8 85.2% 34.5%;
+		--chart-teal: 173.4 80.4% 40%;
+		--chart-cyan: 191.6 91.4% 36.5%;
+		--chart-indigo: 243.4 75.4% 58.6%;
+		--chart-purple: 271.5 81.3% 55.9%;
+		--chart-pink: 333.3 71.4% 50.6%;
 	}
 
 	.dark {
@@ -51,11 +57,17 @@
 		--border: 0 0% 14.9%;
 		--input: 0 0% 14.9%;
 		--ring: 0 0% 83.1%;
-		--chart-inprogress: 213.1 93.9% 67.8%;
-		--chart-completed: 141.9 69.2% 58%;
-		--chart-overdue: 0 90.6%, 70.8%;
-		--chart-1: 280 65% 60%;
-		--chart-2: 340 75% 55%;
+		--chart-inprogress: 217.2 91.2% 59.8%;
+		--chart-completed: 142.1 70.6% 45.3%;
+		--chart-overdue: 349.7 89.2% 60.2%;
+		--chart-slate: 215 20.2% 65.1%;
+		--chart-orange: 24.6 95% 53.1%;
+		--chart-lime: 82.7 78% 55.5%;
+		--chart-teal: 172.5 66% 50.4%;
+		--chart-cyan: 188.7 94.5% 42.7%;
+		--chart-indigo: 238.7 83.5% 66.7%;
+		--chart-purple: 270.7 91% 65.1%;
+		--chart-pink: 330.4 81.2% 60.4%;
 	}
 }
 

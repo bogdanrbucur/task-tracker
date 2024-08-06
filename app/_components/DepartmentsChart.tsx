@@ -5,7 +5,7 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector } from "rechar
 import { DeptTaskChartData } from "../deptTasksChartData";
 import { StatusColors } from "../page";
 
-const COLORS = ["#16a34a", "#ef4444", "#3b82f6", "#f97316", "#a855f7", "#64748b", "#e035d2"];
+const COLORS = ["hsl(var(--chart-purple))", "hsl(var(--chart-lime))", "hsl(var(--chart-pink))", "hsl(var(--chart-orange))", "hsl(var(--chart-indigo))", "hsl(var(--chart-cyan))", "hsl(var(--chart-slate))", "hsl(var(--chart-teal))"];
 
 interface Props {
 	data: DeptTaskChartData[];
@@ -27,11 +27,11 @@ export default function DepartmentsChart({ data, statusColors, isGuest }: Props)
 		const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, inprogress, overdue, completed } = props;
 		const sin = Math.sin(-RADIAN * midAngle);
 		const cos = Math.cos(-RADIAN * midAngle);
-		const sx = cx + (outerRadius + 0) * cos;
+		const sx = cx + (outerRadius + 5) * cos;
 		const sy = cy + (outerRadius + 10) * sin;
 		const mx = cx + (outerRadius + 30) * cos;
-		const my = cy + (outerRadius + 30) * sin;
-		const ex = mx + (cos >= 0 ? 1 : -1) * 40;
+		const my = cy + (outerRadius + 20) * sin;
+		const ex = mx + (cos >= 0 ? 1 : -1) * 30;
 		const ey = my;
 		const textAnchor = cos >= 0 ? "start" : "end";
 
