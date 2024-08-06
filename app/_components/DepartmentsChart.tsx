@@ -49,14 +49,14 @@ export default function DepartmentsChart({ data, statusColors, isGuest }: Props)
 				<circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
 				<text
 					className="text-sm"
-					fill={statusColors.inprogress}
+					fill={"hsl(var(--chart-inprogress))"}
 					x={ex + (cos >= 0 ? 1 : -1) * 12}
 					y={ey}
 					dy={-10}
 					textAnchor={textAnchor}
 				>{`${inprogress} In Progress`}</text>
-				<text className="text-sm" fill={statusColors.overdue} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={5} textAnchor={textAnchor}>{`${overdue} Overdue`}</text>
-				<text className="text-sm" fill={statusColors.completed} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={20} textAnchor={textAnchor}>{`${completed} Completed`}</text>
+				<text className="text-sm" fill={"hsl(var(--chart-overdue))"} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={5} textAnchor={textAnchor}>{`${overdue} Overdue`}</text>
+				<text className="text-sm" fill={"hsl(var(--chart-completed))"} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={20} textAnchor={textAnchor}>{`${completed} Completed`}</text>
 			</g>
 		);
 	};

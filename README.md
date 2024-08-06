@@ -183,6 +183,5 @@ Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
 
 ## Todo
 
-- [ ] [fix] Task view in mobile: action buttons below the status
 - [ ] [feat] Automatic database backups
 - [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
