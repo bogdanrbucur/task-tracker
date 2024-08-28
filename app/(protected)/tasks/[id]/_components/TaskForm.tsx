@@ -56,6 +56,39 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 							</div>
 						</div>
 					</div>
+					{/* Source fields */}
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+						<div className="flex md:justify-start">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label className="text-left" htmlFor="source">
+									Source
+								</Label>
+								<Input name="source" placeholder="Inspection/investigation report" defaultValue={task ? task.source : undefined} />
+								{/* Hidden input fields ensures formData is submitted */}
+								<input type="hidden" name="source" value={task ? task.source : ""} />
+							</div>
+						</div>
+						<div className="flex md:justify-center">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label className="text-left" htmlFor="sourceLink">
+									Source Link
+								</Label>
+								<Input name="sourceLink" placeholder="Link to source document" defaultValue={task ? task.sourceLink : undefined} />
+								{/* Hidden input fields ensures formData is submitted */}
+								<input type="hidden" name="sourceLink" value={task ? task.sourceLink : ""} />
+							</div>
+						</div>
+						<div className="flex md:justify-end">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label className="text-left" htmlFor="source">
+									Source Attachment
+								</Label>
+								<Input name="source" placeholder="Enter task source" defaultValue={task ? task.source : undefined} />
+								{/* Hidden input fields ensures formData is submitted */}
+								<input type="hidden" name="source" value={task ? task.source : ""} />
+							</div>
+						</div>
+					</div>
 					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />

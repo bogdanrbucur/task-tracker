@@ -19,6 +19,7 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 			description: task.description,
 			dueDate: new Date(task.dueDate),
 			assignedToUserId: task.assignedToUserId,
+			source: task.source,
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});

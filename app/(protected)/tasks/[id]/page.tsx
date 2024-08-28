@@ -136,13 +136,29 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									</div>
 								</div>
 							)}
+							{task.source && (
+								<div id="source">
+									<div className="mb-1 md:mb-2">Source:</div>
+									<div className="flex items-center">
+										<div>{task.source}</div>
+									</div>
+								</div>
+							)}
+							{task.sourceLink && (
+								<div id="source">
+									<div className="mb-1 md:mb-2">Source:</div>
+									<div className="flex items-center">
+										<div>{task.source}</div>
+									</div>
+								</div>
+							)}
 						</div>
 					</div>
 					<Separator className="my-3 md:my-6" />
 					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} users={users as UserExtended[]} />
 				</div>
 				<div className="space-y-6">
-					<Card >
+					<Card>
 						<CardHeader className="px-3 md:px-6 py-3 md:py-6">
 							<CardTitle>Task History</CardTitle>
 						</CardHeader>

@@ -3,7 +3,7 @@ import { TaskExtended } from "../page";
 
 export async function generateExcelExport(tasks: TaskExtended[]) {
 	let dataArray = [];
-	const headers = ["ID", "Title", "Description", "Created", "Created By", "Assigned To", "Department", "Status", "Due on", "Completed on", "Updated At"];
+	const headers = ["ID", "Title", "Description", "Source", "Created", "Created By", "Assigned To", "Department", "Status", "Due on", "Completed on", "Updated At"];
 	dataArray.push(headers);
 
 	// create the data array
@@ -12,6 +12,7 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 			task.id,
 			task.title,
 			task.description,
+			task.source,
 			task.createdAt,
 			task.createdByUser ? task.createdByUser.firstName + " " + task.createdByUser.lastName : "",
 			`${task.assignedToUser?.firstName} ${task.assignedToUser?.lastName}`,
@@ -28,11 +29,24 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 	const ws = XLSX.utils.aoa_to_sheet(dataArray);
 
 	// set columns widths, in order starting with A, B etc.
-	ws["!cols"] = [{ wch: 4 }, { wch: 60 }, { wch: 80 }, { wch: 10 }, { wch: 18 }, { wch: 18 }, { wch: 15 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 }];
+	ws["!cols"] = [
+		{ wch: 4 },
+		{ wch: 60 },
+		{ wch: 80 },
+		{ wch: 35 },
+		{ wch: 10 },
+		{ wch: 18 },
+		{ wch: 18 },
+		{ wch: 15 },
+		{ wch: 10 },
+		{ wch: 10 },
+		{ wch: 12 },
+		{ wch: 10 },
+	];
 
 	// Styling...
 	// Center and bold range A2:H4
-	for (let col = 0; col <= 10; col++) {
+	for (let col = 0; col <= 11; col++) {
 		let row = 0;
 		const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
 		// if the cell exists (has data)

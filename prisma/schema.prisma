@@ -16,6 +16,8 @@ model Task {
   description         String
   createdByUserId     String?
   assignedToUserId    String?
+  source              String?
+  sourceLink          String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   createdByUser       User?     @relation("CreatedByUser", fields: [createdByUserId], references: [id])
