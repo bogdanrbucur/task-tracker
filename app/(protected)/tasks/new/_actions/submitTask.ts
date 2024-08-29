@@ -17,6 +17,7 @@ export type NewTask = {
 	createdByUserId: string;
 	assignedToUserId: string;
 	source?: string;
+	sourceLink?: string;
 };
 export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
@@ -38,6 +39,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
 		createdByUserId: z.string().length(25),
 		source: z.string().max(50, {message: "Source must be at most 50 characters."}).optional(),
+		sourceLink: z.string().max(255, {message: "Source link must be at most 255 characters."}).optional(),
 	});
 
 	let newTask: Task | null = null;
@@ -53,6 +55,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			assignedToUserId: formData.get("assignedToUserId") as string,
 			createdByUserId: formData.get("editingUser") as string,
 			source: formData.get("source") as string,
+			sourceLink: formData.get("sourceLink") as string,
 		});
 
 		// Get the created by user object by the ID

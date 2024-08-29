@@ -15,6 +15,7 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 			assignedToUserId: task.assignedToUserId,
 			createdByUserId: task.createdByUserId,
 			source: task.source,
+			sourceLink: task.sourceLink,
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});

@@ -63,7 +63,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 								<Label className="text-left" htmlFor="source">
 									Source
 								</Label>
-								<Input name="source" placeholder="Inspection/investigation report" defaultValue={task ? task.source : undefined} />
+								<Input name="source" placeholder="(optional) Task source" defaultValue={task ? task.source : undefined} />
 								{/* Hidden input fields ensures formData is submitted */}
 								<input type="hidden" name="source" value={task ? task.source : ""} />
 							</div>
@@ -73,7 +73,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 								<Label className="text-left" htmlFor="sourceLink">
 									Source Link
 								</Label>
-								<Input name="sourceLink" placeholder="Link to source document" defaultValue={task ? task.sourceLink : undefined} />
+								<Input name="sourceLink" placeholder="(optional) Source link" defaultValue={task ? task.sourceLink : undefined} />
 								{/* Hidden input fields ensures formData is submitted */}
 								<input type="hidden" name="sourceLink" value={task ? task.sourceLink : ""} />
 							</div>
@@ -83,7 +83,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 								<Label className="text-left" htmlFor="source">
 									Source Attachment
 								</Label>
-								<Input name="source" placeholder="Enter task source" defaultValue={task ? task.source : undefined} />
+								<Input name="source" placeholder="(optional) Task source" defaultValue={task ? task.source : undefined} />
 								{/* Hidden input fields ensures formData is submitted */}
 								<input type="hidden" name="source" value={task ? task.source : ""} />
 							</div>

@@ -3,7 +3,21 @@ import { TaskExtended } from "../page";
 
 export async function generateExcelExport(tasks: TaskExtended[]) {
 	let dataArray = [];
-	const headers = ["ID", "Title", "Description", "Source", "Created", "Created By", "Assigned To", "Department", "Status", "Due on", "Completed on", "Updated At"];
+	const headers = [
+		"ID",
+		"Title",
+		"Description",
+		"Created",
+		"Source",
+		"Source Link",
+		"Created By",
+		"Assigned To",
+		"Department",
+		"Status",
+		"Due on",
+		"Completed on",
+		"Updated At",
+	];
 	dataArray.push(headers);
 
 	// create the data array
@@ -12,8 +26,9 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 			task.id,
 			task.title,
 			task.description,
-			task.source,
 			task.createdAt,
+			task.source,
+			task.sourceLink,
 			task.createdByUser ? task.createdByUser.firstName + " " + task.createdByUser.lastName : "",
 			`${task.assignedToUser?.firstName} ${task.assignedToUser?.lastName}`,
 			task.department?.name,
@@ -33,6 +48,7 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 		{ wch: 4 },
 		{ wch: 60 },
 		{ wch: 80 },
+		{ wch: 10 },
 		{ wch: 35 },
 		{ wch: 10 },
 		{ wch: 18 },
@@ -46,7 +62,7 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 
 	// Styling...
 	// Center and bold range A2:H4
-	for (let col = 0; col <= 11; col++) {
+	for (let col = 0; col <= 12; col++) {
 		let row = 0;
 		const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
 		// if the cell exists (has data)
@@ -58,6 +74,15 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 				font: { bold: true },
 				fill: { fgColor: { rgb: "BFBFBF" } },
 			};
+		}
+	}
+
+	// Set the hyperlinks for columns 5
+	for (let row = 1; row < dataArray.length; row++) {
+		const cellAddress = XLSX.utils.encode_cell({ r: row, c: 5 });
+		if (ws[cellAddress]) {
+			ws[cellAddress].l = { Target: dataArray[row][5] };
+			ws[cellAddress].s = { font: { color: { rgb: "0000FF" }, underline: true } };
 		}
 	}
 
