@@ -146,7 +146,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 							)}
 							{task.sourceLink && (
 								<div id="source">
-									<Link className="mb-1 md:mb-2 text-blue-600 hover:underline" href={task.sourceLink}>
+									<Link className="mb-1 md:mb-2 text-blue-600 hover:underline" href={task.sourceLink} target="_blank">
 										Source Link
 									</Link>
 								</div>

@@ -33,10 +33,11 @@ model Task {
 }
 
 model Status {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  color String
-  tasks Task[]
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  displayName String?
+  color       String
+  tasks       Task[]
 }
 
 model Change {

@@ -7,8 +7,8 @@ const StatusBadge = ({ statusObj, size }: { statusObj: Status; size: string }) =
 	}
 
 	return (
-		<Badge className={`px-2 py-1 min-w-${size === "xs" ? "24" : "28"} text-${size} justify-center ${getStatusColor(statusObj)} whitespace-nowrap`} variant="outline">
-			{statusObj.name}
+		<Badge className={`px-2 py-1 min-w-28 text-${size} justify-center ${getStatusColor(statusObj)} whitespace-nowrap`} variant="outline">
+			{statusObj.displayName}
 		</Badge>
 	);
 };
