@@ -11,30 +11,31 @@ datasource db {
 }
 
 model Task {
-  id                  Int       @id @default(autoincrement())
+  id                  Int          @id @default(autoincrement())
   title               String
   description         String
   createdByUserId     String?
   assignedToUserId    String?
   source              String?
   sourceLink          String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  createdByUser       User?     @relation("CreatedByUser", fields: [createdByUserId], references: [id])
-  assignedToUser      User?     @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
-  statusId            Int       @default(1)
-  status              Status    @relation(fields: [statusId], references: [id])
-  changes             Change[]  @relation("Changes") // New relation to Change model
-  comments            Comment[] @relation("Comments") // New relation to Comment model
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  createdByUser       User?        @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  assignedToUser      User?        @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
+  statusId            Int          @default(1)
+  status              Status       @relation(fields: [statusId], references: [id])
+  changes             Change[]     @relation("Changes") // New relation to Change model
+  comments            Comment[]    @relation("Comments") // New relation to Comment model
   dueDate             DateTime
   completedOn         DateTime?
   closedOn            DateTime?
-  dueSoonReminderSent Boolean   @default(false)
+  dueSoonReminderSent Boolean      @default(false)
+  Attachment          Attachment[]
 }
 
 model Status {
-  id          Int    @id @default(autoincrement())
-  name        String @unique
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
   displayName String?
   color       String
   tasks       Task[]
@@ -92,6 +93,15 @@ model Avatar {
   path   String
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model Attachment {
+  id     String   @id
+  taskId Int // Foreign key to Task model
+  task   Task     @relation(fields: [taskId], references: [id])
+  path   String
+  time   DateTime @default(now())
+  type   String
 }
 
 model Session {

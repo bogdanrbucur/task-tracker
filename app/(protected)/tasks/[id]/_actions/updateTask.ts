@@ -4,6 +4,7 @@ import { Editor, UpdateTask } from "../../new/_actions/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import { sendEmail } from "@/app/email/email";
+import { randomUUID } from "crypto";
 
 export async function updateTask(task: UpdateTask, editingUser: Editor) {
 	// Get the old task for comparison
@@ -42,6 +43,22 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 
 	// Check if the task is now overdue and update its status
 	await checkIfTaskOverdue(updatedTask.id);
+
+	// TODO Check if an attachment was added and if so, save it
+	if (task.sourceAttachment) {
+		console.log("Attachment found, saving...");
+		const addedAttachment = await prisma.attachment.create({
+			data: {
+				id: randomUUID(),
+				taskId: updatedTask.id,
+				type: "source",
+				path: task.sourceAttachment.name,
+			},
+		});
+
+		if (!addedAttachment) throw new Error("Attachment failed to save");
+		console.log(`Attachment ${addedAttachment.id} saved successfully`);
+	}
 
 	console.log(`Task ${task.id} updated successfully`);
 

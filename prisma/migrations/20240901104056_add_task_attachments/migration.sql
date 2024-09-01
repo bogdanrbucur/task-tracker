@@ -1,0 +1,9 @@
+-- CreateTable
+CREATE TABLE "Attachment" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "taskId" INTEGER NOT NULL,
+    "path" TEXT NOT NULL,
+    "time" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "type" TEXT NOT NULL,
+    CONSTRAINT "Attachment_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);

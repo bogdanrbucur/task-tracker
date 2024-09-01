@@ -80,12 +80,12 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						</div>
 						<div className="flex md:justify-end">
 							<div className="flex flex-col space-y-3 w-60">
-								<Label className="text-left" htmlFor="source">
+								<Label className="text-left" htmlFor="sourceAttachment">
 									Source Attachment
 								</Label>
-								<Input name="source" placeholder="(optional) Task source" defaultValue={task ? task.source : undefined} />
+								<Input name="sourceAttachment" type="file" accept="*" />
 								{/* Hidden input fields ensures formData is submitted */}
-								<input type="hidden" name="source" value={task ? task.source : ""} />
+								{/* <input type="hidden" name="sourceAttachment" value={task ? task.sourceAttachment : ""} /> */}
 							</div>
 						</div>
 					</div>

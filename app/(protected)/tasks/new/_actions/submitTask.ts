@@ -18,13 +18,23 @@ export type NewTask = {
 	assignedToUserId: string;
 	source?: string;
 	sourceLink?: string;
+	sourceAttachment: Attachment | null;
 };
 export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
 
+const Attachment = z.object({
+	size: z.number(),
+	type: z.string(),
+	name: z.string(),
+	lastModified: z.number(),
+});
+
+type Attachment = z.infer<typeof Attachment>;
+
 export default async function submitTask(prevState: any, formData: FormData) {
-	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
+	const rawFormData = Object.fromEntries(formData.entries());
+	console.log(rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -38,8 +48,9 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		dueDate: z.string().datetime({ message: "Due date is required." }),
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
 		createdByUserId: z.string().length(25),
-		source: z.string().max(50, {message: "Source must be at most 50 characters."}).optional(),
-		sourceLink: z.string().max(255, {message: "Source link must be at most 255 characters."}).optional(),
+		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
+		sourceLink: z.string().max(255, { message: "Source link must be at most 255 characters." }).optional(),
+		sourceAttachment: Attachment.nullable(),
 	});
 
 	let newTask: Task | null = null;
@@ -56,7 +67,13 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			createdByUserId: formData.get("editingUser") as string,
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
+			sourceAttachment: formData.get("sourceAttachment") as File | null,
 		});
+
+		// Check the size of the avatar and reject if it's too large
+		if (data.sourceAttachment && data.sourceAttachment.size > 5242880) {
+			return { message: "Attachment is too large. Maximum size is 5 MB." };
+		}
 
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.createdByUserId);
