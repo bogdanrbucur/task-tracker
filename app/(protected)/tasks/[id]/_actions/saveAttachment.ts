@@ -1,0 +1,41 @@
+import prisma from "@/prisma/client";
+import { Task } from "@prisma/client";
+import { randomUUID } from "crypto";
+import fs from "fs-extra";
+
+export default async function saveAttachment(attachment: File, task: Task) {
+	console.log(attachment);
+	try {
+		const arrayBuffer = await attachment.arrayBuffer();
+		const attachmentBuffer = Buffer.from(arrayBuffer);
+
+		// Check if the task has an attachment folder, and then check if the attachment already exists
+		const attachmentsFolderPath = `./attachments/${task.id}`;
+		if (await fs.pathExists(attachmentsFolderPath)) {
+			const attachments = await fs.readdir(attachmentsFolderPath);
+			const oldattachment = attachments.find((file) => file.includes(String(attachment.name)));
+			if (oldattachment) await fs.remove(`${attachmentsFolderPath}/${oldattachment}`);
+		}
+
+		// If the task doesn't have an attachment folder, create one
+		else await fs.mkdir(attachmentsFolderPath);
+
+		// Save the attachment locally
+		await fs.writeFile(`./attachments/${task.id}/${attachment.name}`, attachmentBuffer);
+
+		console.log(`Attachment saved to ./attachments/${task.id}/${attachment.name}`);
+
+		// Update the user with the new attachment path
+    // TODO update the attachment path in the database if it already exists
+		const addedAttachment = await prisma.attachment.create({
+			data: {
+				id: randomUUID(),
+				taskId: task.id,
+				type: "source",
+				path: attachment.name,
+			},
+		});
+	} catch (error) {
+		console.log(error);
+	}
+}

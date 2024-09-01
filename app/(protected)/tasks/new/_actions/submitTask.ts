@@ -30,7 +30,7 @@ const Attachment = z.object({
 	lastModified: z.number(),
 });
 
-type Attachment = z.infer<typeof Attachment>;
+export type Attachment = z.infer<typeof Attachment>;
 
 export default async function submitTask(prevState: any, formData: FormData) {
 	const rawFormData = Object.fromEntries(formData.entries());
@@ -67,7 +67,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			createdByUserId: formData.get("editingUser") as string,
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
-			sourceAttachment: formData.get("sourceAttachment") as File | null,
+			sourceAttachment: formData.get("sourceAttachment") as File,
 		});
 
 		// Check the size of the avatar and reject if it's too large
@@ -80,12 +80,15 @@ export default async function submitTask(prevState: any, formData: FormData) {
 
 		// If a task ID is provided, update the existing task
 		if (data.id) {
-			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!);
+			const attachment = formData.get("sourceAttachment") as File;
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachment);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
 		} else {
 			// If no task ID is provided, create a new task
-			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!);
+			// TODO handle source attachment
+			const attachment = formData.get("sourceAttachment") as File;
+			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachment);
 			newTask = createdTask;
 			emailStatus = statusTempVar;
 		}

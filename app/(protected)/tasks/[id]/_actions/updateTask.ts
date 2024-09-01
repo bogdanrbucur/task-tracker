@@ -1,12 +1,12 @@
+import { sendEmail } from "@/app/email/email";
+import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
-import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
-import { sendEmail } from "@/app/email/email";
-import { randomUUID } from "crypto";
+import saveAttachment from "./saveAttachment";
 
-export async function updateTask(task: UpdateTask, editingUser: Editor) {
+export async function updateTask(task: UpdateTask, editingUser: Editor, attFile: File) {
 	// Get the old task for comparison
 	const oldTask = await prisma.task.findUnique({
 		where: { id: Number(task.id) },
@@ -44,21 +44,14 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 	// Check if the task is now overdue and update its status
 	await checkIfTaskOverdue(updatedTask.id);
 
-	// TODO Check if an attachment was added and if so, save it
-	if (task.sourceAttachment) {
+	// Check if an attachment was added and if so, save it
+	if (task.sourceAttachment && task.sourceAttachment.size > 0) {
 		console.log("Attachment found, saving...");
-		const addedAttachment = await prisma.attachment.create({
-			data: {
-				id: randomUUID(),
-				taskId: updatedTask.id,
-				type: "source",
-				path: task.sourceAttachment.name,
-			},
-		});
-
-		if (!addedAttachment) throw new Error("Attachment failed to save");
-		console.log(`Attachment ${addedAttachment.id} saved successfully`);
+		await saveAttachment(attFile, updatedTask);
 	}
+
+	// TODO if attachment was removed, delete it
+	//
 
 	console.log(`Task ${task.id} updated successfully`);
 
