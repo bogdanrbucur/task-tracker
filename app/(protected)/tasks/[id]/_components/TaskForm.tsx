@@ -84,8 +84,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 									Source Attachment
 								</Label>
 								<Input name="sourceAttachment" type="file" accept="*" />
-								{/* Hidden input fields ensures formData is submitted */}
-								{/* <input type="hidden" name="sourceAttachment" value={task ? task.sourceAttachment : ""} /> */}
+								{/* TODO show list of attachments and option to remove them */}
 							</div>
 						</div>
 					</div>

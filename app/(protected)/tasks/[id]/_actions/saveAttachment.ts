@@ -4,7 +4,6 @@ import { randomUUID } from "crypto";
 import fs from "fs-extra";
 
 export default async function saveAttachment(attachment: File, task: Task) {
-	console.log(attachment);
 	try {
 		const arrayBuffer = await attachment.arrayBuffer();
 		const attachmentBuffer = Buffer.from(arrayBuffer);
@@ -25,16 +24,37 @@ export default async function saveAttachment(attachment: File, task: Task) {
 
 		console.log(`Attachment saved to ./attachments/${task.id}/${attachment.name}`);
 
-		// Update the user with the new attachment path
-    // TODO update the attachment path in the database if it already exists
-		const addedAttachment = await prisma.attachment.create({
-			data: {
-				id: randomUUID(),
+		// Update the attachment path in the database if it already exists
+		const existingAttachments = await prisma.attachment.findMany({
+			where: {
 				taskId: task.id,
-				type: "source",
 				path: attachment.name,
 			},
 		});
+
+		if (existingAttachments.length > 0) {
+			await prisma.attachment.updateMany({
+				where: {
+					taskId: task.id,
+				},
+				data: {
+					id: randomUUID(),
+					taskId: task.id,
+					type: "source",
+				},
+			});
+
+			console.log(`Replaced attachment ${attachment.name} for task ${task.id}`);
+		} else {
+			const addedAttachment = await prisma.attachment.create({
+				data: {
+					id: randomUUID(),
+					taskId: task.id,
+					type: "source",
+					path: attachment.name,
+				},
+			});
+		}
 	} catch (error) {
 		console.log(error);
 	}

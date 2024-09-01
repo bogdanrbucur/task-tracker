@@ -30,7 +30,7 @@ model Task {
   completedOn         DateTime?
   closedOn            DateTime?
   dueSoonReminderSent Boolean      @default(false)
-  Attachment          Attachment[]
+  attachments         Attachment[]
 }
 
 model Status {

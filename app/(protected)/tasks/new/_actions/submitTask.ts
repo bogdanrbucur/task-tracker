@@ -86,7 +86,6 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			emailStatus = statusTempVar;
 		} else {
 			// If no task ID is provided, create a new task
-			// TODO handle source attachment
 			const attachment = formData.get("sourceAttachment") as File;
 			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachment);
 			newTask = createdTask;
