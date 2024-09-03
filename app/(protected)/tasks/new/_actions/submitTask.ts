@@ -18,7 +18,7 @@ export type NewTask = {
 	assignedToUserId: string;
 	source?: string;
 	sourceLink?: string;
-	sourceAttachment: Attachment | null;
+	sourceAttachments: Attachment[] | null;
 };
 export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
@@ -33,8 +33,8 @@ const Attachment = z.object({
 export type Attachment = z.infer<typeof Attachment>;
 
 export default async function submitTask(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log("raw data", rawFormData.sourceAttachments);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -50,7 +50,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		createdByUserId: z.string().length(25),
 		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
 		sourceLink: z.string().max(255, { message: "Source link must be at most 255 characters." }).optional(),
-		sourceAttachment: Attachment.nullable(),
+		sourceAttachments: z.array(Attachment).nullable(),
 	});
 
 	let newTask: Task | null = null;
@@ -67,27 +67,27 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			createdByUserId: formData.get("editingUser") as string,
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
-			sourceAttachment: formData.get("sourceAttachment") as File,
+			sourceAttachments: formData.getAll("sourceAttachments") as File[],
 		});
 
 		// Check the size of the avatar and reject if it's too large
-		if (data.sourceAttachment && data.sourceAttachment.size > 5242880) {
-			return { message: "Attachment is too large. Maximum size is 5 MB." };
-		}
+		// if (data.sourceAttachments && data.sourceAttachments.size > 5242880) {
+		// 	return { message: "Attachment is too large. Maximum size is 5 MB." };
+		// }
 
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.createdByUserId);
 
 		// If a task ID is provided, update the existing task
 		if (data.id) {
-			const attachment = formData.get("sourceAttachment") as File;
-			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachment);
+			const attachments = formData.getAll("sourceAttachments") as File[];
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachments);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
 		} else {
 			// If no task ID is provided, create a new task
-			const attachment = formData.get("sourceAttachment") as File;
-			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachment);
+			const attachments = formData.getAll("sourceAttachments") as File[];
+			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachments);
 			newTask = createdTask;
 			emailStatus = statusTempVar;
 		}

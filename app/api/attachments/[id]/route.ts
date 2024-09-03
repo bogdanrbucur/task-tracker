@@ -1,3 +1,4 @@
+import { getAuth } from "@/actions/auth/get-auth";
 import fs from "fs-extra";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";

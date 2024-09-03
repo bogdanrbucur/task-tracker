@@ -25,17 +25,18 @@ export default async function saveAttachment(attachment: File, task: Task) {
 		console.log(`Attachment saved to ./attachments/${task.id}/${attachment.name}`);
 
 		// Update the attachment path in the database if it already exists
-		const existingAttachments = await prisma.attachment.findMany({
+		const existingAttachment = await prisma.attachment.findFirst({
 			where: {
 				taskId: task.id,
 				path: attachment.name,
 			},
 		});
 
-		if (existingAttachments.length > 0) {
+		if (existingAttachment) {
 			await prisma.attachment.updateMany({
 				where: {
 					taskId: task.id,
+					path: attachment.name,
 				},
 				data: {
 					id: randomUUID(),

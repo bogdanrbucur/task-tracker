@@ -23,6 +23,27 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [formState, formAction] = useFormState(submitTask, initialState);
+	const [attachments, setAttachments] = useState(task?.attachments || []);
+
+	const handleRemoveAttachment = async (index: number): Promise<void> => {
+		setAttachments(attachments.filter((_: any, i: number) => i !== index));
+		try {
+			await fetch(`/api/attachments/${attachments[index].id}/remove`, {
+				method: "DELETE",
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const handleAddAttachment = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		const files = event.target.files ? Array.from(event.target.files) : [];
+		const newAttachments = files.map((file, index) => ({
+			path: file.name,
+			file,
+		}));
+		setAttachments(newAttachments);
+	};
 
 	return (
 		<Card className="container mx-auto max-w-4xl px-3 py-3 md:px-8 md:py-6">
@@ -57,7 +78,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						</div>
 					</div>
 					{/* Source fields */}
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						<div className="flex md:justify-start">
 							<div className="flex flex-col space-y-3 w-60">
 								<Label className="text-left" htmlFor="source">
@@ -68,7 +89,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 								<input type="hidden" name="source" value={task ? task.source : ""} />
 							</div>
 						</div>
-						<div className="flex md:justify-center">
+						<div className="flex md:justify-end">
 							<div className="flex flex-col space-y-3 w-60">
 								<Label className="text-left" htmlFor="sourceLink">
 									Source Link
@@ -78,15 +99,24 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 								<input type="hidden" name="sourceLink" value={task ? task.sourceLink : ""} />
 							</div>
 						</div>
-						<div className="flex md:justify-end">
-							<div className="flex flex-col space-y-3 w-60">
-								<Label className="text-left" htmlFor="sourceAttachment">
-									Source Attachment
-								</Label>
-								<Input name="sourceAttachment" type="file" accept="*" />
-								{/* TODO show list of attachments and option to remove them */}
-							</div>
+					</div>
+					{/* TODO show list of attachments and option to remove them */}
+					<div className="space-y-2">
+						<div>
+							<Label className="text-left" htmlFor="sourceAttachment">
+								Source Attachments
+							</Label>
 						</div>
+						{attachments.map((attachment: { id: string; path: string; file: File }, index: number) => (
+							<div key={attachment.id} className="grid grid-cols-2">
+								<div className="text-muted-foreground text-sm">{attachment.path}</div>
+								<Button className="bg-red-400 text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
+									Remove
+								</Button>
+							</div>
+						))}
+						<div className="text-sm">{attachments.length > 0 ? "Replace existing" : "Add"} attachments</div>
+						<Input className="space-y-3 w-60" name="sourceAttachments" type="file" multiple accept="*" onChange={handleAddAttachment} />
 					</div>
 					{formState?.message && (
 						<Alert variant="destructive">

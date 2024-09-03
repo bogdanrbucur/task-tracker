@@ -7,7 +7,7 @@ import saveAttachment from "../../[id]/_actions/saveAttachment";
 import { Editor, NewTask } from "./submitTask";
 
 // Create a new task in the database
-export async function createTask(task: NewTask, editingUser: Editor, attFile: File) {
+export async function createTask(task: NewTask, editingUser: Editor, attFiles: File[]) {
 	const newTask = await prisma.task.create({
 		data: {
 			title: task.title,
@@ -27,9 +27,9 @@ export async function createTask(task: NewTask, editingUser: Editor, attFile: Fi
 	await checkIfTaskOverdue(newTask.id);
 
 	// Check if an attachment was added and if so, save it
-	if (task.sourceAttachment && task.sourceAttachment.size > 0) {
+	if (task.sourceAttachments && task.sourceAttachments.length > 0) {
 		console.log("Attachment found, saving...");
-		await saveAttachment(attFile, newTask);
+		// await saveAttachment(attFile, newTask);
 	}
 
 	// TODO if attachment was removed, delete it
