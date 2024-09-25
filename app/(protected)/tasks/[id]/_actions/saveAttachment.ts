@@ -3,7 +3,7 @@ import { Task } from "@prisma/client";
 import { randomUUID } from "crypto";
 import fs from "fs-extra";
 
-export default async function saveAttachment(attachment: File, task: Task) {
+export default async function saveAttachment(attachment: File, task: Task, attachmentDescription: string) {
 	try {
 		const arrayBuffer = await attachment.arrayBuffer();
 		const attachmentBuffer = Buffer.from(arrayBuffer);
@@ -29,6 +29,7 @@ export default async function saveAttachment(attachment: File, task: Task) {
 			where: {
 				taskId: task.id,
 				path: attachment.name,
+				description: attachmentDescription,
 			},
 		});
 
@@ -42,6 +43,7 @@ export default async function saveAttachment(attachment: File, task: Task) {
 					id: randomUUID(),
 					taskId: task.id,
 					type: "source",
+					description: attachmentDescription,
 				},
 			});
 
@@ -53,6 +55,7 @@ export default async function saveAttachment(attachment: File, task: Task) {
 					taskId: task.id,
 					type: "source",
 					path: attachment.name,
+					description: attachmentDescription,
 				},
 			});
 		}

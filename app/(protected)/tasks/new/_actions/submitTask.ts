@@ -51,6 +51,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
 		sourceLink: z.string().max(255, { message: "Source link must be at most 255 characters." }).optional(),
 		sourceAttachments: z.array(Attachment).nullable(),
+		sourceAttachmentsDescriptions: z.array(z.string()).nullable(),
 	});
 
 	let newTask: Task | null = null;
@@ -68,6 +69,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
 			sourceAttachments: formData.getAll("sourceAttachments") as File[],
+			sourceAttachmentsDescriptions: formData.getAll("sourceAttachmentsDescriptions") as string[],
 		});
 
 		// Check the size of the avatar and reject if it's too large
@@ -81,12 +83,15 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		// If a task ID is provided, update the existing task
 		if (data.id) {
 			const attachments = formData.getAll("sourceAttachments") as File[];
-			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachments);
+			// For some retarded reason, the descriptions are return as an array of the same string, so we split the first one
+			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachments, attachmentsDescriptions);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
 		} else {
 			// If no task ID is provided, create a new task
 			const attachments = formData.getAll("sourceAttachments") as File[];
+			// TODO update this to use the descriptions array
 			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachments);
 			newTask = createdTask;
 			emailStatus = statusTempVar;

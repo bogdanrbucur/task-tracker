@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from "react";
+import { Key, useState } from "react";
 import { useFormState } from "react-dom";
 import submitTask from "../../new/_actions/submitTask";
 
@@ -24,12 +24,14 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [formState, formAction] = useFormState(submitTask, initialState);
 	const [attachments, setAttachments] = useState(task?.attachments || []);
+	const [descriptions, setDescriptions] = useState<string[]>([]);
 
-	// const handleDescriptionChange = (index: number, value: string) => {
-	// 	const newAttachments = [...attachments];
-	// 	newAttachments[index].description = value;
-	// 	setAttachments(newAttachments);
-	// };
+	const handleDescriptionChange = (index: number, value: string) => {
+		const updatedDescriptions = [...descriptions];
+		updatedDescriptions[index] = value;
+		setDescriptions(updatedDescriptions);
+		console.log(updatedDescriptions);
+	};
 
 	const handleRemoveAttachment = async (index: number): Promise<void> => {
 		setAttachments(attachments.filter((_: any, i: number) => i !== index));
@@ -107,22 +109,24 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 							</div>
 						</div>
 					</div>
-					{/* TODO show list of attachments and option to remove them */}
+					{/* Show list of attachments and option to remove them */}
 					<div className="space-y-2">
 						<div>
 							<Label className="text-left" htmlFor="sourceAttachment">
 								Source Attachments
 							</Label>
 						</div>
-						{attachments.map((attachment: { id: Key | null | undefined; path: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; description: string | number | readonly string[] | undefined; }, index: number) => (
+						{attachments.map((attachment: { id: Key | null | undefined; path: string; description: string }, index: number) => (
 							<div key={attachment.id} className="grid grid-cols-3 gap-5">
 								<div className="text-muted-foreground text-sm">{attachment.path}</div>
-								{/* <Input
-									name={`sourceAttDesc${index}`}
-									placeholder="Description"
+								<Input
+									type="text"
+									placeholder={"Description"}
 									defaultValue={attachment.description}
 									onChange={(e) => handleDescriptionChange(index, e.target.value)}
-								/>{" "} */}
+									required
+								/>
+								<input type="hidden" name="sourceAttachmentsDescriptions" value={descriptions} />
 								<Button className="bg-red-400 text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
 									Remove
 								</Button>

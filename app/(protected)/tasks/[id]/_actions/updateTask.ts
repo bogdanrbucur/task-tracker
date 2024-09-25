@@ -1,13 +1,13 @@
 import { sendEmail } from "@/app/email/email";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import fs from "fs-extra";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
 import saveAttachment from "./saveAttachment";
-import fs from "fs-extra";
 
-export async function updateTask(task: UpdateTask, editingUser: Editor, attFiles: File[]) {
+export async function updateTask(task: UpdateTask, editingUser: Editor, attFiles: File[], attDescriptions: string[]) {
 	// Get the old task for comparison
 	const oldTask = await prisma.task.findUnique({
 		where: { id: Number(task.id) },
@@ -51,8 +51,8 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attFiles
 		console.log("Attachments found, saving...");
 
 		for (const att of attFiles) {
-			await saveAttachment(att, updatedTask);
-			console.log(att.name);
+			await saveAttachment(att, updatedTask, attDescriptions[attFiles.indexOf(att)]);
+			console.log(att.name, attDescriptions[attFiles.indexOf(att)]);
 		}
 	}
 
@@ -83,6 +83,30 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attFiles
 			} catch (err) {
 				console.log(err);
 			}
+		}
+	}
+
+	// If attachment descriptions were changed, update them
+	const oldAttachments = await prisma.attachment.findMany({
+		where: { taskId: updatedTask.id },
+	});
+	const oldAttachmentDescriptions = oldAttachments.map((att) => att.description);
+	const newAttachmentDescriptions = attDescriptions;
+	const changedDescriptions = oldAttachmentDescriptions.filter((desc) => desc !== null && !newAttachmentDescriptions.includes(desc));
+	console.log("Changed descriptions:", changedDescriptions);
+	for (const desc of changedDescriptions) {
+		try {
+			await prisma.attachment.updateMany({
+				where: {
+					taskId: updatedTask.id,
+					description: desc,
+				},
+				data: {
+					description: newAttachmentDescriptions[oldAttachmentDescriptions.indexOf(desc)],
+				},
+			});
+		} catch (err) {
+			console.log(err);
 		}
 	}
 

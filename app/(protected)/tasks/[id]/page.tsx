@@ -158,11 +158,11 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									<div className="mb-1 md:mb-2">Source attachments</div>
 									<div className="">
 										{task.attachments
-											.filter((t) => t.type === "source")
-											.map((t) => (
-												<div key={t.id}>
-													<a href={`/api/attachments/${task.id}/${t.path}`} target="_blank" className="text-blue-600 hover:underline">
-														{t.path}
+											.filter((a) => a.type === "source")
+											.map((a) => (
+												<div key={a.id}>
+													<a href={`/api/attachments/${task.id}/${a.path}`} target="_blank" className="text-blue-600 hover:underline">
+														{a.description}
 													</a>
 												</div>
 											))}
