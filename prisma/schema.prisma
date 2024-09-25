@@ -96,12 +96,13 @@ model Avatar {
 }
 
 model Attachment {
-  id     String   @id
-  taskId Int // Foreign key to Task model
-  task   Task     @relation(fields: [taskId], references: [id])
-  path   String
-  time   DateTime @default(now())
-  type   String
+  id          String   @id
+  taskId      Int // Foreign key to Task model
+  task        Task     @relation(fields: [taskId], references: [id])
+  path        String
+  description String?
+  time        DateTime @default(now())
+  type        String
 }
 
 model Session {

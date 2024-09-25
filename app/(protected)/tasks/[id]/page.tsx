@@ -54,6 +54,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 			status: true,
 			changes: true,
 			comments: true,
+			attachments: true,
 		},
 	});
 	// If the task is not found, return a 404 page, included in Next.js
@@ -149,6 +150,23 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									<Link className="mb-1 md:mb-2 text-blue-600 hover:underline" href={task.sourceLink} target="_blank">
 										Source Link
 									</Link>
+								</div>
+							)}
+							{task.attachments.filter((t) => t.type === "source").length > 0 && (
+								// TODO API endpoint for attachments
+								<div id="source">
+									<div className="mb-1 md:mb-2">Source attachments</div>
+									<div className="">
+										{task.attachments
+											.filter((t) => t.type === "source")
+											.map((t) => (
+												<div key={t.id}>
+													<a href={`/api/attachments/${task.id}/${t.path}`} target="_blank" className="text-blue-600 hover:underline">
+														{t.path}
+													</a>
+												</div>
+											))}
+									</div>
 								</div>
 							)}
 						</div>

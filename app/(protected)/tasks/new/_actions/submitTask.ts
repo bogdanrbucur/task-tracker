@@ -33,8 +33,8 @@ const Attachment = z.object({
 export type Attachment = z.infer<typeof Attachment>;
 
 export default async function submitTask(prevState: any, formData: FormData) {
-	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log("raw data", rawFormData.sourceAttachments);
+	const rawFormData = Object.fromEntries(formData.entries());
+	console.log("raw data", rawFormData.sourceAttachments);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
