@@ -68,15 +68,15 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	switch (emailType) {
 		case "taskAssigned":
 			emailTemplate = NewTaskEmail({ baseUrl, task: task! });
-			subject = "New task assigned to you";
+			subject = `New task assigned - ${task?.title}`;
 			break;
 		case "taskDueSoon":
 			emailTemplate = TaskDueSoonEmail({ baseUrl, task: task! });
-			subject = "Task due soon";
+			subject = `Task due soon - ${task?.title}`;
 			break;
 		case "taskOverdue":
 			emailTemplate = TaskOverdueEmail({ baseUrl, task: task! });
-			subject = "Task overdue";
+			subject = `Task overdue - ${task?.title}`;
 			break;
 		case "taskCompleted":
 			emailTemplate = TaskCompletedEmail({
@@ -85,7 +85,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				baseUrl,
 				task: task!,
 			});
-			subject = "Task completed - ready for review";
+			subject = `Task ready for review - ${task?.title}`;
 			break;
 		case "taskReopened":
 			emailTemplate = TaskReopenedEmail({
@@ -95,7 +95,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				baseUrl,
 				task: task!,
 			});
-			subject = "Task reopened";
+			subject = `Task reopened - ${task?.title}`;
 			break;
 		case "commentMention":
 			emailTemplate = CommentMentionEmail({
@@ -115,7 +115,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				baseUrl,
 				task: task!,
 			});
-			subject = "Task cancelled";
+			subject = `Task cancelled - ${task?.title}`;
 			break;
 		case "passwordResetRequest":
 			emailTemplate = PasswordResetEmail({

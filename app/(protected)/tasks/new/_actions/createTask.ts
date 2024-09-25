@@ -7,7 +7,7 @@ import saveAttachment from "../../[id]/_actions/saveAttachment";
 import { Editor, NewTask } from "./submitTask";
 
 // Create a new task in the database
-export async function createTask(task: NewTask, editingUser: Editor, attFiles: File[]) {
+export async function createTask(task: NewTask, editingUser: Editor, attFiles: File[], attDescriptions: string[]) {
 	const newTask = await prisma.task.create({
 		data: {
 			title: task.title,
@@ -27,13 +27,16 @@ export async function createTask(task: NewTask, editingUser: Editor, attFiles: F
 	await checkIfTaskOverdue(newTask.id);
 
 	// Check if an attachment was added and if so, save it
-	if (task.sourceAttachments && task.sourceAttachments.length > 0) {
-		console.log("Attachment found, saving...");
-		// await saveAttachment(attFile, newTask);
-	}
+	// Check if a source attachment was added and if so, save it
+	if (task.sourceAttachments && task.sourceAttachments.length > 0 && task.sourceAttachments[0].size > 0) {
+		console.log("attachments:", attFiles);
+		console.log("Attachments found, saving...");
 
-	// TODO if attachment was removed, delete it
-	//
+		for (const att of attFiles) {
+			await saveAttachment(att, newTask, attDescriptions[attFiles.indexOf(att)]);
+			console.log(att.name, attDescriptions[attFiles.indexOf(att)]);
+		}
+	}
 
 	console.log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`);
 	log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`, `./logs/${logDate()}`);

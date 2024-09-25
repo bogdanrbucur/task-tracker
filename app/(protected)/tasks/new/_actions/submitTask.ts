@@ -91,8 +91,8 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		} else {
 			// If no task ID is provided, create a new task
 			const attachments = formData.getAll("sourceAttachments") as File[];
-			// TODO update this to use the descriptions array
-			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachments);
+			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
+			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachments, attachmentsDescriptions);
 			newTask = createdTask;
 			emailStatus = statusTempVar;
 		}
