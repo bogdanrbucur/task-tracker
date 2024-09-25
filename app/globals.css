@@ -100,3 +100,7 @@
 .fade-in {
 	animation: fadeIn 0.4s ease-out;
 }
+
+.fade-in-delayed {
+	animation: fadeIn 0.4s ease-in-out 0.5s;
+}

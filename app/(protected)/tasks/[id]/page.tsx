@@ -23,6 +23,7 @@ import { CloseTaskButton } from "./_components/CloseTaskButton";
 import CommentsSection from "./_components/CommentsSection";
 import { CompleteTaskButton } from "./_components/CompleteTaskButton";
 import { ReopenTaskButton } from "./_components/ReopenTaskButton";
+import SourceAttachments from "./_components/SourceAttachments";
 
 interface Props {
 	params: { id: string };
@@ -153,19 +154,10 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								</div>
 							)}
 							{task.attachments.filter((t) => t.type === "source").length > 0 && (
-								// TODO API endpoint for attachments
 								<div id="source">
 									<div className="mb-1 md:mb-2">Source attachments</div>
 									<div className="">
-										{task.attachments
-											.filter((a) => a.type === "source")
-											.map((att) => (
-												<div key={att.id}>
-													<a href={`/api/attachments/${att.id}`} target="_blank" className="text-blue-600 hover:underline">
-														{att.description}
-													</a>
-												</div>
-											))}
+										<SourceAttachments attachments={task.attachments} />
 									</div>
 								</div>
 							)}
