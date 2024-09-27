@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { Key, useState } from "react";
+import { useRef, useState } from "react";
 import { useFormState } from "react-dom";
+import getTaskAttachments from "../../_actions/getTaskAttachments";
 import submitTask from "../../new/_actions/submitTask";
 
 const initialState = {
@@ -25,16 +26,64 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	const [formState, formAction] = useFormState(submitTask, initialState);
 	const [attachments, setAttachments] = useState(task?.attachments || []);
 	const [descriptions, setDescriptions] = useState<string[]>([]);
+	const [newDescription, setNewDescription] = useState<string>("");
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	const handleDescriptionChange = (index: number, value: string) => {
-		const updatedDescriptions = [...descriptions];
-		updatedDescriptions[index] = value;
-		setDescriptions(updatedDescriptions);
-		console.log(updatedDescriptions);
+	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const files = event.target.files;
+		if (files && files.length > 0) {
+			setSelectedFile(files[0]);
+		}
 	};
 
-	const handleRemoveAttachment = async (index: number): Promise<void> => {
-		setAttachments(attachments.filter((_: any, i: number) => i !== index));
+	const handleAddAttachment = async () => {
+		if (selectedFile && newDescription) {
+			const formData = new FormData();
+			formData.append("file", selectedFile);
+			formData.append("description", newDescription);
+
+			try {
+				const response = await fetch(`/api/attachments?id=${task.id}`, {
+					method: "POST",
+					body: formData,
+				});
+
+				if (!response.ok) {
+					throw new Error("Error uploading file");
+				}
+
+				const data = (await response.json()) as {
+					id: string;
+					path: string;
+					description: string | null;
+				};
+				console.log("File uploaded successfully:", data);
+				const updatedAttachments = await getTaskAttachments(task.id);
+				setAttachments(updatedAttachments);
+				setDescriptions([...descriptions, newDescription]);
+				setNewDescription(""); // Reset the new description input
+				setSelectedFile(null); // Reset the selected file input
+				if (fileInputRef.current) fileInputRef.current.value = ""; // Clear the file input
+			} catch (error) {
+				console.error("Error uploading file:", error);
+			}
+		}
+	};
+
+	const handleDescriptionChange = (index: number, newDescription: string) => {
+		const updatedDescriptions = [...descriptions];
+		updatedDescriptions[index] = newDescription;
+		setDescriptions(updatedDescriptions);
+
+		const updatedAttachments = [...attachments];
+		updatedAttachments[index].description = newDescription;
+		setAttachments(updatedAttachments);
+		console.log(descriptions);
+	};
+
+	const handleRemoveAttachment = async (index: number) => {
+		const updatedDescriptions = descriptions.filter((_, i) => i !== index);
 		try {
 			await fetch(`/api/attachments/${attachments[index].id}/remove`, {
 				method: "DELETE",
@@ -42,16 +91,10 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 		} catch (err) {
 			console.error(err);
 		}
-	};
 
-	const handleAddAttachment = (event: React.ChangeEvent<HTMLInputElement>): void => {
-		const files = event.target.files ? Array.from(event.target.files) : [];
-		const newAttachments = files.map((file, index) => ({
-			path: file.name,
-			file,
-			description: "",
-		}));
-		setAttachments(newAttachments);
+		const updatedAttachments = await getTaskAttachments(task.id);
+		setAttachments(updatedAttachments);
+		setDescriptions(updatedDescriptions);
 	};
 
 	return (
@@ -110,31 +153,54 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						</div>
 					</div>
 					{/* Show list of attachments and option to remove them */}
-					<div className="space-y-2">
-						<div>
-							<Label className="text-left" htmlFor="sourceAttachment">
-								Source Attachments
-							</Label>
-						</div>
-						{attachments.map((attachment: { id: Key | null | undefined; path: string; description: string }, index: number) => (
-							<div key={attachment.id} className="grid grid-cols-3 gap-5">
-								<div className="text-muted-foreground text-sm">{attachment.path}</div>
+					{task ? (
+						<div className="space-y-2">
+							<div>
+								<Label className="text-left" htmlFor="sourceAttachment">
+									Source Attachments
+								</Label>
+							</div>
+							{attachments.map((attachment: { id: string; path: string; description: string }, index: number) => (
+								<div key={attachment.id} className="grid grid-cols-3 gap-5">
+									<div className="text-muted-foreground text-sm">{attachment.path}</div>
+									<Input
+										type="text"
+										placeholder="Description"
+										defaultValue={attachment.description}
+										onChange={(e) => handleDescriptionChange(index, e.target.value)}
+										required
+									/>
+									<Button className="bg-red-400 text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
+										Remove
+									</Button>
+								</div>
+							))}
+							<div className="text-sm">Add attachment</div>
+							<div className="grid grid-cols-3 gap-5">
+								<Input className="space-y-3 w-60" type="file" accept="*" onChange={handleFileChange} ref={fileInputRef} />
 								<Input
+									className=""
+									name="newDescription"
 									type="text"
-									placeholder={"Description"}
-									defaultValue={attachment.description}
-									onChange={(e) => handleDescriptionChange(index, e.target.value)}
-									required
+									placeholder="Description for new attachment"
+									value={newDescription}
+									onChange={(e) => setNewDescription(e.target.value)}
 								/>
 								<input type="hidden" name="sourceAttachmentsDescriptions" value={descriptions} />
-								<Button className="bg-red-400 text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
-									Remove
+								<Button className="text-sm max-w-16" type="button" size="sm" onClick={handleAddAttachment}>
+									Add
 								</Button>
 							</div>
-						))}
-						<div className="text-sm">{attachments.length > 0 ? "Replace existing" : "Add"} attachments</div>
-						<Input className="space-y-3 w-60" name="sourceAttachments" type="file" multiple accept="*" onChange={handleAddAttachment} />
-					</div>
+						</div>
+					) : (
+						<div className="space-y-2">
+							<div>
+								<Label className="text-left text-orange-600 dark:text-orange-400" htmlFor="sourceAttachment">
+									To add source attachments, edit the task after creation.
+								</Label>
+							</div>
+						</div>
+					)}
 					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
