@@ -1,13 +1,11 @@
 import { sendEmail } from "@/app/email/email";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import fs from "fs-extra";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
-import saveAttachment from "./saveAttachment";
 
-export async function updateTask(task: UpdateTask, editingUser: Editor, attFiles: File[], attDescriptions: string[]) {
+export async function updateTask(task: UpdateTask, editingUser: Editor, attDescriptions: string[]) {
 	// Get the old task for comparison
 	const oldTask = await prisma.task.findUnique({
 		where: { id: Number(task.id) },
@@ -45,68 +43,18 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attFiles
 	// Check if the task is now overdue and update its status
 	await checkIfTaskOverdue(updatedTask.id);
 
-	// Check if a source attachment was added and if so, save it
-	if (task.sourceAttachments && task.sourceAttachments.length > 0 && task.sourceAttachments[0].size > 0) {
-		console.log("attachments:", attFiles);
-		console.log("Attachments found, saving...");
-
-		for (const att of attFiles) {
-			await saveAttachment(att, updatedTask, attDescriptions[attFiles.indexOf(att)]);
-			console.log(att.name, attDescriptions[attFiles.indexOf(att)]);
-		}
-	}
-
-	// If some source attachments were replaced, remove the old ones
-	if (task.sourceAttachments && task.sourceAttachments.length > 0 && task.sourceAttachments[0].size > 0) {
-		console.log("Some attachments removed, deleting...");
-		const oldAttachments = await prisma.attachment.findMany({
-			where: { taskId: updatedTask.id },
-		});
-
-		console.log("sent attachments", task.sourceAttachments);
-		console.log("existing attachments", oldAttachments);
-
-		const oldAttachmentNames = oldAttachments.map((att) => att.path);
-		const newAttachmentNames = task.sourceAttachments.map((att) => att.name);
-		const removedAttachments = oldAttachmentNames.filter((att) => !newAttachmentNames.includes(att));
-		console.log("Removed attachments:", removedAttachments);
-		for (const att of removedAttachments) {
-			try {
-				await prisma.attachment.deleteMany({
-					where: {
-						taskId: updatedTask.id,
-						path: att,
-					},
-				});
-
-				await fs.remove(`./attachments/${updatedTask.id}/${att}`);
-			} catch (err) {
-				console.log(err);
-			}
-		}
-	}
-
 	// If attachment descriptions were changed, update them
 	const oldAttachments = await prisma.attachment.findMany({
 		where: { taskId: updatedTask.id },
 	});
-	const oldAttachmentDescriptions = oldAttachments.map((att) => att.description);
-	const newAttachmentDescriptions = attDescriptions;
-	const changedDescriptions = oldAttachmentDescriptions.filter((desc) => desc !== null && !newAttachmentDescriptions.includes(desc));
-	console.log("Changed descriptions:", changedDescriptions);
-	for (const desc of changedDescriptions) {
-		try {
-			await prisma.attachment.updateMany({
-				where: {
-					taskId: updatedTask.id,
-					description: desc,
-				},
-				data: {
-					description: newAttachmentDescriptions[oldAttachmentDescriptions.indexOf(desc)],
-				},
+
+	for (const att of oldAttachments) {
+		const newDesc = attDescriptions[oldAttachments.indexOf(att)];
+		if (att.description !== newDesc && newDesc !== "") {
+			await prisma.attachment.update({
+				where: { id: att.id },
+				data: { description: newDesc },
 			});
-		} catch (err) {
-			console.log(err);
 		}
 	}
 

@@ -1,6 +1,7 @@
 // server function to add new task
 "use server";
 
+import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import { Task } from "@prisma/client";
@@ -8,7 +9,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { updateTask } from "../../[id]/_actions/updateTask";
 import { createTask } from "./createTask";
-import { getAuth } from "@/actions/auth/get-auth";
 
 export type NewTask = {
 	title: string;
@@ -18,7 +18,6 @@ export type NewTask = {
 	assignedToUserId: string;
 	source?: string;
 	sourceLink?: string;
-	sourceAttachments: Attachment[] | null;
 };
 export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
@@ -33,8 +32,8 @@ const Attachment = z.object({
 export type Attachment = z.infer<typeof Attachment>;
 
 export default async function submitTask(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log("raw data", rawFormData.sourceAttachments);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log("raw data", rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -50,7 +49,6 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		createdByUserId: z.string().length(25),
 		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
 		sourceLink: z.string().max(255, { message: "Source link must be at most 255 characters." }).optional(),
-		sourceAttachments: z.array(Attachment).nullable(),
 		sourceAttachmentsDescriptions: z.array(z.string()).nullable(),
 	});
 
@@ -68,7 +66,6 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			createdByUserId: formData.get("editingUser") as string,
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
-			sourceAttachments: formData.getAll("sourceAttachments") as File[],
 			sourceAttachmentsDescriptions: formData.getAll("sourceAttachmentsDescriptions") as string[],
 		});
 
@@ -82,17 +79,15 @@ export default async function submitTask(prevState: any, formData: FormData) {
 
 		// If a task ID is provided, update the existing task
 		if (data.id) {
-			const attachments = formData.getAll("sourceAttachments") as File[];
 			// For some retarded reason, the descriptions are return as an array of the same string, so we split the first one
 			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
-			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachments, attachmentsDescriptions);
+			console.log("attDescriptions:", attachmentsDescriptions);
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachmentsDescriptions);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
 		} else {
 			// If no task ID is provided, create a new task
-			const attachments = formData.getAll("sourceAttachments") as File[];
-			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
-			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!, attachments, attachmentsDescriptions);
+			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!);
 			newTask = createdTask;
 			emailStatus = statusTempVar;
 		}

@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import fs from "fs-extra";
 
 export default async function saveAttachment(attachment: File, task: Task, attachmentDescription: string) {
+	let response;
 	try {
 		const arrayBuffer = await attachment.arrayBuffer();
 		const attachmentBuffer = Buffer.from(arrayBuffer);
@@ -47,6 +48,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 				},
 			});
 
+			response = existingAttachment;
 			console.log(`Replaced attachment ${attachment.name} for task ${task.id}`);
 		} else {
 			const addedAttachment = await prisma.attachment.create({
@@ -58,8 +60,10 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 					description: attachmentDescription,
 				},
 			});
+			response = addedAttachment;
 		}
 	} catch (error) {
 		console.log(error);
 	}
+	return response;
 }
