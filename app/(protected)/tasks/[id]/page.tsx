@@ -113,6 +113,16 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								<div className="mb-1 md:mb-2">Assigned to:</div>
 								<UserAvatarNameNormal user={task.assignedToUser as UserExtended} />
 							</div>
+							{/* Display the Original Due Date only if it's different than the Due Date */}
+							{task.originalDueDate !== task.dueDate ? (
+								<div id="originalDueOn" className="mb-1 md:mb-2">
+									<div className="mb-1 md:mb-2">Original due date:</div>
+									<div className="flex items-center">
+										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+										<div className={dueColor(task)}>{formatDate(task.originalDueDate)}</div>
+									</div>
+								</div>
+							) : null}
 							<div id="dueOn" className="mb-1 md:mb-2">
 								<div className="mb-1 md:mb-2">Due on:</div>
 								<div className="flex items-center">

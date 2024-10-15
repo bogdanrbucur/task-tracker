@@ -27,6 +27,7 @@ model Task {
   changes             Change[]     @relation("Changes") // New relation to Change model
   comments            Comment[]    @relation("Comments") // New relation to Comment model
   dueDate             DateTime
+  originalDueDate     DateTime
   completedOn         DateTime?
   closedOn            DateTime?
   dueSoonReminderSent Boolean      @default(false)

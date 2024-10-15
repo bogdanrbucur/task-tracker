@@ -15,7 +15,6 @@ import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import getTaskAttachments from "../../_actions/getTaskAttachments";
 import submitTask from "../../new/_actions/submitTask";
-import { log } from "console";
 
 const initialState = {
 	message: null,

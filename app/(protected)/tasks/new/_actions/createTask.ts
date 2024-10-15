@@ -12,6 +12,7 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 			title: task.title,
 			description: task.description,
 			dueDate: task.dueDate,
+			originalDueDate: task.dueDate,
 			assignedToUserId: task.assignedToUserId,
 			createdByUserId: task.createdByUserId,
 			source: task.source,
