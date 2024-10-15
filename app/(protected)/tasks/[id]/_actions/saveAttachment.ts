@@ -21,7 +21,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 		else await fs.mkdir(attachmentsFolderPath);
 
 		// Save the attachment locally
-		await fs.writeFile(`./attachments/${task.id}/${attachment.name}`, attachmentBuffer);
+		fs.writeFile(`./attachments/${task.id}/${attachment.name}`, new Uint8Array(attachmentBuffer));
 
 		console.log(`Attachment saved to ./attachments/${task.id}/${attachment.name}`);
 

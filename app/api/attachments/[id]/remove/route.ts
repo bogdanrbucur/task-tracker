@@ -42,5 +42,5 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 	});
 
 	// Return a success response
-	return NextResponse.json({ message: "Attachment deleted successfully" });
+	return NextResponse.json({ message: "Attachment deleted successfully", Status: "200" });
 }

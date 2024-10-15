@@ -51,6 +51,7 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 	for (const att of oldAttachments) {
 		const newDesc = attDescriptions[oldAttachments.indexOf(att)];
 		if (att.description !== newDesc && newDesc !== "") {
+			console.log(`Description updated from ${att.description} to ${newDesc}`);
 			await prisma.attachment.update({
 				where: { id: att.id },
 				data: { description: newDesc },

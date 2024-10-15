@@ -11,10 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import getTaskAttachments from "../../_actions/getTaskAttachments";
 import submitTask from "../../new/_actions/submitTask";
+import { log } from "console";
 
 const initialState = {
 	message: null,
@@ -29,6 +30,15 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	const [newDescription, setNewDescription] = useState<string>("");
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [attachmentError, setAttachmentError] = useState<string | null>(null);
+
+	// Get the actual descriptions from each attachment
+	useEffect(() => {
+		if (task) {
+			const descriptions = task.attachments.map((attachment: { description: string }) => attachment.description);
+			setDescriptions(descriptions);
+		}
+	}, []);
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
@@ -50,7 +60,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 				});
 
 				if (!response.ok) {
-					throw new Error("Error uploading file");
+					throw new Error(response.statusText);
 				}
 
 				const data = (await response.json()) as {
@@ -65,8 +75,10 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 				setNewDescription(""); // Reset the new description input
 				setSelectedFile(null); // Reset the selected file input
 				if (fileInputRef.current) fileInputRef.current.value = ""; // Clear the file input
+				setAttachmentError(null);
 			} catch (error) {
 				console.error("Error uploading file:", error);
+				setAttachmentError(`Error uploading file ${selectedFile?.name}: ${error}`);
 			}
 		}
 	};
@@ -75,6 +87,8 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 		const updatedDescriptions = [...descriptions];
 		updatedDescriptions[index] = newDescription;
 		setDescriptions(updatedDescriptions);
+
+		console.log(index, newDescription);
 
 		const updatedAttachments = [...attachments];
 		updatedAttachments[index].description = newDescription;
@@ -85,11 +99,17 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	const handleRemoveAttachment = async (index: number) => {
 		const updatedDescriptions = descriptions.filter((_, i) => i !== index);
 		try {
-			await fetch(`/api/attachments/${attachments[index].id}/remove`, {
+			const response = await fetch(`/api/attachments/${attachments[index].id}/remove`, {
 				method: "DELETE",
 			});
-		} catch (err) {
-			console.error(err);
+
+			if (!response.ok) {
+				throw new Error(response.statusText);
+			}
+			setAttachmentError(null);
+		} catch (error) {
+			console.error("Error deleting file:", error);
+			setAttachmentError(`Error deleting file ${selectedFile?.name}: ${error}`);
 		}
 
 		const updatedAttachments = await getTaskAttachments(task.id);
@@ -155,6 +175,13 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					{/* Show list of attachments and option to remove them */}
 					{task ? (
 						<div className="space-y-2">
+							{attachmentError && (
+								<Alert variant="destructive">
+									<AlertCircle className="h-4 w-4" />
+									<AlertTitle>Attachment Error</AlertTitle>
+									<AlertDescription>{attachmentError}</AlertDescription>
+								</Alert>
+							)}
 							<div>
 								<Label className="text-left" htmlFor="sourceAttachment">
 									Source Attachments

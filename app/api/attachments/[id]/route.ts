@@ -38,6 +38,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 		headers: {
 			"Content-Type": "application/octet-stream",
 			"Content-Disposition": `attachment; filename="${attachment.path}"`,
+			Status: "201",
 		},
 	});
 }
