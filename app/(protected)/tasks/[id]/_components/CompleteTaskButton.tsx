@@ -44,6 +44,8 @@ export function CompleteTaskButton({ userId, taskId }: { userId: string | undefi
 						</Alert>
 					)}
 					<Textarea name="completeComment" draggable="false" className="my-3" placeholder="Your comment..." />
+					{/* Completion attachments section */}
+					
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<Button type="submit">Confirm</Button>

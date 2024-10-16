@@ -87,12 +87,9 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 		updatedDescriptions[index] = newDescription;
 		setDescriptions(updatedDescriptions);
 
-		console.log(index, newDescription);
-
 		const updatedAttachments = [...attachments];
 		updatedAttachments[index].description = newDescription;
 		setAttachments(updatedAttachments);
-		console.log(descriptions);
 	};
 
 	const handleRemoveAttachment = async (index: number) => {
