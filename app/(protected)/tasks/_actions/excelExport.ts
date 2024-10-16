@@ -14,6 +14,7 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 		"Assigned To",
 		"Department",
 		"Status",
+		"Original due on",
 		"Due on",
 		"Completed on",
 		"Updated At",
@@ -32,7 +33,8 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 			task.createdByUser ? task.createdByUser.firstName + " " + task.createdByUser.lastName : "",
 			`${task.assignedToUser?.firstName} ${task.assignedToUser?.lastName}`,
 			task.department?.name,
-			task.status?.name,
+			task.status?.displayName,
+			task.originalDueDate,
 			task.dueDate,
 			task.completedOn,
 			task.updatedAt,
@@ -54,15 +56,16 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 		{ wch: 18 },
 		{ wch: 18 },
 		{ wch: 15 },
-		{ wch: 10 },
+		{ wch: 15 },
+		{ wch: 14 },
 		{ wch: 10 },
 		{ wch: 12 },
 		{ wch: 10 },
 	];
 
 	// Styling...
-	// Center and bold range A2:H4
-	for (let col = 0; col <= 12; col++) {
+	// Center and bold range A1:N1
+	for (let col = 0; col <= 13; col++) {
 		let row = 0;
 		const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
 		// if the cell exists (has data)

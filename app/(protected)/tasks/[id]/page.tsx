@@ -13,7 +13,7 @@ import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { completedColor, dueColor, formatDate } from "@/lib/utilityFunctions";
+import { completedColor, datesAreEqual, dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
@@ -114,15 +114,15 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								<UserAvatarNameNormal user={task.assignedToUser as UserExtended} />
 							</div>
 							{/* Display the Original Due Date only if it's different than the Due Date */}
-							{task.originalDueDate !== task.dueDate ? (
+							{!datesAreEqual(task.originalDueDate, task.dueDate) && (
 								<div id="originalDueOn" className="mb-1 md:mb-2">
-									<div className="mb-1 md:mb-2">Original due date:</div>
+									<div className="mb-1 md:mb-2">Original due on:</div>
 									<div className="flex items-center">
 										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
 										<div className={dueColor(task)}>{formatDate(task.originalDueDate)}</div>
 									</div>
 								</div>
-							) : null}
+							)}
 							<div id="dueOn" className="mb-1 md:mb-2">
 								<div className="mb-1 md:mb-2">Due on:</div>
 								<div className="flex items-center">
