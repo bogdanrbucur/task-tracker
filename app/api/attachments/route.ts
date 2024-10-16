@@ -12,6 +12,9 @@ export async function POST(req: NextRequest) {
 
 	const searchParams = req.nextUrl.searchParams;
 	const taskId = searchParams.get("id");
+	const type = searchParams.get("type");
+
+	if (type !== "source" && type !== "completion") return notFound();
 
 	// Search for the task in the database by its id
 	const task = await prisma.task.findFirst({
@@ -31,7 +34,7 @@ export async function POST(req: NextRequest) {
 	// Call saveAttachment(att, task, attDescription) to save the attachment
 	const attachments = [];
 	for (const [index, file] of files.entries()) {
-		const addedAttachment = await saveAttachment(file, task, descriptions[index] as string);
+		const addedAttachment = await saveAttachment(file, task, descriptions[index] as string, type);
 		attachments.push(addedAttachment);
 	}
 	return NextResponse.json(attachments);

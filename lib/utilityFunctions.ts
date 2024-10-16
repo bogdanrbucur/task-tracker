@@ -9,7 +9,6 @@ export function formatDate(date: Date) {
 }
 
 export function datesAreEqual(date1: Date, date2: Date) {
-	if (isEqual(date1, date2)) console.log(`${date1} is equal to ${date2}`);
 	return isEqual(date1, date2);
 }
 

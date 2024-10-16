@@ -53,7 +53,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 			formData.append("description", newDescription);
 
 			try {
-				const response = await fetch(`/api/attachments?id=${task.id}`, {
+				const response = await fetch(`/api/attachments?id=${task.id}&type=source`, {
 					method: "POST",
 					body: formData,
 				});
