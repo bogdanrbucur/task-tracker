@@ -15,8 +15,13 @@ export interface TaskAttachments {
 	type: string;
 }
 
+// Constants for attachment restrictions
+const MAX_ATTACHMENTS = 5;
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 // Component for uploading and managing attachments
-export default function Attachments({ taskId, taskAttachments }: { taskId: number; taskAttachments: TaskAttachments[]; type: "source" | "completion" }) {
+export default function AttachmentsUpload({ taskId, taskAttachments, type }: { taskId: number; taskAttachments: TaskAttachments[]; type: "source" | "completion" }) {
 	const [attachments, setAttachments] = useState(taskAttachments || []);
 	const [descriptions, setDescriptions] = useState<string[]>([]);
 	const [newDescription, setNewDescription] = useState<string>("");
@@ -33,7 +38,22 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
 		if (files && files.length > 0) {
-			setSelectedFile(files[0]);
+			const file = files[0];
+
+			// Check if the number of attachments exceeds the maximum allowed
+			if (attachments.length >= MAX_ATTACHMENTS) {
+				setAttachmentError(`You can only upload up to ${MAX_ATTACHMENTS} attachments.`);
+				return;
+			}
+
+			// Check if the file size exceeds the maximum allowed size
+			if (file.size > MAX_FILE_SIZE_BYTES) {
+				setAttachmentError(`File size must not exceed ${MAX_FILE_SIZE_MB} MB.`);
+				return;
+			}
+
+			setSelectedFile(file);
+			setAttachmentError(null); // Clear any previous errors
 		}
 	};
 
@@ -44,7 +64,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 			formData.append("description", newDescription);
 
 			try {
-				const response = await fetch(`/api/attachments?id=${taskId}&type=source`, {
+				const response = await fetch(`/api/attachments?id=${taskId}&type=${type}`, {
 					method: "POST",
 					body: formData,
 				});
@@ -60,7 +80,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 				};
 				console.log("File uploaded successfully:", data);
 				const updatedAttachments = await getTaskAttachments(taskId);
-				setAttachments(updatedAttachments);
+				setAttachments(updatedAttachments.filter((a) => a.type === type));
 				setDescriptions([...descriptions, newDescription]);
 				setNewDescription(""); // Reset the new description input
 				setSelectedFile(null); // Reset the selected file input
@@ -80,7 +100,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 
 		const updatedAttachments = [...attachments];
 		updatedAttachments[index].description = newDescription;
-		setAttachments(updatedAttachments);
+		setAttachments(updatedAttachments.filter((a) => a.type === type));
 	};
 
 	const handleRemoveAttachment = async (index: number) => {
@@ -100,7 +120,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 		}
 
 		const updatedAttachments = await getTaskAttachments(taskId);
-		setAttachments(updatedAttachments);
+		setAttachments(updatedAttachments.filter((a) => a.type === type));
 		setDescriptions(updatedDescriptions);
 	};
 	return (
@@ -114,7 +134,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 			)}
 			<div>
 				<Label className="text-left" htmlFor="sourceAttachment">
-					Source Attachments
+					{type === "source" ? "Source" : type === "completion" ? "Completion" : null} attachments
 				</Label>
 			</div>
 			{attachments.map((attachment, index: number) => (
@@ -126,6 +146,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 						defaultValue={attachment.description as string}
 						onChange={(e) => handleDescriptionChange(index, e.target.value)}
 						required
+						disabled={type === "completion"}
 					/>
 					<Button className="bg-red-400 text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
 						Remove
@@ -133,7 +154,7 @@ export default function Attachments({ taskId, taskAttachments }: { taskId: numbe
 				</div>
 			))}
 			<div className="text-sm">Add attachment</div>
-			<div className="grid grid-cols-3 gap-5">
+			<div className="grid grid-cols-3 gap-5 items-center">
 				<Input className="space-y-3 w-60" type="file" accept="*" onChange={handleFileChange} ref={fileInputRef} />
 				<Input
 					className=""

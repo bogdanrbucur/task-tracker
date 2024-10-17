@@ -14,7 +14,10 @@ export async function POST(req: NextRequest) {
 	const taskId = searchParams.get("id");
 	const type = searchParams.get("type");
 
-	if (type !== "source" && type !== "completion") return notFound();
+	// return Bad Request if the task ID or type is not provided or wrong type
+	if (type !== "source" && type !== "completion") {
+		return NextResponse.json({ error: "Invalid attachment type" }, { status: 400 });
+	}
 
 	// Search for the task in the database by its id
 	const task = await prisma.task.findFirst({

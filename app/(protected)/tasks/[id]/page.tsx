@@ -18,12 +18,12 @@ import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AttachmentList from "./_components/AttachmentsList";
 import { CancelTaskButton } from "./_components/CancelTaskButton";
 import { CloseTaskButton } from "./_components/CloseTaskButton";
 import CommentsSection from "./_components/CommentsSection";
 import { CompleteTaskButton } from "./_components/CompleteTaskButton";
 import { ReopenTaskButton } from "./_components/ReopenTaskButton";
-import SourceAttachments from "./_components/SourceAttachments";
 
 interface Props {
 	params: { id: string };
@@ -103,7 +103,9 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									</Button>
 								)}
 								{canReopenTask && (task.statusId === 2 || task.statusId === 3 || task.statusId === 4) && <ReopenTaskButton userId={user?.id} taskId={task.id} />}
-								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
+								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && (
+									<CompleteTaskButton userId={user?.id} taskId={task.id} taskAttachments={task.attachments.filter((t) => t.type === "completion")} />
+								)}
 								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
 								{canCancelTask && task.statusId !== 4 && task.statusId !== 3 && <CancelTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
@@ -167,7 +169,15 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								<div id="source">
 									<div className="mb-1 md:mb-2">Source attachments</div>
 									<div className="">
-										<SourceAttachments attachments={task.attachments} />
+										<AttachmentList attachments={task.attachments.filter((a) => a.type === "source")} />
+									</div>
+								</div>
+							)}
+							{task.attachments.filter((t) => t.type === "completion").length > 0 && (
+								<div id="source">
+									<div className="mb-1 md:mb-2">Completion attachments</div>
+									<div className="">
+										<AttachmentList attachments={task.attachments.filter((a) => a.type === "completion")} />
 									</div>
 								</div>
 							)}

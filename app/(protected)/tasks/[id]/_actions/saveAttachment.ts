@@ -13,7 +13,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 		const attachmentsFolderPath = `./attachments/${task.id}`;
 		if (await fs.pathExists(attachmentsFolderPath)) {
 			const attachments = await fs.readdir(attachmentsFolderPath);
-			const oldattachment = attachments.find((file) => file.includes(String(attachment.name)));
+			const oldattachment = attachments.find((file) => file.includes(String(`${type}_${attachment.name}`)));
 			if (oldattachment) await fs.remove(`${attachmentsFolderPath}/${oldattachment}`);
 		}
 
@@ -21,15 +21,15 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 		else await fs.mkdir(attachmentsFolderPath);
 
 		// Save the attachment locally
-		fs.writeFile(`./attachments/${task.id}/${attachment.name}`, new Uint8Array(attachmentBuffer));
+		fs.writeFile(`./attachments/${task.id}/${type}_${attachment.name}`, new Uint8Array(attachmentBuffer));
 
-		console.log(`Attachment saved to ./attachments/${task.id}/${attachment.name}`);
+		console.log(`Attachment saved to ./attachments/${task.id}/${type}_${attachment.name}`);
 
 		// Update the attachment path in the database if it already exists
 		const existingAttachment = await prisma.attachment.findFirst({
 			where: {
 				taskId: task.id,
-				path: attachment.name,
+				path: `${type}_${attachment.name}`,
 				description: attachmentDescription,
 			},
 		});
@@ -38,7 +38,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 			await prisma.attachment.updateMany({
 				where: {
 					taskId: task.id,
-					path: attachment.name,
+					path: `${type}_${attachment.name}`,
 				},
 				data: {
 					id: randomUUID(),
@@ -49,14 +49,14 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 			});
 
 			response = existingAttachment;
-			console.log(`Replaced attachment ${attachment.name} for task ${task.id}`);
+			console.log(`Replaced attachment ${type}_${attachment.name} for task ${task.id}`);
 		} else {
 			const addedAttachment = await prisma.attachment.create({
 				data: {
 					id: randomUUID(),
 					taskId: task.id,
 					type: type,
-					path: attachment.name,
+					path: `${type}_${attachment.name}`,
 					description: attachmentDescription,
 				},
 			});

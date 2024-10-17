@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import submitTask from "../../new/_actions/submitTask";
-import Attachments from "./Attachments";
+import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
 
 const initialState = {
 	message: null,
@@ -82,7 +82,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					</div>
 					{/* Show list of attachments and option to remove them */}
 					{task ? (
-						<Attachments taskId={task.id} taskAttachments={task.attachments} type="source" />
+						<AttachmentsUpload taskId={task.id} taskAttachments={task.attachments.filter((a: TaskAttachments) => a.type === "source")} type="source" />
 					) : (
 						<div className="space-y-2">
 							<div>

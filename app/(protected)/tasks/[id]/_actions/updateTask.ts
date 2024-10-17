@@ -44,9 +44,12 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 	await checkIfTaskOverdue(updatedTask.id);
 
 	// If attachment descriptions were changed, update them
-	const oldAttachments = await prisma.attachment.findMany({
+	let oldAttachments = await prisma.attachment.findMany({
 		where: { taskId: updatedTask.id },
 	});
+
+	// Keep only source attachments - only these can be renamed
+	oldAttachments = oldAttachments.filter((att) => att.type === "source");
 
 	for (const att of oldAttachments) {
 		const newDesc = attDescriptions[oldAttachments.indexOf(att)];
