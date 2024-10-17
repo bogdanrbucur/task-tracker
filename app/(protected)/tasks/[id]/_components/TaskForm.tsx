@@ -41,7 +41,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						<div className="flex md:justify-start">
 							<div className="flex flex-col space-y-3 w-60">
-								<Label htmlFor="dueDate">Due Date</Label>
+								<Label htmlFor="dueDate">Due date</Label>
 								<DatePicker onChange={setSelectedDate} defaultDate={task?.dueDate} />
 								<input type="hidden" name="dueDate" value={selectedDate?.toISOString() ?? ""} />
 							</div>
@@ -49,7 +49,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						<div className="flex md:justify-end">
 							<div className="flex flex-col space-y-3 w-60">
 								<Label className="text-left" htmlFor="assignedUser">
-									Assigned To
+									Assigned to
 								</Label>
 								<UsersSelection users={users} onChange={setSelectedUserId} defaultUser={task?.assignedToUser} />
 								{/* Hidden input fields ensures formData is submitted */}
@@ -72,7 +72,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						<div className="flex md:justify-end">
 							<div className="flex flex-col space-y-3 w-60">
 								<Label className="text-left" htmlFor="sourceLink">
-									Source Link
+									Source link
 								</Label>
 								<Input name="sourceLink" placeholder="(optional) Source link" defaultValue={task ? task.sourceLink : undefined} />
 								{/* Hidden input fields ensures formData is submitted */}
@@ -95,7 +95,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
-							<AlertTitle>Task could not be created</AlertTitle>
+							<AlertTitle>Task could not be saved</AlertTitle>
 							<AlertDescription>{formState?.message}</AlertDescription>
 						</Alert>
 					)}

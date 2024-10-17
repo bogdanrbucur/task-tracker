@@ -138,7 +138,7 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 				</Label>
 			</div>
 			{attachments.map((attachment, index: number) => (
-				<div key={attachment.id} className="grid grid-cols-3 gap-5">
+				<div key={attachment.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
 					<div className="text-muted-foreground text-sm">{attachment.path}</div>
 					<Input
 						type="text"
@@ -154,7 +154,7 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 				</div>
 			))}
 			<div className="text-sm">Add attachment</div>
-			<div className="grid grid-cols-3 gap-5 items-center">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 items-center">
 				<Input className="space-y-3 w-60" type="file" accept="*" onChange={handleFileChange} ref={fileInputRef} />
 				<Input
 					className=""

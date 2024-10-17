@@ -39,6 +39,15 @@ export default async function submitTask(prevState: any, formData: FormData) {
 	const { user: agent } = await getAuth();
 	if (!agent) return { message: "You do not have permission to perform this action." };
 
+	const isValidURL = (url: string): boolean => {
+		try {
+			new URL(url);
+			return true;
+		} catch (_) {
+			return false;
+		}
+	};
+
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		id: z.string().nullable(),
@@ -48,7 +57,13 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
 		createdByUserId: z.string().length(25),
 		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
-		sourceLink: z.string().max(255, { message: "Source link must be at most 255 characters." }).optional(),
+		sourceLink: z
+			.string()
+			.max(255, { message: "Source link must be at most 255 characters." })
+			.optional()
+			.refine((url) => !url || isValidURL(url), {
+				message: "Invalid Source link URL",
+			}),
 		sourceAttachmentsDescriptions: z.array(z.string()).nullable(),
 	});
 

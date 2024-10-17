@@ -40,7 +40,7 @@ export function CompleteTaskButton({ userId, taskId, taskAttachments }: { userId
 					<Check size="18" />
 				</Button>
 			</AlertDialogTrigger>
-			<AlertDialogContent className="min-w-[800px]">
+			<AlertDialogContent className="md:min-w-[800px]">
 				<form action={formAction}>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Complete the task</AlertDialogTitle>
