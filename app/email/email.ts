@@ -140,7 +140,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				lastName: userLastName!,
 				userId: comment!,
 			});
-			subject = "Newly registered user not confirmed";
+			subject = `Newly registered user not confirmed - ${userFirstName} ${userLastName}`;
 			break;
 		default:
 			null;
