@@ -40,3 +40,8 @@ next-env.d.ts
 
 # Loader.io
 /public/*.txt
+
+# Database file, avatars and attachments
+*.db
+/attachments/*
+/avatars/*

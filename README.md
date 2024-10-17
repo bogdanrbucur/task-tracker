@@ -173,8 +173,9 @@ Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
 
 #### When making schema changes
 
-1. `npx prisma migrate dev --name init` and `npx prisma migrate dev --name change` for every new change
-2. `npx prisma generate` to generate the client
+1. `npx prisma migrate dev --name whatever-change` for every change
+2. If the migrations were pulled from a commit, run `npx prisma migrate deploy` to apply them
+3. `npx prisma generate` to generate the client
 
 #### Directly accessing the database
 

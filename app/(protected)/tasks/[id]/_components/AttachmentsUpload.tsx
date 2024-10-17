@@ -80,7 +80,7 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 				};
 				console.log("File uploaded successfully:", data);
 				const updatedAttachments = await getTaskAttachments(taskId);
-				setAttachments(updatedAttachments.filter((a) => a.type === type));
+				setAttachments(updatedAttachments.filter((a: TaskAttachments) => a.type === type));
 				setDescriptions([...descriptions, newDescription]);
 				setNewDescription(""); // Reset the new description input
 				setSelectedFile(null); // Reset the selected file input
@@ -120,7 +120,7 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 		}
 
 		const updatedAttachments = await getTaskAttachments(taskId);
-		setAttachments(updatedAttachments.filter((a) => a.type === type));
+		setAttachments(updatedAttachments.filter((a: TaskAttachments) => a.type === type));
 		setDescriptions(updatedDescriptions);
 	};
 	return (
