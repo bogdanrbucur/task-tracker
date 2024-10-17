@@ -1,11 +1,11 @@
+import { sendEmail } from "@/app/email/email";
+import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
-import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
-import { sendEmail } from "@/app/email/email";
 
-export async function updateTask(task: UpdateTask, editingUser: Editor) {
+export async function updateTask(task: UpdateTask, editingUser: Editor, attDescriptions: string[]) {
 	// Get the old task for comparison
 	const oldTask = await prisma.task.findUnique({
 		where: { id: Number(task.id) },
@@ -19,6 +19,8 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 			description: task.description,
 			dueDate: new Date(task.dueDate),
 			assignedToUserId: task.assignedToUserId,
+			source: task.source,
+			sourceLink: task.sourceLink,
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
@@ -40,6 +42,25 @@ export async function updateTask(task: UpdateTask, editingUser: Editor) {
 
 	// Check if the task is now overdue and update its status
 	await checkIfTaskOverdue(updatedTask.id);
+
+	// If attachment descriptions were changed, update them
+	let oldAttachments = await prisma.attachment.findMany({
+		where: { taskId: updatedTask.id },
+	});
+
+	// Keep only source attachments - only these can be renamed
+	oldAttachments = oldAttachments.filter((att) => att.type === "source");
+
+	for (const att of oldAttachments) {
+		const newDesc = attDescriptions[oldAttachments.indexOf(att)];
+		if (att.description !== newDesc && newDesc !== "") {
+			console.log(`Description updated from ${att.description} to ${newDesc}`);
+			await prisma.attachment.update({
+				where: { id: att.id },
+				data: { description: newDesc },
+			});
+		}
+	}
 
 	console.log(`Task ${task.id} updated successfully`);
 

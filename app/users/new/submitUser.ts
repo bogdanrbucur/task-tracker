@@ -4,14 +4,13 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import createUser from "@/app/users/_actions/createUser";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logDate, resizeAndSaveImage } from "@/lib/utilityFunctions";
-import prisma from "@/prisma/client";
+import { logDate } from "@/lib/utilityFunctions";
 import { User } from "@prisma/client";
-import fs from "fs-extra";
 import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import saveAvatar from "../[id]/_actions/saveAvatar";
 import updateUser from "../[id]/_actions/updateUser";
 
 export type NewUser = {
@@ -142,33 +141,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		// Save the avatar locally
 		if (newUser && data.avatar && data.avatar?.size > 0) {
 			const avatar = formData.get("avatar") as File;
-			const arrayBuffer = await avatar.arrayBuffer();
-			const avatarBuffer = Buffer.from(arrayBuffer);
-			// const extension = avatar.name.split(".").pop();
-			const fileName = `${newUser.id}.jpg`;
-			// data.avatarPath = fileName;
-			try {
-				// First delete the existing avatar if it exists
-				// search for any file in the avatars folder that matches the id
-				const avatars = await fs.readdir("./avatars");
-				const oldAvatar = avatars.find((file) => file.includes(String(newUser!.id)));
-				if (oldAvatar) await fs.remove(`./avatars/${oldAvatar}`);
-
-				// Resize and save the avatar
-				await resizeAndSaveImage(avatarBuffer, `./avatars/${fileName}`);
-
-				console.log(`Avatar saved to ./avatars/${fileName}`);
-
-				// Update the user with the new avatar path
-				const newAvatar = await prisma.avatar.create({
-					data: {
-						userId: newUser.id,
-						path: fileName,
-					},
-				});
-			} catch (error) {
-				console.log(error);
-			}
+			await saveAvatar(avatar, newUser);
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

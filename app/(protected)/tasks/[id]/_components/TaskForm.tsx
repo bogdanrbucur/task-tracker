@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import submitTask from "../../new/_actions/submitTask";
+import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
 
 const initialState = {
 	message: null,
@@ -40,7 +41,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						<div className="flex md:justify-start">
 							<div className="flex flex-col space-y-3 w-60">
-								<Label htmlFor="dueDate">Due Date</Label>
+								<Label htmlFor="dueDate">Due date</Label>
 								<DatePicker onChange={setSelectedDate} defaultDate={task?.dueDate} />
 								<input type="hidden" name="dueDate" value={selectedDate?.toISOString() ?? ""} />
 							</div>
@@ -48,7 +49,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						<div className="flex md:justify-end">
 							<div className="flex flex-col space-y-3 w-60">
 								<Label className="text-left" htmlFor="assignedUser">
-									Assigned To
+									Assigned to
 								</Label>
 								<UsersSelection users={users} onChange={setSelectedUserId} defaultUser={task?.assignedToUser} />
 								{/* Hidden input fields ensures formData is submitted */}
@@ -56,10 +57,45 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 							</div>
 						</div>
 					</div>
+					{/* Source fields */}
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+						<div className="flex md:justify-start">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label className="text-left" htmlFor="source">
+									Source
+								</Label>
+								<Input name="source" placeholder="(optional) Task source" defaultValue={task ? task.source : undefined} />
+								{/* Hidden input fields ensures formData is submitted */}
+								<input type="hidden" name="source" value={task ? task.source : ""} />
+							</div>
+						</div>
+						<div className="flex md:justify-end">
+							<div className="flex flex-col space-y-3 w-60">
+								<Label className="text-left" htmlFor="sourceLink">
+									Source link
+								</Label>
+								<Input name="sourceLink" placeholder="(optional) Source link" defaultValue={task ? task.sourceLink : undefined} />
+								{/* Hidden input fields ensures formData is submitted */}
+								<input type="hidden" name="sourceLink" value={task ? task.sourceLink : ""} />
+							</div>
+						</div>
+					</div>
+					{/* Show list of attachments and option to remove them */}
+					{task ? (
+						<AttachmentsUpload taskId={task.id} taskAttachments={task.attachments.filter((a: TaskAttachments) => a.type === "source")} type="source" />
+					) : (
+						<div className="space-y-2">
+							<div>
+								<Label className="text-left text-orange-600 dark:text-orange-400" htmlFor="sourceAttachment">
+									To add source attachments, edit the task after creation.
+								</Label>
+							</div>
+						</div>
+					)}
 					{formState?.message && (
 						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
-							<AlertTitle>Task could not be created</AlertTitle>
+							<AlertTitle>Task could not be saved</AlertTitle>
 							<AlertDescription>{formState?.message}</AlertDescription>
 						</Alert>
 					)}

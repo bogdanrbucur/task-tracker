@@ -13,11 +13,12 @@ import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { completedColor, dueColor, formatDate } from "@/lib/utilityFunctions";
+import { completedColor, datesAreEqual, dueColor, formatDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AttachmentList from "./_components/AttachmentsList";
 import { CancelTaskButton } from "./_components/CancelTaskButton";
 import { CloseTaskButton } from "./_components/CloseTaskButton";
 import CommentsSection from "./_components/CommentsSection";
@@ -54,6 +55,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 			status: true,
 			changes: true,
 			comments: true,
+			attachments: true,
 		},
 	});
 	// If the task is not found, return a 404 page, included in Next.js
@@ -101,7 +103,9 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									</Button>
 								)}
 								{canReopenTask && (task.statusId === 2 || task.statusId === 3 || task.statusId === 4) && <ReopenTaskButton userId={user?.id} taskId={task.id} />}
-								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && <CompleteTaskButton userId={user?.id} taskId={task.id} />}
+								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && (
+									<CompleteTaskButton userId={user?.id} taskId={task.id} taskAttachments={task.attachments.filter((t) => t.type === "completion")} />
+								)}
 								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
 								{canCancelTask && task.statusId !== 4 && task.statusId !== 3 && <CancelTaskButton userId={user?.id} taskId={task.id} />}
 							</div>
@@ -111,6 +115,16 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 								<div className="mb-1 md:mb-2">Assigned to:</div>
 								<UserAvatarNameNormal user={task.assignedToUser as UserExtended} />
 							</div>
+							{/* Display the Original Due Date only if it's different than the Due Date */}
+							{!datesAreEqual(task.originalDueDate, task.dueDate) && (
+								<div id="originalDueOn" className="mb-1 md:mb-2">
+									<div className="mb-1 md:mb-2">Original due on:</div>
+									<div className="flex items-center">
+										<CalendarIcon className="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+										<div className={dueColor(task)}>{formatDate(task.originalDueDate)}</div>
+									</div>
+								</div>
+							)}
 							<div id="dueOn" className="mb-1 md:mb-2">
 								<div className="mb-1 md:mb-2">Due on:</div>
 								<div className="flex items-center">
@@ -136,13 +150,44 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									</div>
 								</div>
 							)}
+							{task.source && (
+								<div id="source">
+									<div className="mb-1 md:mb-2">Source:</div>
+									<div className="flex items-center">
+										<div>{task.source}</div>
+									</div>
+								</div>
+							)}
+							{task.sourceLink && (
+								<div id="source">
+									<Link className="mb-1 md:mb-2 text-blue-600 hover:underline" href={task.sourceLink} target="_blank">
+										Source Link
+									</Link>
+								</div>
+							)}
+							{task.attachments.filter((t) => t.type === "source").length > 0 && (
+								<div id="source">
+									<div className="mb-1 md:mb-2">Source attachments</div>
+									<div className="">
+										<AttachmentList attachments={task.attachments.filter((a) => a.type === "source")} />
+									</div>
+								</div>
+							)}
+							{task.attachments.filter((t) => t.type === "completion").length > 0 && (
+								<div id="source">
+									<div className="mb-1 md:mb-2">Completion attachments</div>
+									<div className="">
+										<AttachmentList attachments={task.attachments.filter((a) => a.type === "completion")} />
+									</div>
+								</div>
+							)}
 						</div>
 					</div>
 					<Separator className="my-3 md:my-6" />
 					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} users={users as UserExtended[]} />
 				</div>
 				<div className="space-y-6">
-					<Card >
+					<Card>
 						<CardHeader className="px-3 md:px-6 py-3 md:py-6">
 							<CardTitle>Task History</CardTitle>
 						</CardHeader>

@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
-import MobileTaskTabelCell from "./MobileTaskTabelCell";
 import { TaskExtended, TasksQuery } from "../page";
+import MobileTaskTabelCell from "./MobileTaskTabelCell";
 
 interface Props {
 	searchParams: TasksQuery;
@@ -53,10 +53,11 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 						<TableCell className="hidden py-1 md:table-cell">
 							<StatusBadge statusObj={task.status} size="xs" />
 						</TableCell>
-						<TableCell className="hidden py-1 md:table-cell">{formatDate(task.createdAt)}</TableCell>
-						<TableCell className={cn(dueColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.dueDate)}</TableCell>
+						<TableCell className="hidden py-1 md:table-cell">{task.source}</TableCell>
+						<TableCell className="hidden py-1 md:table-cell w-min whitespace-nowrap">{formatDate(task.createdAt)}</TableCell>
+						<TableCell className={cn(dueColor(task), "hidden py-1 md:table-cell w-min whitespace-nowrap")}>{formatDate(task.dueDate)}</TableCell>
 						{task.completedOn ? (
-							<TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell")}>{formatDate(task.completedOn)}</TableCell>
+							<TableCell className={cn(completedColor(task), "hidden py-1 md:table-cell w-min whitespace-nowrap")}>{formatDate(task.completedOn)}</TableCell>
 						) : (
 							<TableCell className={"hidden py-1 md:table-cell"}></TableCell>
 						)}
@@ -83,6 +84,11 @@ const columns: { label: string; value: keyof Task; className?: string }[] = [
 	{
 		label: "Status",
 		value: "statusId",
+		className: "hidden md:table-cell py-1",
+	},
+	{
+		label: "Source",
+		value: "source",
 		className: "hidden md:table-cell py-1",
 	},
 	{

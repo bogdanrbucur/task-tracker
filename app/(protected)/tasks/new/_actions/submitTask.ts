@@ -1,6 +1,7 @@
 // server function to add new task
 "use server";
 
+import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import { Task } from "@prisma/client";
@@ -8,7 +9,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { updateTask } from "../../[id]/_actions/updateTask";
 import { createTask } from "./createTask";
-import { getAuth } from "@/actions/auth/get-auth";
 
 export type NewTask = {
 	title: string;
@@ -16,17 +16,37 @@ export type NewTask = {
 	dueDate: string;
 	createdByUserId: string;
 	assignedToUserId: string;
+	source?: string;
+	sourceLink?: string;
 };
 export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
 
+const Attachment = z.object({
+	size: z.number(),
+	type: z.string(),
+	name: z.string(),
+	lastModified: z.number(),
+});
+
+export type Attachment = z.infer<typeof Attachment>;
+
 export default async function submitTask(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
+	// console.log("raw data", rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
 	if (!agent) return { message: "You do not have permission to perform this action." };
+
+	const isValidURL = (url: string): boolean => {
+		try {
+			new URL(url);
+			return true;
+		} catch (_) {
+			return false;
+		}
+	};
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -36,6 +56,15 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		dueDate: z.string().datetime({ message: "Due date is required." }),
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
 		createdByUserId: z.string().length(25),
+		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
+		sourceLink: z
+			.string()
+			.max(255, { message: "Source link must be at most 255 characters." })
+			.optional()
+			.refine((url) => !url || isValidURL(url), {
+				message: "Invalid Source link URL",
+			}),
+		sourceAttachmentsDescriptions: z.array(z.string()).nullable(),
 	});
 
 	let newTask: Task | null = null;
@@ -50,14 +79,25 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			dueDate: formData.get("dueDate") as string,
 			assignedToUserId: formData.get("assignedToUserId") as string,
 			createdByUserId: formData.get("editingUser") as string,
+			source: formData.get("source") as string,
+			sourceLink: formData.get("sourceLink") as string,
+			sourceAttachmentsDescriptions: formData.getAll("sourceAttachmentsDescriptions") as string[],
 		});
+
+		// Check the size of the avatar and reject if it's too large
+		// if (data.sourceAttachments && data.sourceAttachments.size > 5242880) {
+		// 	return { message: "Attachment is too large. Maximum size is 5 MB." };
+		// }
 
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.createdByUserId);
 
 		// If a task ID is provided, update the existing task
 		if (data.id) {
-			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!);
+			// For some retarded reason, the descriptions are return as an array of the same string, so we split the first one
+			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
+			console.log("attDescriptions:", attachmentsDescriptions);
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachmentsDescriptions);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
 		} else {

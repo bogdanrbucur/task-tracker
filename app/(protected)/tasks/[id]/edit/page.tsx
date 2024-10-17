@@ -14,7 +14,7 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Fetch the task with the given ID
 	const task = await prisma.task.findUnique({
 		where: { id: Number(params.id) },
-		include: { assignedToUser: true },
+		include: { assignedToUser: true, attachments: true },
 	});
 
 	// If the task is not found OR task is not In Progress or Overdue, return a 404 page, included in Next.js

@@ -8,7 +8,7 @@ export interface NewUserNotConfirmedEmailProps {
 }
 
 export const NewUserNotConfirmedEmail = ({ baseUrl, firstName, lastName, userId }: NewUserNotConfirmedEmailProps) => {
-	const previewText = `Newly registered user not confirmed`;
+	const previewText = `Newly registered user not confirmed - ${firstName} ${lastName}`;
 
 	return (
 		<Html>
@@ -26,7 +26,7 @@ export const NewUserNotConfirmedEmail = ({ baseUrl, firstName, lastName, userId 
 							</Heading>
 							<Text className="text-black text-[14px] leading-[24px]">Hello,</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
-								User {firstName} {lastName} has not confirmed their email and set a login password. They will not be able to login and and receive tasks until they follow
+								User {firstName} {lastName} has not confirmed their email and has not set a login password. They will not be able to login and receive tasks until they follow
 								the link in the email and set an account password.
 							</Text>
 						</Section>

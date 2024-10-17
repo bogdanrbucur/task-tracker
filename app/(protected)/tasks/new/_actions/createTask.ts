@@ -12,8 +12,11 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 			title: task.title,
 			description: task.description,
 			dueDate: task.dueDate,
+			originalDueDate: task.dueDate,
 			assignedToUserId: task.assignedToUserId,
 			createdByUserId: task.createdByUserId,
+			source: task.source,
+			sourceLink: task.sourceLink,
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});

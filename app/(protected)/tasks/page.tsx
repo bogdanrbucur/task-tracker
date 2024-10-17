@@ -82,6 +82,7 @@ export default async function TasksPage({ searchParams }: Props) {
 						OR: [
 							{ title: { contains: term } },
 							{ description: { contains: term } },
+							{ source: { contains: term } },
 							{
 								assignedToUser: {
 									OR: [
