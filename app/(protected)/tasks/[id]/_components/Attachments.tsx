@@ -16,7 +16,7 @@ export interface TaskAttachments {
 }
 
 // Component for uploading and managing attachments
-export default function Attachments({ taskId, taskAttachments }: { taskId: number; taskAttachments: TaskAttachments[] }) {
+export default function Attachments({ taskId, taskAttachments }: { taskId: number; taskAttachments: TaskAttachments[]; type: "source" | "completion" }) {
 	const [attachments, setAttachments] = useState(taskAttachments || []);
 	const [descriptions, setDescriptions] = useState<string[]>([]);
 	const [newDescription, setNewDescription] = useState<string>("");

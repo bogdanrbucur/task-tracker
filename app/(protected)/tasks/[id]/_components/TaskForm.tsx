@@ -82,7 +82,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 					</div>
 					{/* Show list of attachments and option to remove them */}
 					{task ? (
-						<Attachments taskId={task.id} taskAttachments={task.attachments} />
+						<Attachments taskId={task.id} taskAttachments={task.attachments} type="source" />
 					) : (
 						<div className="space-y-2">
 							<div>
