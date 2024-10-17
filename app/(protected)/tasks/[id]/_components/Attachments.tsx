@@ -6,9 +6,18 @@ import { AlertCircle } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import getTaskAttachments from "../../_actions/getTaskAttachments";
 
-async function Attachments(taskId: number) {
-	// const initialTaskAttachments = await getTaskAttachments(taskId);
-	const [attachments, setAttachments] = useState((await getTaskAttachments(taskId)) || []);
+export interface TaskAttachments {
+	id: string;
+	taskId: number;
+	path: string;
+	description: string | null;
+	time: Date;
+	type: string;
+}
+
+// Component for uploading and managing attachments
+export default function Attachments({ taskId, taskAttachments }: { taskId: number; taskAttachments: TaskAttachments[] }) {
+	const [attachments, setAttachments] = useState(taskAttachments || []);
 	const [descriptions, setDescriptions] = useState<string[]>([]);
 	const [newDescription, setNewDescription] = useState<string>("");
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -17,7 +26,7 @@ async function Attachments(taskId: number) {
 
 	// Get the actual descriptions from each attachment
 	useEffect(() => {
-		const descriptions = attachments.map((attachment) => attachment.description);
+		const descriptions = taskAttachments.map((attachment) => attachment.description);
 		setDescriptions(descriptions as string[]);
 	}, []);
 
@@ -142,5 +151,3 @@ async function Attachments(taskId: number) {
 		</div>
 	);
 }
-
-export default Attachments;
