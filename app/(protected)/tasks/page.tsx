@@ -93,7 +93,7 @@ export default async function TasksPage({ searchParams }: Props) {
 									],
 								},
 							},
-							{ status: { name: { contains: term } } },
+							{ status: { displayName: { contains: term } } },
 						],
 					})),
 				},
