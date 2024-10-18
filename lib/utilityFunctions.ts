@@ -1,7 +1,7 @@
 import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
-import { differenceInCalendarDays, format, isEqual, isPast, isToday } from "date-fns";
+import { differenceInCalendarDays, format, isPast, isSameDay, isToday } from "date-fns";
 import sharp from "sharp";
 
 export function formatDate(date: Date) {
@@ -9,7 +9,7 @@ export function formatDate(date: Date) {
 }
 
 export function datesAreEqual(date1: Date, date2: Date) {
-	return isEqual(date1, date2);
+	return isSameDay(date1, date2);
 }
 
 // Return yellow text color if task is within 10 days of today or red if past due
