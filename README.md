@@ -163,6 +163,16 @@ You can use Task Scheduler to run the script at a specific interval. Create a ne
 Program/script: "Powershell"
 Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
 
+### Scheduled daily database backups
+
+#### Linux
+
+You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 02:00, add the following line to your crontab by running `crontab -e`:
+
+```bsh
+0 1 * * * cd /path/to/app/task-tracker/ && /db_backup.sh
+```
+
 ### Using Primsa with SQLite
 
 #### First-time setup. Unnecessary if you clone the repo
@@ -181,6 +191,23 @@ Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
 
 1. `npx prisma studio` to open the studio
 2. To generate a password hash to insert in the database, change the `pass` const in `./lib/hashpass.js` and run `node ./lib/hashpass.js` to get the hash printed to the console
+
+### SFTP VS Code extension setup
+
+Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a new configuration file. Add the following content:
+
+```json
+{
+	"name": "Raspberry Pi",
+	"host": "",
+	"protocol": "sftp",
+	"port": 22,
+	"username": "",
+	"password": "",
+	"remotePath": "/path/to/app/task-tracker",
+	"uploadOnSave": true
+}
+```
 
 ## Todo
 

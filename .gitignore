@@ -45,6 +45,7 @@ next-env.d.ts
 *.db
 /avatars
 /attachments
+*.tar.gz
 
 # SFTP
 sftp.json
