@@ -13,7 +13,7 @@ paths_to_archive=(
 )
 
 # Define the correct database path and a temporary backup path
-db_path="./prisma/db/your_database.db"  # Replace with actual database path
+db_path="./prisma/db/database.db"  # Replace with actual database path
 db_backup_path="./prisma/db/your_database_backup-${current_datetime}.db"
 
 # Perform a safe SQLite backup using the .backup command
