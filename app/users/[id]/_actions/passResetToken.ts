@@ -8,10 +8,17 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import log from "log-to-file";
 import { logDate } from "@/lib/utilityFunctions";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
 
 export default async function passResetToken(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// console.log(rawFormData);
+
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	const userPermissions = await getPermissions(agent?.id);
+	if (!userPermissions.isAdmin) return { message: "You do not have permission to perform this action." };
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
