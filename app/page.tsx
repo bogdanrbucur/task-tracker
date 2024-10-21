@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { logDate } from "@/lib/utilityFunctions";
+import { logDate, normalizeIP } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import fs from "fs-extra";
 import log from "log-to-file";
@@ -13,6 +13,7 @@ import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
 import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
 import getUserDetails, { prismaExtendedUserSelection } from "./users/_actions/getUserById";
 import { getTeamTasks, userTasks } from "./users/_actions/userAndTeamTasks";
+import { headers } from "next/headers";
 
 export type StatusColors = {
 	inprogress: string;
@@ -28,6 +29,11 @@ try {
 }
 
 export default async function Home() {
+	// Get client IP address
+	const headersList = headers();
+	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
+	const ip = normalizeIP(rawIP);
+
 	// Check user permissions
 	const { user } = await getAuth();
 
@@ -48,16 +54,16 @@ export default async function Home() {
 	const statusTasksChartData = statusTasks(activeTasks);
 
 	if (!user) {
-		console.log("A guest visitor accessed the home page.");
-		log("A guest visitor accessed the home page.", `./logs/${logDate()}`);
+		console.log(`A guest visitor accessed the home page from ${ip}.`);
+		log(`A guest visitor accessed the home page from ${ip}.`, `./logs/${logDate()}`);
 	}
 
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);
 
-	console.log(`User ${userDetails.email} accessed the home page.`);
-	log(`User ${userDetails.email} accessed the home page.`, `./logs/${logDate()}`);
+	console.log(`User ${userDetails.email} accessed the home page from ${ip}.`);
+	log(`User ${userDetails.email} accessed the home page from ${ip}.`, `./logs/${logDate()}`);
 
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	if (activeSubordinates.length > 0) hasSubordinates = true;

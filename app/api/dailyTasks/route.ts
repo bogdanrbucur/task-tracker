@@ -1,7 +1,7 @@
 import { sendEmail } from "@/app/email/email";
 import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { subDays } from "date-fns";
+import { subDays, subHours } from "date-fns";
 import log from "log-to-file";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -184,6 +184,13 @@ export async function POST(req: NextRequest) {
 			comment: user.id,
 		});
 	}
+
+	// Clear all records older than 1 hour from the FailedLoginAttempt table
+	await prisma.failedLoginAttempt.deleteMany({
+		where: {
+			timestamp: { lte: subHours(new Date(), 1) },
+		},
+	});
 
 	return NextResponse.json({ ok: true });
 }

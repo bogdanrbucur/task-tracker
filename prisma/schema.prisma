@@ -132,3 +132,10 @@ model PasswordResetToken {
   expiresAt DateTime
   userId    String
 }
+
+model FailedLoginAttempt {
+  id        Int      @id @default(autoincrement())
+  email     String?
+  ipAddress String
+  timestamp DateTime @default(now())
+}
