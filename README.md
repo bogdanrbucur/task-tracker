@@ -73,6 +73,11 @@ See all changes made to tasks, enforcing accountability.
 
 ![history](./readme/history.png)
 
+### 👍 Other features
+
+- Rate limiting to prevent brute force attacks on both IP and email, with separate limits
+- Tasks source and completion attachments with automatic image previews and download links
+
 ## 💾 Tech stack
 
 - Metaframework: [Next.js](https://nextjs.org/)
@@ -94,6 +99,9 @@ See all changes made to tasks, enforcing accountability.
 `RESEND_API_KEY="re_123"`
 `BASE_URL="https://example.com"`
 `DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"`
+`MAX_FAILED_ATTEMPTS_EMAIL=10`
+`MAX_FAILED_ATTEMPTS_IP=50`
+`LOCKOUT_MINUTES=15`
 ```
 
 Enter your Resend API key and your base URL.

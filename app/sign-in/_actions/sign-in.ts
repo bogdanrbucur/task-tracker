@@ -5,16 +5,16 @@ import { lucia } from "@/lib/lucia";
 import { logDate, normalizeIP } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import log from "log-to-file";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Argon2id } from "oslo/password";
 import { z } from "zod";
-import { headers } from "next/headers";
 
 export default async function signIn(prevState: any, formData: FormData) {
 	// Rate-limiting configuration
-	const maxFailedAttempts = 5;
-	const lockoutMinutes = 10;
+	const maxFailedAttemptsEmail = process.env.MAX_FAILED_ATTEMPTS_EMAIL || 5;
+	const maxFailedAttemptsIP = process.env.MAX_FAILED_ATTEMPTS_IP || 20;
+	const lockoutMinutes = process.env.LOCKOUT_MINUTES || 5;
 
 	// Get client IP address
 	const headersList = headers();
@@ -35,19 +35,34 @@ export default async function signIn(prevState: any, formData: FormData) {
 			password: formData.get("password") as string,
 		});
 
-		// Check for too many failed attempts
-		const failedAttempts = await prisma.failedLoginAttempt.count({
+		// Count failed attempts per email
+		const failedAttemptsEmail = await prisma.failedLoginAttempt.count({
 			where: {
-				OR: [{ email: data.email }, { ipAddress: ip }],
+				email: data.email,
 				timestamp: {
-					gte: new Date(Date.now() - lockoutMinutes * 60 * 1000),
+					gte: new Date(Date.now() - Number(lockoutMinutes) * 60 * 1000),
 				},
 			},
 		});
 
-		if (failedAttempts >= maxFailedAttempts) {
-			console.log(`${data.email} attempting to login from ${ip} reached the maximum number of failed attempts.`);
-			log(`${data.email} attempting to login from ${ip} reached the maximum number of failed attempts.`, `./logs/${logDate()}`);
+		// Count failed attempts per IP
+		const failedAttemptsIP = await prisma.failedLoginAttempt.count({
+			where: {
+				ipAddress: ip,
+				timestamp: {
+					gte: new Date(Date.now() - Number(lockoutMinutes) * 60 * 1000),
+				},
+			},
+		});
+
+		if (Number(failedAttemptsEmail) >= Number(maxFailedAttemptsEmail)) {
+			console.log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`);
+			log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`, `./logs/${logDate()}`);
+			throw new Error("Too many failed login attempts. Please try again later.");
+		}
+		if (Number(failedAttemptsIP) >= Number(maxFailedAttemptsIP)) {
+			console.log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`);
+			log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`, `./logs/${logDate()}`);
 			throw new Error("Too many failed login attempts. Please try again later.");
 		}
 
@@ -58,6 +73,14 @@ export default async function signIn(prevState: any, formData: FormData) {
 		if (!user) {
 			console.log(`${data.email} attempting to login from ${ip}, but user does not exist.`);
 			log(`${data.email} attempting to login from ${ip}, but user does not exist.`, `./logs/${logDate()}`);
+
+			// Log failed attempt
+			await prisma.failedLoginAttempt.create({
+				data: {
+					email: data.email,
+					ipAddress: ip,
+				},
+			});
 			throw new Error("Incorrect email or password.");
 		}
 
@@ -80,7 +103,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 		// Clear failed attempts on successful login
 		await prisma.failedLoginAttempt.deleteMany({
 			where: {
-				OR: [{ email: data.email }, { ipAddress: ip }],
+				email: data.email,
 			},
 		});
 
@@ -93,6 +116,8 @@ export default async function signIn(prevState: any, formData: FormData) {
 
 		console.log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`);
 		log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`, `./logs/${logDate()}`);
+
+		redirect("/");
 	} catch (error) {
 		// Handle Zod validation errors
 		if (error instanceof z.ZodError) {
@@ -108,5 +133,4 @@ export default async function signIn(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
-	redirect("/");
 }

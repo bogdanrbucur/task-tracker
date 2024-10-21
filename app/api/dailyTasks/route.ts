@@ -191,6 +191,8 @@ export async function POST(req: NextRequest) {
 			timestamp: { lte: subHours(new Date(), 1) },
 		},
 	});
+	console.log("Cleared failed login attempts older than 1 hour");
+	log("Cleared failed login attempts older than 1 hour", `./logs/${logDate()}`);
 
 	return NextResponse.json({ ok: true });
 }
