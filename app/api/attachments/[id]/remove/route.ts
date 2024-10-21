@@ -1,4 +1,4 @@
-// /api/attachments/[id]/remove
+// DELETE route to remove attachments by their ID
 
 import { getAuth } from "@/actions/auth/get-auth";
 import prisma from "@/prisma/client";
@@ -10,9 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
 	// Check user permissions
 	const { user } = await getAuth();
-	if (!user) {
-		return NextResponse.json({ message: "Permission denied." });
-	}
+	if (!user) return NextResponse.json({ message: "Permission denied." });
 
 	// search for the attachment in the database by its id
 	const attachment = await prisma.attachment.findFirst({

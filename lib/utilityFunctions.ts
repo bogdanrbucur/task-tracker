@@ -2,6 +2,7 @@ import { sendEmail } from "@/app/email/email";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { differenceInCalendarDays, format, isPast, isSameDay, isToday } from "date-fns";
+import { isIPv4, isIPv6 } from "net";
 import sharp from "sharp";
 
 export function formatDate(date: Date) {
@@ -79,4 +80,18 @@ export async function checkIfTaskOverdue(taskId: number) {
 export function logDate() {
 	let logDate: any = new Date();
 	return `${logDate.getFullYear()}.${String(logDate.getMonth() + 1).padStart(2, "0")}.${String(logDate.getDate()).padStart(2, "0")}.log`;
+}
+
+export function normalizeIP(ip: string): string {
+  if (isIPv4(ip)) {
+    return ip;
+  } else if (isIPv6(ip)) {
+    // Check for IPv4-mapped IPv6 address
+    const ipv4Match = ip.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
+    if (ipv4Match) {
+      return ipv4Match[1];
+    }
+    return ip;
+  }
+  return ip;
 }

@@ -1,3 +1,5 @@
+// GET route to download attachments by their ID
+
 import { getAuth } from "@/actions/auth/get-auth";
 import prisma from "@/prisma/client";
 import fs from "fs-extra";
@@ -7,9 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
 	// Check user permissions
 	const { user } = await getAuth();
-	if (!user) {
-		return notFound();
-	}
+	if (!user) return notFound();
 
 	// search for the attachment in the database by its id
 	const attachment = await prisma.attachment.findFirst({

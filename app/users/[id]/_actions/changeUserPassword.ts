@@ -1,6 +1,7 @@
 // server function to add new task
 "use server";
 
+import { getAuth } from "@/actions/auth/get-auth";
 import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import log from "log-to-file";
@@ -9,8 +10,12 @@ import { Argon2id } from "oslo/password";
 import { z } from "zod";
 
 export default async function changeUserPassword(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// console.log(rawFormData);
+
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	if (!agent) return { message: "You do not have permission to perform this action." };
 
 	const passwordSchema = z
 		.string()

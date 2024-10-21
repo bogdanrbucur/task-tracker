@@ -6,8 +6,15 @@ import { NewUser } from "@/app/users/new/submitUser";
 import prisma from "@/prisma/client";
 import { sendEmail } from "../../email/email";
 import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
 
 export default async function createUser(data: NewUser, editingUser: UserExtended) {
+	// Check user permissions
+	const { user: agent } = await getAuth();
+	const userPermissions = await getPermissions(agent?.id);
+	if (!userPermissions.isAdmin) return { message: "You do not have permission to perform this action." };
+	
 	try {
 		const newUser = await prisma.user.create({
 			data: {
