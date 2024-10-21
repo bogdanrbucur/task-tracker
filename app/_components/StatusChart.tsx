@@ -29,7 +29,7 @@ export default function StatusChart({ data, isGuest }: Props) {
 					<Pie
 						data={data}
 						cx="50%"
-						cy="55%"
+						cy="50%"
 						labelLine={false}
 						// label={inPieLabel}
 						innerRadius={75}

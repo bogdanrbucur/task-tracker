@@ -81,11 +81,11 @@ export default function DepartmentsChart({ data, isGuest }: Props) {
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department distribution</h4>
 			</div>
 			<ResponsiveContainer width="100%" height="90%">
-				<PieChart width={600} height={400}>
+				<PieChart width={600} height={400} >
 					<Pie
 						data={data}
 						cx="50%"
-						cy="55%"
+						cy="50%"
 						labelLine={false}
 						// label={inPieLabel}
 						innerRadius={75}
