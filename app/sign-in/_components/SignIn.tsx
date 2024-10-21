@@ -28,7 +28,7 @@ export default function SignInForm() {
 				<CardContent>
 					<form action={formAction} className="flex flex-col gap-y-9">
 						<div className="grid w-full gap-4">
-							{state.message && (
+							{state?.message && (
 								<Alert variant="destructive">
 									<AlertCircle className="h-4 w-4" />
 									<AlertTitle>{state?.message}</AlertTitle>
