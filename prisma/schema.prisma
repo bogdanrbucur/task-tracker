@@ -33,12 +33,18 @@ model Task {
   dueSoonReminderSent       Boolean      @default(false)
   lastOverdueReminderSentOn DateTime?
   attachments               Attachment[]
+
+  @@index([assignedToUserId])
+  @@index([statusId])
+  @@index([dueDate])
+  @@index([createdAt])
+  @@index([assignedToUserId, statusId])
 }
 
 model Status {
   id          Int     @id @default(autoincrement())
   name        String  @unique
-  displayName String?
+  displayName String
   color       String
   tasks       Task[]
 }
