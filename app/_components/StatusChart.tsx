@@ -2,16 +2,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector } from "recharts";
-import { StatusColors } from "../page";
 import { StatusTasksChartData } from "../statusTasksChartData";
 
 interface Props {
 	data: StatusTasksChartData[];
-	colors: StatusColors;
 	isGuest: boolean;
 }
 
-export default function StatusChart({ data, colors, isGuest }: Props) {
+export default function StatusChart({ data, isGuest }: Props) {
 	const router = useRouter();
 	const [inPieActiveIndex, setInPieActiveIndex] = useState<number | undefined>(undefined);
 

@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Globe, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {
@@ -19,10 +19,13 @@ export default function Footer() {
 					</svg>
 				</div>
 			</div>
-			<Link href="https://github.com/bogdanrbucur">
+			<Link href="https://tetrabit.dev" target="_blank">
+				<Globe size="16" />
+			</Link>
+			<Link href="https://github.com/bogdanrbucur" target="_blank">
 				<Github size="16" />
 			</Link>
-			<Link href="https://www.linkedin.com/in/bogdan-bucur-60a9b4189">
+			<Link href="https://www.linkedin.com/in/bogdan-bucur-60a9b4189" target="_blank">
 				<Linkedin size="16" />
 			</Link>
 			<Link href="mailto:bogdanrbucur@gmail.com">

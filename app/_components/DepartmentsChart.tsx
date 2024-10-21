@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector } from "recharts";
 import { DeptTaskChartData } from "../deptTasksChartData";
-import { StatusColors } from "../page";
 
 const COLORS = [
 	"hsl(var(--chart-purple))",
@@ -18,11 +17,10 @@ const COLORS = [
 
 interface Props {
 	data: DeptTaskChartData[];
-	statusColors: StatusColors;
 	isGuest: boolean;
 }
 
-export default function DepartmentsChart({ data, statusColors, isGuest }: Props) {
+export default function DepartmentsChart({ data, isGuest }: Props) {
 	const router = useRouter();
 	const [inPieActiveIndex, setInPieActiveIndex] = useState<number | undefined>(undefined);
 
@@ -67,12 +65,12 @@ export default function DepartmentsChart({ data, statusColors, isGuest }: Props)
 				<text className="text-sm" fill={"hsl(var(--chart-overdue))"} x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={5} textAnchor={textAnchor}>{`${overdue} Overdue`}</text>
 				<text
 					className="text-sm"
-					fill={"hsl(var(--chart-completed))"}
+					fill={"hsl(var(--chart-pendingreview))"}
 					x={ex + (cos >= 0 ? 1 : -1) * 12}
 					y={ey}
 					dy={20}
 					textAnchor={textAnchor}
-				>{`${completed} Completed`}</text>
+				>{`${completed} Pending Review`}</text>
 			</g>
 		);
 	};
