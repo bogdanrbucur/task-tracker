@@ -32,6 +32,7 @@ model Task {
   closedOn                  DateTime?
   dueSoonReminderSent       Boolean      @default(false)
   lastOverdueReminderSentOn DateTime?
+  lastReadyForReviewSentOn  DateTime?
   attachments               Attachment[]
 
   @@index([assignedToUserId])

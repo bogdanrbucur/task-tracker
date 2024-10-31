@@ -140,6 +140,57 @@ export async function POST(req: NextRequest) {
 	}
 
 	//
+	// Check for completed/ready for review tasks and send email reminders
+	//
+
+	// Check for tasks that are ready for review and the last email was sent more than 7 days ago
+	const tasksReadyForReview = await prisma.task.findMany({
+		where: {
+			AND: [{ statusId: 2 }, { lastReadyForReviewSentOn: { lte: subDays(new Date(), overdueReminderEvery) } }],
+		},
+		include: {
+			assignedToUser: {
+				select: {
+					email: true,
+					firstName: true,
+					lastName: true,
+					manager: { select: { email: true, firstName: true, lastName: true, manager: { select: { email: true } } } },
+				},
+			},
+		},
+	});
+
+	for (const task of tasksReadyForReview) {
+		console.log(`Task ${task.id} is ready for review!`);
+		log(`Task ${task.id} is ready for review!`, `./logs/${logDate()}`);
+
+		// If the user has no manager, skip it
+		if (!task.assignedToUser?.manager) {
+			console.log("Task assigned to user has no manager, skipping...");
+			log("Task assigned to user has no manager, skipping...", `./logs/${logDate()}`);
+			continue;
+		}
+
+		// send email notification to assignee and their manager
+		await sendEmail({
+			recipients: task.assignedToUser.manager.email,
+			cc: task.assignedToUser.manager.manager ? task.assignedToUser.manager.manager.email : "",
+			emailType: "taskCompleted",
+			userFirstName: task.assignedToUser.firstName,
+			userLastName: task.assignedToUser.lastName,
+			task,
+		});
+
+		await prisma.task.update({
+			where: { id: task.id },
+			data: { lastReadyForReviewSentOn: new Date() },
+		});
+
+		// Wait for 1 second to avoid rate limiting
+		await new Promise((resolve) => setTimeout(resolve, 1200));
+	}
+
+	//
 	// Check for expired password reset tokens and delete them
 	//
 	const usersWithExpiredTokens: Set<string> = new Set();

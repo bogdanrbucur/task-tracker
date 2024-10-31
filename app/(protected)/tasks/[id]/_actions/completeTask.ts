@@ -75,7 +75,15 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			if (!emailStatus) console.log("Task completed, but user not assigned, no email sent");
 			// If the email sent failed
 			else if (emailStatus && !emailStatus.success) console.log("Task completed, email error");
-			else console.log("Task completed, email sent");
+			else {
+				console.log("Task completed, email sent");
+				const completedTask = await prisma.task.update({
+					where: { id: Number(data.taskId) },
+					data: {
+						lastReadyForReviewSentOn: new Date(),
+					},
+				});
+			}
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
