@@ -27,6 +27,7 @@ export default function AttachmentList({ attachments }: { attachments: Attachmen
 		setSelectedPhoto(null);
 	};
 
+	// Close the popup when the user presses the Escape key
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
@@ -58,7 +59,7 @@ export default function AttachmentList({ attachments }: { attachments: Attachmen
 			))}
 
 			{selectedPhoto && (
-				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClosePopup}>
+				<div className="z-10 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClosePopup}>
 					<div className="relative" onClick={(e) => e.stopPropagation()}>
 						<img src={selectedPhoto} alt="Source attachment" className="max-w-[85vw] max-h-[85vh] rounded-xl fade-in" />
 						<button onClick={handleClosePopup} className="absolute top-0 right-0 m-2 text-white bg-black bg-opacity-80 rounded-full py-1 px-2">
