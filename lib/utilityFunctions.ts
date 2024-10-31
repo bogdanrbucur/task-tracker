@@ -19,6 +19,12 @@ export function dueColor(task: Task) {
 	if (task.statusId === 1 && differenceInCalendarDays(task.dueDate, new Date()) <= 10) return "text-orange-600 dark:text-orange-400";
 	return "";
 }
+// Return yellow text color if task is within 10 days of today or red if past due
+export function originalDueColor(task: Task) {
+	if (isPast(task.originalDueDate) || isToday(task.originalDueDate)) return "text-red-600 dark:text-red-400";
+	if (task.statusId === 1 && differenceInCalendarDays(task.originalDueDate, new Date()) <= 10) return "text-orange-600 dark:text-orange-400";
+	return "";
+}
 
 // Return red if completed past due date
 export function completedColor(task: Task) {
@@ -83,15 +89,15 @@ export function logDate() {
 }
 
 export function normalizeIP(ip: string): string {
-  if (isIPv4(ip)) {
-    return ip;
-  } else if (isIPv6(ip)) {
-    // Check for IPv4-mapped IPv6 address
-    const ipv4Match = ip.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
-    if (ipv4Match) {
-      return ipv4Match[1];
-    }
-    return ip;
-  }
-  return ip;
+	if (isIPv4(ip)) {
+		return ip;
+	} else if (isIPv6(ip)) {
+		// Check for IPv4-mapped IPv6 address
+		const ipv4Match = ip.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
+		if (ipv4Match) {
+			return ipv4Match[1];
+		}
+		return ip;
+	}
+	return ip;
 }
