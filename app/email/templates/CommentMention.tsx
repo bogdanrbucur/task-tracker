@@ -8,9 +8,10 @@ interface CommentMentionEmailProps {
 	comment: string;
 	baseUrl: string;
 	task: EmailTask;
+	recipientFirstName: string;
 }
 
-export const CommentMentionEmail = ({ userFirstName, userLastName, comment, baseUrl, task }: CommentMentionEmailProps) => {
+export const CommentMentionEmail = ({ userFirstName, userLastName, comment, baseUrl, task, recipientFirstName }: CommentMentionEmailProps) => {
 	const previewText = `Comment mention`;
 
 	return (
@@ -28,7 +29,7 @@ export const CommentMentionEmail = ({ userFirstName, userLastName, comment, base
 						</Section>
 						<Section>
 							<Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">Comment mention</Heading>
-							<Text className="text-black text-[14px] leading-[24px]">Hello {task.assignedToUser?.firstName},</Text>
+							<Text className="text-black text-[14px] leading-[24px]">Hello {recipientFirstName},</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
 								{userFirstName} {userLastName} mentioned you in a comment on the task:
 								<p>
@@ -50,8 +51,8 @@ export const CommentMentionEmail = ({ userFirstName, userLastName, comment, base
 						</Section>
 						<Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
 						<Text className="text-[#666666] text-[12px] leading-[24px]">
-							This email was intended for <span className="text-black">{task.assignedToUser?.firstName}</span> and was sent by the <a href={baseUrl}>Task Tracker</a> app.
-							If you are not the intended recipient or have received this email in error, please contact the app administrator.
+							This email was intended for <span className="text-black">{recipientFirstName}</span> and was sent by the <a href={baseUrl}>Task Tracker</a> app. If you are
+							not the intended recipient or have received this email in error, please contact the app administrator.
 						</Text>
 					</Container>
 				</Body>

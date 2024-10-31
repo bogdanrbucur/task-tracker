@@ -69,6 +69,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 
 			// Build the array of email addresses
 			const recipients = mentionedUsersExtended.map((user) => user.email);
+			const recipient = mentionedUsersExtended.find((user) => user.firstName);
 
 			// Email the users mentioned in the comment
 			const emailStatus: EmailResponse = await sendEmail({
@@ -79,6 +80,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 				emailType: "commentMention",
 				task: task!,
 				comment: data.comment,
+				recipientFirstName: recipient?.firstName,
 			});
 
 			// If the email sent failed

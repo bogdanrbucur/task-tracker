@@ -23,6 +23,7 @@ type Props = {
 	emailType: EmailType;
 	comment?: string;
 	task?: EmailTask;
+	recipientFirstName?: string;
 };
 
 export interface EmailTask extends Task {
@@ -57,7 +58,7 @@ export type EmailType =
 	| "newUserNotConfirmed";
 
 // Resend email
-export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task }: Props): Promise<EmailResponse> {
+export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task, recipientFirstName }: Props): Promise<EmailResponse> {
 	// Choose the email template based on the emailType
 
 	console.log(`Sending ${emailType} email to ${recipients}...`);
@@ -104,6 +105,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				comment: comment!,
 				baseUrl,
 				task: task!,
+				recipientFirstName: recipientFirstName!,
 			});
 			subject = "You were mentioned in a task comment";
 			break;
