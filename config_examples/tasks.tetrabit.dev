@@ -1,5 +1,6 @@
 # Define the upstream block for blue-green deployment
 upstream task-tracker {
+    ip_hash; # Keep users on the same instance based on IP
     server 127.0.0.1:3001; # Blue instance
     server 127.0.0.1:3002; # Green instance
 }
