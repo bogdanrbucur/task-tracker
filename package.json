@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
-		"start": "next start -p 3001",
+		"start": "dotenv -e .env.local -- sh -c 'next start -p $PORT'",
 		"lint": "next lint",
 		"daily": "node ./lib/dailyTasks.js"
 	},
@@ -61,6 +61,7 @@
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",
+		"dotenv-cli": "^7.4.2",
 		"postcss": "^8",
 		"prisma": "^5.21.1",
 		"tailwindcss": "^3.4.1",

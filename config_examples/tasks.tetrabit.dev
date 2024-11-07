@@ -1,0 +1,40 @@
+# Define the upstream block for blue-green deployment
+upstream task-tracker {
+    server 127.0.0.1:3001; # Blue instance
+    server 127.0.0.1:3002; # Green instance
+}
+
+server {
+    server_name tasks.tetrabit.dev;
+
+    location / {
+        proxy_pass http://task-tracker;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ~ /.well-known/acme-challenge {
+        allow all;
+    }
+
+    include /etc/nginx/conf.d/cloudflare.conf;
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/tasks.tetrabit.dev/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/tasks.tetrabit.dev/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+# Redirect HTTP to HTTPS
+server {
+    if ($host = tasks.tetrabit.dev) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name tasks.tetrabit.dev;
+    return 404; # managed by Certbot
+}

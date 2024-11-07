@@ -103,6 +103,7 @@ See all changes made to tasks, enforcing accountability.
 `MAX_FAILED_ATTEMPTS_IP=50`
 `LOCKOUT_MINUTES=15`
 `DEPLOYMENT="blue"`
+`PORT=3001`
 ```
 
 Enter your Resend API key and your base URL.

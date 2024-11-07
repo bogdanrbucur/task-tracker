@@ -1,0 +1,18 @@
+[Unit]
+Description=Task Tracker
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+Restart=always
+Restart=on-failure
+RestartSec=10
+WorkingDirectory=/path/to/app/task-tracker/
+StandardOutput=/var/log/task-tracker.log
+StandardError=/var/log/task-tracker.log
+ExecStart=/usr/bin/npm start
+
+[Install]
+WantedBy=multi-user.target
