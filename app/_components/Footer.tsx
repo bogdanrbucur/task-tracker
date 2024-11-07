@@ -3,12 +3,12 @@ import { Github, Globe, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {
-	const { version, deployment } = getVersion();
+	const version = getVersion();
 	return (
 		<footer className="flex items-center h-7 px-4">
 			<div className="flex text-left text-xs text-muted-foreground items-center">
 				<svg height="9" width="9" className="mr-1">
-					<circle cx="4" cy="4" r="4" fill={deployment} />
+					<circle cx="4" cy="4" r="4" fill={process.env.DEPLOYMENT} />
 				</svg>
 				{version}
 			</div>

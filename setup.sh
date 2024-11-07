@@ -10,7 +10,7 @@ else
 fi
 
 # Define the app user
-APP_USER="appuser" # replace this with the actual user under which your app runs
+APP_USER="ubuntu" # replace this with the actual user under which your app runs
 
 # Check if environment variables were set
 if [[ -z "$DATABASE_URL" || -z "$FILES_PATH" || -z "$LOGS_PATH" ]]; then
@@ -19,7 +19,9 @@ if [[ -z "$DATABASE_URL" || -z "$FILES_PATH" || -z "$LOGS_PATH" ]]; then
 fi
 
 # Extract the directory path from DATABASE_URL (removing the filename)
-DB_DIR=$(dirname "$DATABASE_URL")
+# Remove 'file:' prefix from DATABASE_URL
+DB_PATH_NO_PREFIX=$(echo "$DATABASE_URL" | sed 's/^file://')
+DB_DIR=$(dirname "$DB_PATH_NO_PREFIX")
 
 # Create directories
 echo "Creating directories..."

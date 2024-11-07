@@ -102,6 +102,7 @@ See all changes made to tasks, enforcing accountability.
 `MAX_FAILED_ATTEMPTS_EMAIL=10`
 `MAX_FAILED_ATTEMPTS_IP=50`
 `LOCKOUT_MINUTES=15`
+`DEPLOYMENT="blue"`
 ```
 
 Enter your Resend API key and your base URL.
@@ -147,6 +148,7 @@ WantedBy=multi-user.target
 5. Start the service with `sudo systemctl start task-tracker`
 6. Enable the service to start at boot with `sudo systemctl enable task-tracker`
 7. Check the status with `sudo systemctl status task-tracker`
+8. If running a blue-green deployment, append `-blue` or `-green` to the service name
 
 #### Windows - Task Scheduler
 
