@@ -1,32 +1,43 @@
 #!/bin/bash
 
+# Load environment variables from .env file
+if [ -f .env ]; then
+    echo "Loading environment variables from .env file..."
+    export $(grep -E '^(DATABASE_URL|FILES_PATH)=' .env | xargs)
+else
+    echo ".env file not found. Exiting."
+    exit 1
+fi
+
+# Check if environment variables were set
+if [[ -z "$DATABASE_URL" || -z "$FILES_PATH" ]]; then
+    echo "Required environment variables (DATABASE_URL, FILES_PATH) are missing in the .env file."
+    exit 1
+fi
+
 # Get current date and time in the format YYYY-MM-DD_HH-MM-SS
 current_datetime=$(date +'%Y-%m-%d_%H-%M-%S')
 
 # Define the backup filename with the current date and time
 backup_filename="backup-${current_datetime}.tar.gz"
 
-# Paths to archive (excluding the SQLite database initially)
-paths_to_archive=(
-    "./avatars"
-    "./attachments"
-)
-
 # Define the correct database path and a temporary backup path
-db_path="./prisma/db/database.db"  # Replace with actual database path
-db_backup_path="./prisma/db/your_database_backup-${current_datetime}.db"
+db_backup_path="$(dirname "$DATABASE_URL")/backup-${current_datetime}.db"
 
 # Perform a safe SQLite backup using the .backup command
-sqlite3 ${db_path} ".backup '${db_backup_path}'"
+sqlite3 "$DATABASE_URL" ".backup '${db_backup_path}'"
 
-# Add the database backup to the paths to archive
-paths_to_archive+=(${db_backup_path})
+# Paths to archive (add FILES_PATH and database backup path)
+paths_to_archive=(
+    "$FILES_PATH"
+    "$db_backup_path"
+)
 
-# Create the tar.gz archive, including the database backup
-tar -czvf ${backup_filename} ${paths_to_archive[@]}
+# Create the tar.gz archive, including the database backup and file storage
+tar -czvf "$backup_filename" "${paths_to_archive[@]}"
 
 # Remove the temporary database backup
-rm ${db_backup_path}
+rm "$db_backup_path"
 
 # Output success message
 echo "Backup created: ${backup_filename}"
