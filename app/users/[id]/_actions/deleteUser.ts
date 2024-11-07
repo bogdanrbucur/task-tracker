@@ -51,12 +51,12 @@ export default async function deleteUser(prevState: any, formData: FormData) {
 				where: { userId: data.id },
 			});
 			// Check if the avatar file exists before deleting it
-			if (fs.existsSync(`avatars/${data.id}.jpg`)) {
-				fs.unlinkSync(`avatars/${data.id}.jpg`);
+			if (fs.existsSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`)) {
+				fs.unlinkSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`);
 			}
 			// Delete the user's avatar file
 			console.log(`User ${deletedUser.email} deleted. Avatar deleted.`);
-			log(`User ${deletedUser.email} deleted. Avatar deleted.`, `./logs/${logDate()}`);
+			log(`User ${deletedUser.email} deleted. Avatar deleted.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 			return { message: null, emailSent: "success" };
 		} else {

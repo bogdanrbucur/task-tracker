@@ -52,7 +52,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 		});
 
 		console.log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`);
-		log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`, `./logs/${logDate()}`);
+		log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		// If there are users mentioned in the comment
 		if (mentionedUsersArray && mentionedUsersArray.length > 0) {
@@ -87,12 +87,12 @@ export default async function addComment(prevState: any, formData: FormData) {
 			if (!emailStatus.success) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("User was mentioned in comment, but email failed.");
-				log("User was mentioned in comment, but email failed.", `./logs/${logDate()}`);
+				log("User was mentioned in comment, but email failed.", `${process.env.LOGS_PATH}/${logDate()}`);
 				return { success, emailSent: emailStatus.success, message: emailStatus.error };
 				// Else it succeded
 			} else {
 				console.log("User was mentioned in comment, email sent.");
-				log("User was mentioned in comment, email sent.", `./logs/${logDate()}`);
+				log("User was mentioned in comment, email sent.", `${process.env.LOGS_PATH}/${logDate()}`);
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				return { success, emailSent: emailStatus.success };
 			}

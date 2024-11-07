@@ -28,7 +28,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		if (!data.email) return;
 
 		console.log(`Password reset request received for email address ${data.email}`);
-		log(`Password reset request received for email address ${data.email}`, `./logs/${logDate()}`);
+		log(`Password reset request received for email address ${data.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
@@ -37,7 +37,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 
 		if (!user) {
 			console.log(`No active user found with email address ${data.email}`);
-			log(`No active user found with email address ${data.email}`, `./logs/${logDate()}`);
+			log(`No active user found with email address ${data.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
 			return { success: true };
 		}
 

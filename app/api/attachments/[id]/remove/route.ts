@@ -23,12 +23,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 	if (!attachment) return notFound();
 
 	// Using the taskId, search for the attachment in the filesystem
-	const files = await fs.readdir(`./attachments/${attachment.taskId}`);
+	const files = await fs.readdir(`${process.env.FILES_PATH}/attachments/${attachment.taskId}`);
 
 	// Delete the files
 	for (const file of files) {
 		if (file.includes(attachment.path)) {
-			await fs.remove(`./attachments/${attachment.taskId}/${file}`);
+			await fs.remove(`${process.env.FILES_PATH}/attachments/${attachment.taskId}/${file}`);
 		}
 	}
 

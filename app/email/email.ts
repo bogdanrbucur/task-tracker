@@ -62,7 +62,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	// Choose the email template based on the emailType
 
 	console.log(`Sending ${emailType} email to ${recipients}...`);
-	log(`Sending ${emailType} email to ${recipients}...`, `./logs/${logDate()}`);
+	log(`Sending ${emailType} email to ${recipients}...`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	let emailTemplate;
 	let subject = "";
@@ -160,12 +160,12 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 
 		if (error) {
 			console.log(`Email not sent: ${error.message}`);
-			log(`Email not sent: ${error.message}`, `./logs/${logDate()}`);
+			log(`Email not sent: ${error.message}`, `${process.env.LOGS_PATH}/${logDate()}`);
 			return { success: false, error: error.message };
 		}
 
 		console.log(`Email sent succesfully: ${JSON.stringify(data)}`);
-		log(`Email sent succesfully: ${JSON.stringify(data)}`, `./logs/${logDate()}`);
+		log(`Email sent succesfully: ${JSON.stringify(data)}`, `${process.env.LOGS_PATH}/${logDate()}`);
 		return { success: true, error: null };
 	} catch (error: any) {
 		console.log(error);

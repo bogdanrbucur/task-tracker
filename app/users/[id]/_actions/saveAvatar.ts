@@ -12,14 +12,14 @@ export default async function saveAvatar(avatar: File, newUser: User) {
 			try {
 				// First delete the existing avatar if it exists
 				// search for any file in the avatars folder that matches the id
-				const avatars = await fs.readdir("./avatars");
+				const avatars = await fs.readdir(`${process.env.FILES_PATH}/avatars`);
 				const oldAvatar = avatars.find((file) => file.includes(String(newUser!.id)));
-				if (oldAvatar) await fs.remove(`./avatars/${oldAvatar}`);
+				if (oldAvatar) await fs.remove(`${process.env.FILES_PATH}/avatars/${oldAvatar}`);
 
 				// Resize and save the avatar
-				await resizeAndSaveImage(avatarBuffer, `./avatars/${fileName}`);
+				await resizeAndSaveImage(avatarBuffer, `${process.env.FILES_PATH}/avatars/${fileName}`);
 
-				console.log(`Avatar saved to ./avatars/${fileName}`);
+				console.log(`Avatar saved to ${process.env.FILES_PATH}/avatars/${fileName}`);
 
 				// Update the user with the new avatar path
 				const newAvatar = await prisma.avatar.create({

@@ -57,12 +57,12 @@ export default async function signIn(prevState: any, formData: FormData) {
 
 		if (Number(failedAttemptsEmail) >= Number(maxFailedAttemptsEmail)) {
 			console.log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`);
-			log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`, `./logs/${logDate()}`);
+			log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`, `${process.env.LOGS_PATH}/${logDate()}`);
 			throw new Error("Too many failed login attempts. Please try again later.");
 		}
 		if (Number(failedAttemptsIP) >= Number(maxFailedAttemptsIP)) {
 			console.log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`);
-			log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`, `./logs/${logDate()}`);
+			log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`, `${process.env.LOGS_PATH}/${logDate()}`);
 			throw new Error("Too many failed login attempts. Please try again later.");
 		}
 
@@ -72,7 +72,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 		});
 		if (!user) {
 			console.log(`${data.email} attempting to login from ${ip}, but user does not exist.`);
-			log(`${data.email} attempting to login from ${ip}, but user does not exist.`, `./logs/${logDate()}`);
+			log(`${data.email} attempting to login from ${ip}, but user does not exist.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 			// Log failed attempt
 			await prisma.failedLoginAttempt.create({
@@ -88,7 +88,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.password);
 		if (!validPassword) {
 			console.log(`Valid user ${data.email} attempting to login from ${ip} with wrong password.`);
-			log(`Valid user ${data.email} attempting to login from ${ip} with wrong password.`, `./logs/${logDate()}`);
+			log(`Valid user ${data.email} attempting to login from ${ip} with wrong password.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 			// Log failed attempt
 			await prisma.failedLoginAttempt.create({
@@ -115,7 +115,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
 		console.log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`);
-		log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`, `./logs/${logDate()}`);
+		log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		redirect("/");
 	} catch (error) {
@@ -123,13 +123,13 @@ export default async function signIn(prevState: any, formData: FormData) {
 		if (error instanceof z.ZodError) {
 			for (const subError of error.errors) {
 				console.log(subError.message);
-				log(subError.message, `./logs/${logDate()}`);
+				log(subError.message, `${process.env.LOGS_PATH}/${logDate()}`);
 				return { message: subError.message };
 			}
 		} else {
 			// Handle other errors
 			console.log((error as any).message);
-			log((error as any).message, `./logs/${logDate()}`);
+			log((error as any).message, `${process.env.LOGS_PATH}/${logDate()}`);
 			return { message: (error as any).message };
 		}
 	}

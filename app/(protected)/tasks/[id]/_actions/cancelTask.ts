@@ -76,15 +76,15 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 		// If email wasn't sent
 		if (!emailStatus) {
 			console.log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`);
-			log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`, `./logs/${logDate()}`);
+			log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 		// If the email sent failed
 		else if (emailStatus && !emailStatus.success) {
 			console.log("Task cancelled, email error");
-			log("Task cancelled, email error", `./logs/${logDate()}`);
+			log("Task cancelled, email error", `${process.env.LOGS_PATH}/${logDate()}`);
 		} else {
 			console.log("Task cancelled, email sent");
-			log("Task cancelled, email sent", `./logs/${logDate()}`);
+			log("Task cancelled, email sent", `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

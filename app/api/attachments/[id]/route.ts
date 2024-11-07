@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 	if (!attachment) return notFound();
 
 	// Using the taskId, search for the attachment in the filesystem
-	const files = await fs.readdir(`./attachments/${attachment.taskId}`);
+	const files = await fs.readdir(`${process.env.FILES_PATH}/attachments/${attachment.taskId}`);
 
 	// Read the file from the filesystem
 	const fileName = files.find((file) => file.includes(attachment.path));
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 	if (!fileName) return notFound();
 
 	// Read the file content from the filesystem
-	const filePath = `./attachments/${attachment.taskId}/${fileName}`;
+	const filePath = `${process.env.FILES_PATH}/attachments/${attachment.taskId}/${fileName}`;
 	const fileContent = await fs.readFile(filePath);
 
 	// Return the file as a response

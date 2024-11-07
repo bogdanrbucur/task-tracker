@@ -14,10 +14,10 @@ export async function POST(req: NextRequest) {
 	try {
 		const body = await req.json();
 		console.log(`Daily task API called with body ${body}`);
-		log(`Daily task API called with body ${body}`, `./logs/${logDate()}`);
+		log(`Daily task API called with body ${body}`, `${process.env.LOGS_PATH}/${logDate()}`);
 		if (body.token !== process.env.DAILY_TASKS_TOKEN) {
 			console.log("Token is invalid");
-			log("Token is invalid", `./logs/${logDate()}`);
+			log("Token is invalid", `${process.env.LOGS_PATH}/${logDate()}`);
 			return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 		}
 	} catch (err) {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 	}
 
 	console.log("Token is valid...");
-	log("Token is valid...", `./logs/${logDate()}`);
+	log("Token is valid...", `${process.env.LOGS_PATH}/${logDate()}`);
 
 	//
 	// Check for overduetasks
@@ -38,12 +38,12 @@ export async function POST(req: NextRequest) {
 	});
 
 	console.log(`Overdue tasks retrieved: ${overdueTasks.length}...`);
-	log(`Overdue tasks retrieved: ${overdueTasks.length}...`, `./logs/${logDate()}`);
+	log(`Overdue tasks retrieved: ${overdueTasks.length}...`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	// Change status to overdue (5) if task is past due
 	for (const task of overdueTasks) {
 		console.log(`Task ${task.id} is overdue!`);
-		log(`Task ${task.id} is overdue!`, `./logs/${logDate()}`);
+		log(`Task ${task.id} is overdue!`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		// send email notification to assignee and their manager
 		await sendEmail({
@@ -73,11 +73,11 @@ export async function POST(req: NextRequest) {
 	});
 
 	console.log(`Tasks due soon retrieved: ${dueSoonTasks.length}...`);
-	log(`Tasks due soon retrieved: ${dueSoonTasks.length}...`, `./logs/${logDate()}`);
+	log(`Tasks due soon retrieved: ${dueSoonTasks.length}...`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	for (const task of dueSoonTasks) {
 		console.log(`Task ${task.id} is due soon!`);
-		log(`Task ${task.id} is due soon!`, `./logs/${logDate()}`);
+		log(`Task ${task.id} is due soon!`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		try {
 			// send email notification to assignee and their manager
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 			});
 		} catch (err) {
 			console.error(err);
-			log(err, `./logs/${logDate()}`);
+			log(err, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 	}
 
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 	// For each task, send the overdue reminder email
 	for (const task of overdueTasksForReminder) {
 		console.log(`Task ${task.id} is overdue for more than ${overdueForMoreThanDays} days!`);
-		log(`Task ${task.id} is overdue for more than ${overdueForMoreThanDays} days!`, `./logs/${logDate()}`);
+		log(`Task ${task.id} is overdue for more than ${overdueForMoreThanDays} days!`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		// send email notification to assignee and their manager
 		await sendEmail({
@@ -162,12 +162,12 @@ export async function POST(req: NextRequest) {
 
 	for (const task of tasksReadyForReview) {
 		console.log(`Task ${task.id} is ready for review!`);
-		log(`Task ${task.id} is ready for review!`, `./logs/${logDate()}`);
+		log(`Task ${task.id} is ready for review!`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		// If the user has no manager, skip it
 		if (!task.assignedToUser?.manager) {
 			console.log("Task assigned to user has no manager, skipping...");
-			log("Task assigned to user has no manager, skipping...", `./logs/${logDate()}`);
+			log("Task assigned to user has no manager, skipping...", `${process.env.LOGS_PATH}/${logDate()}`);
 			continue;
 		}
 
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
 		});
 
 		console.log(`${tokens.length} expired password reset tokens found`);
-		log(`${tokens.length} expired password reset tokens found`, `./logs/${logDate()}`);
+		log(`${tokens.length} expired password reset tokens found`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		for (const token of tokens) {
 			await prisma.passwordResetToken.delete({ where: { id: token.id } });
@@ -208,7 +208,7 @@ export async function POST(req: NextRequest) {
 		}
 	} catch (err) {
 		console.log(err);
-		log(err, `./logs/${logDate()}`);
+		log(err, `${process.env.LOGS_PATH}/${logDate()}`);
 	}
 
 	// Filter users with expired tokens and keep only the unverified ones
@@ -221,8 +221,8 @@ export async function POST(req: NextRequest) {
 
 	console.log("Unverified users found: ", allUnverifiedUsers.length);
 	console.log("Unverified users with expired tokens found: ", unverifiedUsersWithExpiredTokens.length);
-	log(`Unverified users found: ${allUnverifiedUsers.length}`, `./logs/${logDate()}`);
-	log(`Unverified users with expired tokens found: ${unverifiedUsersWithExpiredTokens.length}`, `./logs/${logDate()}`);
+	log(`Unverified users found: ${allUnverifiedUsers.length}`, `${process.env.LOGS_PATH}/${logDate()}`);
+	log(`Unverified users with expired tokens found: ${unverifiedUsersWithExpiredTokens.length}`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	// Email the user creator that the user has not verified their account
 	for (const user of unverifiedUsersWithExpiredTokens) {
@@ -243,7 +243,7 @@ export async function POST(req: NextRequest) {
 		},
 	});
 	console.log("Cleared failed login attempts older than 1 hour");
-	log("Cleared failed login attempts older than 1 hour", `./logs/${logDate()}`);
+	log("Cleared failed login attempts older than 1 hour", `${process.env.LOGS_PATH}/${logDate()}`);
 
 	return NextResponse.json({ ok: true });
 }

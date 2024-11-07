@@ -21,13 +21,6 @@ export type StatusColors = {
 	overdue: string;
 };
 
-// If ./logs folder doesn't exist, create it
-try {
-	fs.ensureDirSync(`./logs`);
-} catch (err) {
-	console.error(err);
-}
-
 export default async function Home() {
 	// Get client IP address
 	const headersList = headers();
@@ -55,7 +48,7 @@ export default async function Home() {
 
 	if (!user) {
 		console.log(`A guest visitor accessed the home page from ${ip}.`);
-		log(`A guest visitor accessed the home page from ${ip}.`, `./logs/${logDate()}`);
+		log(`A guest visitor accessed the home page from ${ip}.`, `${process.env.LOGS_PATH}/${logDate()}`);
 	}
 
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
@@ -63,7 +56,7 @@ export default async function Home() {
 	userDetails.assignedTasks = await userTasks(userDetails);
 
 	console.log(`User ${userDetails.email} accessed the home page from ${ip}.`);
-	log(`User ${userDetails.email} accessed the home page from ${ip}.`, `./logs/${logDate()}`);
+	log(`User ${userDetails.email} accessed the home page from ${ip}.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	if (activeSubordinates.length > 0) hasSubordinates = true;

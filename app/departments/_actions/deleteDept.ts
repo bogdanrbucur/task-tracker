@@ -44,7 +44,7 @@ export default async function deleteDept(prevState: any, formData: FormData) {
 				where: { id: Number(data.id) },
 			});
 			console.log(`Department ${dept.name} deleted`);
-			log(`Department ${dept.name} deleted`, `./logs/${logDate()}`);
+			log(`Department ${dept.name} deleted`, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 		return { dialogOpen: false, success: true };
 	} catch (error) {

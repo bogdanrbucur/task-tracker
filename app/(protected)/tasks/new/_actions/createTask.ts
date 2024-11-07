@@ -27,7 +27,7 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 	await checkIfTaskOverdue(newTask.id);
 
 	console.log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`);
-	log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`, `./logs/${logDate()}`);
+	log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	// Send email notification to the assigned user
 	const emailStatus = await sendEmail({

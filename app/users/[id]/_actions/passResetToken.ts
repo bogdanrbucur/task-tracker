@@ -39,12 +39,12 @@ export default async function passResetToken(prevState: any, formData: FormData)
 		if (!user) throw new Error("Incorrect email or password.");
 
 		console.log(`Password reset requested for user ${user.email}`);
-		log(`Password reset requested for user ${user.email}`, `./logs/${logDate()}`);
+		log(`Password reset requested for user ${user.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		// If the user is already active, send a normal password reset email
 		if (user.status === "active") {
 			console.log("User is active, sending password reset email");
-			log("User is active, sending password reset email", `./logs/${logDate()}`);
+			log("User is active, sending password reset email", `${process.env.LOGS_PATH}/${logDate()}`);
 			// Create a unique random password reset token with default validity
 			const token = await generatePassChangeToken(user);
 			// Send the user an email with a link to reset their password
@@ -58,7 +58,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 			return { emailSent: emailStatus.success ? "success" : "fail", message: null };
 		} else if (user.status === "unverified") {
 			console.log("User is inactive, sending welcome email with a password set link");
-			log("User is inactive, sending welcome email with a password set link", `./logs/${logDate()}`);
+			log("User is inactive, sending welcome email with a password set link", `${process.env.LOGS_PATH}/${logDate()}`);
 			// Create a unique random password reset token with 48 hours validity
 			const token = await generatePassChangeToken(user, 2880);
 			// Send the user a welcome email with a link to set their password

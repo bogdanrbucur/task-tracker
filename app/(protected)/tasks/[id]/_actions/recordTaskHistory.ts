@@ -23,7 +23,7 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 				},
 			});
 			console.log(`Task ${newChange.taskId} changed: ${newChange.changes}`);
-			log(`Task ${newChange.taskId} changed: ${newChange.changes}`, `./logs/${logDate()}`);
+			log(`Task ${newChange.taskId} changed: ${newChange.changes}`, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 		return;
 	}
@@ -39,6 +39,6 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 	});
 
 	console.log(`New task ${newChange.taskId}: ${newChange.changes}`);
-	log(`New task ${newChange.taskId}: ${newChange.changes}`, `./logs/${logDate()}`);
+	log(`New task ${newChange.taskId}: ${newChange.changes}`, `${process.env.LOGS_PATH}/${logDate()}`);
 	return newChange;
 }

@@ -116,14 +116,14 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			console.log(
 				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`
 			);
-			log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `./logs/${logDate()}`);
+			log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `${process.env.LOGS_PATH}/${logDate()}`);
 			log(
 				`OLD USER: ${oldUser.firstName} ${oldUser.lastName} / ${oldUser.email}, dept: ${oldUser.department?.id}, manager: ${oldUser.manager?.id}, admin: ${oldUser.isAdmin}`,
-				`./logs/${logDate()}`
+				`${process.env.LOGS_PATH}/${logDate()}`
 			);
 			log(
 				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`,
-				`./logs/${logDate()}`
+				`${process.env.LOGS_PATH}/${logDate()}`
 			);
 		}
 		// If no user ID is provided, create a new user
@@ -134,7 +134,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 
 			if (newUser) {
 				console.log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
-				log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `./logs/${logDate()}`);
+				log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `${process.env.LOGS_PATH}/${logDate()}`);
 			}
 		}
 

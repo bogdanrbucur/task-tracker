@@ -49,19 +49,19 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		});
 		if (updatedUser.status === "active") {
 			console.log(`User  ${updatedUser.email} activated.`);
-			log(`User  ${updatedUser.email} activated.`, `./logs/${logDate()}`);
+			log(`User  ${updatedUser.email} activated.`, `${process.env.LOGS_PATH}/${logDate()}`);
 		} else {
 			// Delete the user's avatar
 			await prisma.avatar.deleteMany({
 				where: { userId: data.id },
 			});
 			// Check if the avatar file exists before deleting it
-			if (fs.existsSync(`avatars/${data.id}.jpg`)) {
-				fs.unlinkSync(`avatars/${data.id}.jpg`);
+			if (fs.existsSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`)) {
+				fs.unlinkSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`);
 			}
 			// Delete the user's avatar file
 			console.log(`User ${updatedUser.email} deactivated. Avatar deleted.`);
-			log(`User ${updatedUser.email} deactivated. Avatar deleted.`, `./logs/${logDate()}`);
+			log(`User ${updatedUser.email} deactivated. Avatar deleted.`, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

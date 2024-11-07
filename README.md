@@ -107,9 +107,12 @@ See all changes made to tasks, enforcing accountability.
 Enter your Resend API key and your base URL.
 Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tasks API so it cannot be executed remotely.
 
-5. `npm run dev` to run in dev mode
-6. `npm run build` to build the app
-7. `npm run start` to run the app in production mode on port 3000
+5. Open `setup.sh` and change `APP_USER` to the Linux environment user
+6. Update `DATABASE_URL`, `FILES_PATH` and `LOGS_PATH` in `.env` as required. Make sure the folders exist and are writable by the app user
+7. If deployed on Linux, run `./setup.sh` to create the database and files folders and set their permissions. Make sure they are matching the ones defined in `.env`. If you are not deploying on Linux, you will need to create the database and folders manually
+8. `npm run dev` to run in dev mode
+9. `npm run build` to build the app
+10. `npm run start` to run the app in production mode on port 3000
 
 ### Automatic start
 

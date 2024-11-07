@@ -68,7 +68,7 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 		});
 
 		console.log(`User ${updatedUser.email} changed their password.`);
-		log(`User ${updatedUser.email} changed their password.`, `./logs/${logDate()}`);
+		log(`User ${updatedUser.email} changed their password.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 		return { dialogOpen: false };
 	} catch (error) {

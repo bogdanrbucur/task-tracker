@@ -40,7 +40,7 @@ export default async function editDept(prevState: any, formData: FormData) {
 				},
 			});
 			console.log(`Department renamed from ${dept.name} to ${updatedDept.name}`);
-			log(`Department renamed from ${dept.name} to ${updatedDept.name}`, `./logs/${logDate()}`);
+			log(`Department renamed from ${dept.name} to ${updatedDept.name}`, `${process.env.LOGS_PATH}/${logDate()}`);
 		} else {
 			// Create a new department
 			const newDept = await prisma.department.create({
@@ -49,7 +49,7 @@ export default async function editDept(prevState: any, formData: FormData) {
 				},
 			});
 			console.log(`New department created: ${newDept.name}`);
-			log(`New department created: ${newDept.name}`, `./logs/${logDate()}`);
+			log(`New department created: ${newDept.name}`, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 		return { dialogOpen: false, success: true };
 	} catch (error) {

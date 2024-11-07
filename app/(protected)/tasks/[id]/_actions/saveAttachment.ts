@@ -10,7 +10,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 		const attachmentBuffer = Buffer.from(arrayBuffer);
 
 		// Check if the task has an attachment folder, and then check if the attachment already exists
-		const attachmentsFolderPath = `./attachments/${task.id}`;
+		const attachmentsFolderPath = `${process.env.FILES_PATH}/attachments/${task.id}`;
 		if (await fs.pathExists(attachmentsFolderPath)) {
 			const attachments = await fs.readdir(attachmentsFolderPath);
 			const oldattachment = attachments.find((file) => file.includes(String(`${type}_${attachment.name}`)));
@@ -21,9 +21,9 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 		else await fs.mkdir(attachmentsFolderPath);
 
 		// Save the attachment locally
-		fs.writeFile(`./attachments/${task.id}/${type}_${attachment.name}`, new Uint8Array(attachmentBuffer));
+		fs.writeFile(`${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`, new Uint8Array(attachmentBuffer));
 
-		console.log(`Attachment saved to ./attachments/${task.id}/${type}_${attachment.name}`);
+		console.log(`Attachment saved to ${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`);
 
 		// Update the attachment path in the database if it already exists
 		const existingAttachment = await prisma.attachment.findFirst({
