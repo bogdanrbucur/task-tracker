@@ -112,9 +112,9 @@ Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tas
 5. Open `setup.sh` and change `APP_USER` to the Linux environment user
 6. Update `DATABASE_URL`, `FILES_PATH` and `LOGS_PATH` in `.env` as required
 7. If deployed on Linux, run `./setup.sh` to create the database and files folders and set their permissions. The folders in the paths defined in `.env` will be created. If not deploying on Linux, create the paths folders manually
-8. `npm run dev` to run in dev mode
-9. `npm run build` to build the app
-10. `npm run start` to run the app in production mode on port 3000
+8. Run `npx prisma migrate deploy` to inialize the database
+9. `npm run dev` to run in dev mode
+10. `npm run build` to build the app and `npm start` to run in production mode
 
 ### Automatic start
 

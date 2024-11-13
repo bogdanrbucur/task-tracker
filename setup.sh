@@ -10,7 +10,7 @@ else
 fi
 
 # Define the app user
-APP_USER="ubuntu" # replace this with the actual user under which your app runs
+APP_USER="appuser" # replace this with the actual user under which your app runs
 
 # Check if environment variables were set
 if [[ -z "$DATABASE_URL" || -z "$FILES_PATH" || -z "$LOGS_PATH" ]]; then
