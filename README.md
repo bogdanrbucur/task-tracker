@@ -116,6 +116,17 @@ Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tas
 8. Run `npx prisma migrate deploy` to inialize the database
 9. `npm run dev` to run in dev mode
 10. `npm run build` to build the app and `npm start` to run in production mode
+11. `npx prisma studio` and manually add the statuses:
+
+| ID  | Name         | Display Name     | Color   |
+|-----|--------------|------------------|---------|
+| 1   | In Progress  | In Progress      | Blue    |
+| 2   | Completed    | Pending Review   | Green   |
+| 3   | Closed       | Closed           | Gray    |
+| 4   | Cancelled    | Cancelled        | Yellow  |
+| 5   | Overdue      | Overdue          | Red     |
+
+
 
 ### Automatic start
 
