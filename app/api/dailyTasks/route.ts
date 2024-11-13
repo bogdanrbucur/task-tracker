@@ -228,7 +228,7 @@ export async function POST(req: NextRequest) {
 	for (const user of unverifiedUsersWithExpiredTokens) {
 		if (!user) continue;
 		await sendEmail({
-			recipients: user.createdByUser.email,
+			recipients: user.createdByUser!.email,
 			emailType: "newUserNotConfirmed",
 			userFirstName: user.firstName,
 			userLastName: user.lastName,
