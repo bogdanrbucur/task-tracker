@@ -43,8 +43,8 @@ model Task {
 }
 
 model Status {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
+  id          Int    @id @default(autoincrement())
+  name        String @unique
   displayName String
   color       String
   tasks       Task[]
@@ -92,8 +92,8 @@ model User {
   status               String      @default("unverified") // unverified, confirmed, inactive
   lastWelcomeEmailSent DateTime?
   active               Boolean     @default(false)
-  createdByUserId      String
-  createdByUser        User        @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  createdByUserId      String?
+  createdByUser        User?       @relation("CreatedByUser", fields: [createdByUserId], references: [id])
   createdUsers         User[]      @relation("CreatedByUser")
 }
 
