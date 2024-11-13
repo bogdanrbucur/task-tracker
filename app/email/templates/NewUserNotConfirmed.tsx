@@ -18,7 +18,7 @@ export const NewUserNotConfirmedEmail = ({ baseUrl, firstName, lastName, userId 
 				<Body className="bg-white my-auto mx-auto font-sans px-2">
 					<Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
 						<Section className="mt-[32px]">
-							<Img src={`${baseUrl}/logo.png`} width="140" height="37" alt="logo" className="my-0 mx-auto" />
+							<Img src={`${baseUrl}/logo.png`} width="140" height="68" alt="logo" className="my-0 mx-auto" />
 						</Section>
 						<Section>
 							<Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
