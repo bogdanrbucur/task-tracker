@@ -7,7 +7,7 @@ const nextConfig = {
 	experimental: {
 		serverActions: {
 			allowedForwardedHosts: ["localhost:3000", "127.0.0.1:3000", "127.0.0.1:3001", "127.0.0.1:3002", "localhost:3001", "localhost:3002"],
-			allowedOrigins: ["tasks.tetrabit.dev"],
+			allowedOrigins: ["tasks.asm-maritime.com"],
 		},
 	},
 };
