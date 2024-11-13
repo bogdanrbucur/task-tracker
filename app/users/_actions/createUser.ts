@@ -20,7 +20,7 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 			data: {
 				firstName: data.firstName,
 				lastName: data.lastName,
-				email: data.email,
+				email: data.email.toLowerCase(),
 				position: data.position,
 				departmentId: data.departmentId ? Number(data.departmentId) : null,
 				managerId: data.managerId ? data.managerId : null,

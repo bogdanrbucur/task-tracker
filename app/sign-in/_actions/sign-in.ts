@@ -35,6 +35,9 @@ export default async function signIn(prevState: any, formData: FormData) {
 			password: formData.get("password") as string,
 		});
 
+		// Set email to lower case
+		data.email = data.email.toLowerCase();
+
 		// Count failed attempts per email
 		const failedAttemptsEmail = await prisma.failedLoginAttempt.count({
 			where: {
