@@ -150,7 +150,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 
 	try {
 		const { data, error } = await resend.emails.send({
-			from: "Task Tracker <tasks@tasks.tetrabit.dev>",
+			from: process.env.EMAILS_FROM!,
 			to: recipients,
 			cc: cc,
 			subject,
