@@ -27,12 +27,15 @@ DB_DIR=$(dirname "$DB_PATH_NO_PREFIX")
 echo "Creating directories..."
 sudo mkdir -p "$DB_DIR"
 sudo mkdir -p "$FILES_PATH"
+sudo mkdir -p "$FILES_PATH/avatars" "$FILES_PATH/attachments"
 sudo mkdir -p "$LOGS_PATH"
 
 # Set permissions
 echo "Setting permissions..."
 sudo chown -R "$APP_USER":"$APP_USER" "$DB_DIR"
 sudo chown -R "$APP_USER":"$APP_USER" "$FILES_PATH"
+sudo chown -R "$APP_USER":"$APP_USER" "$FILES_PATH/avatars"
+sudo chown -R "$APP_USER":"$APP_USER" "$FILES_PATH/attachments"
 sudo chown -R "$APP_USER":"$APP_USER" "$LOGS_PATH"
 
 # Verify
