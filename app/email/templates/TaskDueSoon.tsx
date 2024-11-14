@@ -8,7 +8,7 @@ interface TaskDueSoonEmailProps {
 }
 
 export const TaskDueSoonEmail = ({ baseUrl, task }: TaskDueSoonEmailProps) => {
-	const previewText = `Task due soon`;
+	const previewText = `Task due soon - ${task.title}`;
 
 	return (
 		<Html>

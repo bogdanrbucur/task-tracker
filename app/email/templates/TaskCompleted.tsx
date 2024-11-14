@@ -10,7 +10,7 @@ interface TaskCompletedEmailProps {
 }
 
 export const TaskCompletedEmail = ({ userFirstName, userLastName, baseUrl, task }: TaskCompletedEmailProps) => {
-	const previewText = `Task completed`;
+	const previewText = `Task completed and ready for review - ${task.title}`;
 
 	return (
 		<Html>

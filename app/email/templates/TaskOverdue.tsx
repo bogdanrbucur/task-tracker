@@ -8,7 +8,7 @@ interface TaskOverdueEmailProps {
 }
 
 export const TaskOverdueEmail = ({ baseUrl, task }: TaskOverdueEmailProps) => {
-	const previewText = `Task overdue`;
+	const previewText = `Task overdue - ${task.title}`;
 
 	return (
 		<Html>

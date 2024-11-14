@@ -2,7 +2,7 @@ import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section
 import { PasswordResetEmailProps } from "./PasswordResetRequest";
 
 export const NewUserRegistration = ({ baseUrl, firstName, token }: PasswordResetEmailProps) => {
-	const previewText = `New account created`;
+	const previewText = `Welcome to Task Tracker! 🥳`;
 
 	return (
 		<Html>

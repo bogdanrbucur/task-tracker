@@ -11,7 +11,7 @@ interface TaskReopenedEmailProps {
 }
 
 export const TaskReopenedEmail = ({ userFirstName, userLastName, comment, baseUrl, task }: TaskReopenedEmailProps) => {
-	const previewText = `Task reopened`;
+	const previewText = `Task reopened - ${task.title}`;
 
 	return (
 		<Html>

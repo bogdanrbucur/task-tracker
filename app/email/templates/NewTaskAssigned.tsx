@@ -8,7 +8,7 @@ interface NewTaskEmailProps {
 }
 
 export const NewTaskEmail = ({ baseUrl, task }: NewTaskEmailProps) => {
-	const previewText = `New task assigned`;
+	const previewText = `New task assigned - ${task.title}`;
 
 	return (
 		<Html>

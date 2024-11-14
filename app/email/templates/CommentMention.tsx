@@ -12,7 +12,7 @@ interface CommentMentionEmailProps {
 }
 
 export const CommentMentionEmail = ({ userFirstName, userLastName, comment, baseUrl, task, recipientFirstName }: CommentMentionEmailProps) => {
-	const previewText = `Comment mention`;
+	const previewText = `${userFirstName} ${userLastName} mentioned you in a comment on the task: ${task.title}`;
 
 	return (
 		<Html>

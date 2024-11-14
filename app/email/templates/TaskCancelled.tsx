@@ -11,7 +11,7 @@ interface TaskCancelledEmailProps {
 }
 
 export const TaskCancelledEmail = ({ userFirstName, userLastName, comment, baseUrl, task }: TaskCancelledEmailProps) => {
-	const previewText = `Task cancelled`;
+	const previewText = `Task cancelled - ${task.title}`;
 
 	return (
 		<Html>

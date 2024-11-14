@@ -108,7 +108,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				task: task!,
 				recipientFirstName: recipientFirstName!,
 			});
-			subject = "You were mentioned in a task comment";
+			subject = `Comment mention in task - ${task?.title}`;
 			break;
 		case "taskCancelled":
 			emailTemplate = TaskCancelledEmail({
