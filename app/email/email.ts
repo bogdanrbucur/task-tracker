@@ -12,6 +12,7 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
+import { render } from "@react-email/render";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -148,6 +149,9 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			null;
 	}
 
+	// Convert HTML email to plaintext
+	const plainTextBody = await render(emailTemplate!, { plainText: true });
+
 	try {
 		const { data, error } = await resend.emails.send({
 			from: process.env.EMAILS_FROM!,
@@ -155,7 +159,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			cc: cc,
 			subject,
 			react: emailTemplate,
-			text: "",
+			text: plainTextBody,
 		});
 
 		if (error) {

@@ -21,7 +21,18 @@ export const TaskDueSoonEmail = ({ baseUrl, task }: TaskDueSoonEmailProps) => {
 				<Body className="bg-white my-auto mx-auto font-sans px-2">
 					<Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
 						<Section className="mt-[32px]">
-							<Img src={`${baseUrl}/logo.png`} width="140" height="68" alt="logo" className="my-0 mx-auto" />
+							<div style={{ textAlign: "center", width: "100%" }}>
+								<img
+									src={`${baseUrl}/logo.png`}
+									width="140"
+									height="68"
+									alt="logo"
+									style={{
+										display: "block",
+										margin: "0 auto",
+									}}
+								/>
+							</div>
 						</Section>
 						<Section>
 							<Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">Task due soon</Heading>
@@ -38,9 +49,32 @@ export const TaskDueSoonEmail = ({ baseUrl, task }: TaskDueSoonEmailProps) => {
 						</Section>
 						<Text>View the task to Complete it.</Text>
 						<Section className="text-center mt-[32px] mb-[32px]">
-							<Button className="bg-[#000000] rounded text-white text-[14px] font-semibold no-underline text-center px-5 py-3" href={`${baseUrl}/tasks/${task.id}`}>
-								View task
-							</Button>
+							<table role="presentation" style={{ margin: "0 auto" }}>
+								<tr>
+									<td
+										style={{
+											backgroundColor: "#000000",
+											borderRadius: "5px",
+											padding: "10px 30px",
+											textAlign: "center",
+										}}
+									>
+										<a
+											href={`${baseUrl}/tasks/${task.id}`}
+											style={{
+												color: "#ffffff",
+												fontSize: "14px",
+												fontWeight: "bold",
+												textDecoration: "none",
+												display: "inline-block",
+												fontFamily: "Arial, sans-serif",
+											}}
+										>
+											View task
+										</a>
+									</td>
+								</tr>
+							</table>
 						</Section>
 						<Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
 						<Text className="text-[#666666] text-[12px] leading-[24px]">
