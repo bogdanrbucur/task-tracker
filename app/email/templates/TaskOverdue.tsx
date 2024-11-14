@@ -78,7 +78,7 @@ export const TaskOverdueEmail = ({ baseUrl, task }: TaskOverdueEmailProps) => {
 						</Section>
 						<Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
 						<Text className="text-[#666666] text-[12px] leading-[24px]">
-							This email was intended for <span className="text-black">{task.assignedToUser?.firstName}</span> and was sent by the <a href={baseUrl}>Task Tracker</a> app.
+							This email was intended for <span className="text-black">{task.assignedToUser?.firstName}</span> and was sent by the Task Tracker app.
 							If you are not the intended recipient or have received this email in error, please contact the app administrator.
 						</Text>
 					</Container>

@@ -72,7 +72,7 @@ export const NewUserNotConfirmedEmail = ({ baseUrl, firstName, lastName, userId 
 						</Section>
 						<Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
 						<Text className="text-[#666666] text-[12px] leading-[24px]">
-							This email was sent by the <a href={baseUrl}>Task Tracker</a> app. If you are not the intended recipient or have received this email in error, please
+							This email was sent by the Task Tracker app. If you are not the intended recipient or have received this email in error, please
 							contact the app administrator.
 						</Text>
 					</Container>
