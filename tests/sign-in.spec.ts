@@ -12,11 +12,16 @@ test.afterAll(async () => {
 	await deleteTestDb();
 });
 
-test("sign in functionality", async ({ page }) => {
-	await page.goto("http://localhost:3535/sign-in");
-	await page.fill('input[name="email"]', email);
-	await page.fill('input[name="password"]', password);
-	await page.click('button[type="submit"]');
-	await expect(page).toHaveURL("http://localhost:3535/");
-	await expect(page.getByTestId("firstName")).toContainText(firstName);
+test.describe("User sign-in and task creation", () => {
+	test("sign in functionality", async ({ page }) => {
+		await page.goto("http://localhost:3535/sign-in");
+		await page.fill('input[name="email"]', email);
+		await page.fill('input[name="password"]', password);
+		await page.click('button[type="submit"]');
+		await expect(page).toHaveURL("http://localhost:3535/");
+		await expect(page.getByTestId("firstName")).toContainText(firstName);
+	});
+
+	// Add a test for creating a task
+	//
 });
