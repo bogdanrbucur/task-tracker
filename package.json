@@ -4,10 +4,13 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
+		"dev-test": "dotenv -e .env.test -e .env.local -- sh -c 'npx prisma migrate deploy && next dev -p 3535'",
 		"build": "next build",
 		"start": "dotenv -e .env.local -- sh -c 'next start -p $PORT'",
 		"lint": "next lint",
-		"daily": "node ./lib/dailyTasks.js"
+		"daily": "node ./lib/dailyTasks.js",
+		"test": "start-server-and-test dev-test http://localhost:3535 playwright:test",
+		"playwright:test": "playwright test"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.3.4",
@@ -34,7 +37,6 @@
 		"clsx": "^2.1.1",
 		"cmdk": "^1.0.0",
 		"date-fns": "^3.6.0",
-		"dotenv": "^16.4.5",
 		"fs-extra": "^11.2.0",
 		"log-to-file": "^3.0.3",
 		"lucia": "^3.2.0",
@@ -59,12 +61,17 @@
 		"zod": "^3.23.6"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.48.2",
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",
+		"dotenv": "^16.4.5",
 		"dotenv-cli": "^7.4.2",
+		"eslint": "8.57.1",
+		"eslint-config-next": "15.0.3",
 		"postcss": "^8",
 		"prisma": "^5.21.1",
+		"start-server-and-test": "^2.0.8",
 		"tailwindcss": "^3.4.1",
 		"typescript": "^5"
 	}

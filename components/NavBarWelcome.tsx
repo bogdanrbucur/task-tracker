@@ -77,7 +77,7 @@ switch (occasion) {
 	return (
 		<div className="text-xs text-center md:text-base">
 			{timeOfDay.greeting}{" "}
-			<Link className="hover:text-gray-500" href={`/users/${userProps.id}`}>
+			<Link data-testid="firstName" className="hover:text-gray-500" href={`/users/${userProps.id}`}>
 				{userProps.firstName}
 			</Link>{" "}
 			<span className="">{timeOfDay.emoji}</span>

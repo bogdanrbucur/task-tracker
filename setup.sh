@@ -1,20 +1,26 @@
 #!/bin/bash
 
-# Load environment variables from .env file
-if [ -f .env ]; then
-    echo "Loading environment variables from .env file..."
-    export $(grep -E '^(DATABASE_URL|FILES_PATH|LOGS_PATH)=' .env | xargs)
-else
-    echo ".env file not found. Exiting."
-    exit 1
-fi
+# Function to load environment variables from a file
+load_env() {
+    local env_file=$1
+    if [ -f "$env_file" ]; then
+        echo "Loading environment variables from $env_file file..."
+        export $(grep -E '^(DATABASE_URL|FILES_PATH|LOGS_PATH)=' "$env_file" | xargs)
+    else
+        echo "$env_file file not found."
+    fi
+}
+
+# Load environment variables from .env and .env.test files
+load_env .env
+load_env .env.test
 
 # Define the app user
 APP_USER="appuser" # replace this with the actual user under which your app runs
 
 # Check if environment variables were set
 if [[ -z "$DATABASE_URL" || -z "$FILES_PATH" || -z "$LOGS_PATH" ]]; then
-    echo "One or more required environment variables (DATABASE_URL, FILES_PATH, LOGS_PATH) are missing in the .env file."
+    echo "One or more required environment variables (DATABASE_URL, FILES_PATH, LOGS_PATH) are missing in the environment files."
     exit 1
 fi
 
