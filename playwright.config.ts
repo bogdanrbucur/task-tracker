@@ -10,6 +10,7 @@ export default defineConfig({
 	use: {
 		browserName: "chromium",
 		headless: true,
+		baseURL: "http://localhost:3535",
 	},
 	reporter: "html",
 });
