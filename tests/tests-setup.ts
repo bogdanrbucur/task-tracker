@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs-extra";
 
-export const user1email = "test1@test.com";
-export const user2email = "test2@domain.net";
+export const user1email = "bounced@resend.dev";
+export const user2email = "delivered@resend.dev";
 export const usersPass = "test_Passw0rd";
 export const user1firstName = "SomeTestFirstName";
 export const user2firstName = "AnotherTestFirstName";
@@ -13,6 +13,9 @@ export const user1lastName = "SomeTestLastName";
 export const user2lastName = "AnotherTestLastName";
 export const user1position = "test_user_admin";
 export const user2position = "Testing User Non-Admin";
+export const taskTitle = "***E2E Automated Test Task***";
+export const taskDescription = "This is a test task created during automated testing workflows.";
+export const taskComment = `This is a test comment added during automated testing workflows @${user2firstName}`;
 
 // Load .env.test file
 dotenv.config({ path: path.resolve(__dirname, "../.env.test") });

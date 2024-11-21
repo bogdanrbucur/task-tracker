@@ -1,5 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { createTaskStatuses, createTestUser, deleteTestDb, user1email, user1firstName, user2firstName, usersPass } from "./tests-setup";
+import {
+	createTaskStatuses,
+	createTestUser,
+	deleteTestDb,
+	taskComment,
+	taskDescription,
+	taskTitle,
+	user1email,
+	user1firstName,
+	user2firstName,
+	usersPass,
+} from "./tests-setup";
 
 test.beforeAll(async () => {
 	await createTestUser();
@@ -11,11 +22,10 @@ test.afterAll(async () => {
 	await deleteTestDb();
 });
 
-test.describe("User sign-in and task creation and closing", () => {
+test.describe("Task creation and closing", () => {
 	let storageStatePath = "storageState.json";
 
-	// First test: User sign-in
-	test("sign in functionality", async ({ page }) => {
+	test("Admin user sign-in", async ({ page }) => {
 		await page.goto("/sign-in");
 		await page.fill('input[name="email"]', user1email);
 		await page.fill('input[name="password"]', usersPass);
@@ -27,15 +37,14 @@ test.describe("User sign-in and task creation and closing", () => {
 		await page.context().storageState({ path: storageStatePath });
 	});
 
-	// Second test: Create a task
-	test("create a task", async ({ browser }) => {
+	test("Create new task", async ({ browser }) => {
 		// Use the saved storage state
 		const context = await browser.newContext({ storageState: storageStatePath });
 		const page = await context.newPage();
 
 		await page.goto("/tasks/new");
-		await page.fill('input[name="title"]', "Test Task Title");
-		await page.fill('textarea[name="description"]', "This is a test task created during automated testing workflows.");
+		await page.fill('input[name="title"]', taskTitle);
+		await page.fill('textarea[name="description"]', taskDescription);
 
 		// Open the datepicker by clicking the "Pick a date" button and select 31 Dec 2025
 		await page.click('button:has-text("Pick a date")');
@@ -55,14 +64,71 @@ test.describe("User sign-in and task creation and closing", () => {
 		await page.click('button:has-text("Create Task")');
 		await page.goto("/tasks");
 		await expect(page).toHaveURL("/tasks");
-		await expect(page.getByText("Test Task Title")).toContainText("Test Task Title");
+		await expect(page.getByText(taskTitle)).toContainText(taskTitle);
 		// Close the browser context
 		await context.close();
 	});
 
 	// TODO Third test: Write a comment to user2
-	//
+	test("Add task comment", async ({ browser }) => {
+		// Use the saved storage state
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		await page.goto("/tasks");
+		await expect(page).toHaveURL("/tasks");
+
+		// Wait for the task title to be visible and assert its visibility
+		const taskTitleElement = page.locator(`text=${taskTitle}`);
+		await expect(taskTitleElement).toBeVisible();
+		// Wait for the page to be fully loaded
+		await page.waitForLoadState("networkidle");
+		// Click on the <a> element with taskTitle text and wait for URL to change
+		await taskTitleElement.click();
+		await page.waitForLoadState("networkidle");
+
+		//! Take a screenshot of the page
+		await page.screenshot({ path: "task.png" });
+
+		// Expect the URL to contain the task ID
+		await expect(page).toHaveURL(/\/tasks\/\d+/);
+
+		// Ensure the textarea is visible and interactable
+		await page.waitForSelector('textarea[name="comment"]');
+		const commentTextarea = page.locator('textarea[name="comment"]');
+
+		await commentTextarea.focus();
+		// Type a comment with @ to trigger mention dropdown
+		await commentTextarea.fill(`This is a test comment @${user2firstName}`);
+		// Wait for the mentions list to appear
+		await page.waitForSelector('[data-testid="users-mentions-list"]');
+		await page.click(`li:has-text(${user2firstName})`);
+
+		await page.click('button:has-text("Post Comment")');
+
+		// Verify the user's mention appears in the comments field
+		const commentValue = await page.locator('textarea[name="comment"]').inputValue();
+		expect(commentValue).toContain(`@${user2firstName}`);
+
+		// Close the browser context
+		await context.close();
+	});
 
 	// TODO Fourth test: Sign out as user1
+	//
+
+	// TODO Fifth test: Sign in as user2
+	//
+
+	// TODO Sixth test: Complete the task created by user1 and add a completion attachment
+	//
+
+	// TODO Seventh test: Sign out as user2
+	//
+
+	// TODO Eighth test: Sign in as user1
+	//
+
+	// TODO Ninth test: Close the task created by user1
 	//
 });
