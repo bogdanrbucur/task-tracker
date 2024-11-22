@@ -128,7 +128,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 			>
 				<section className="space-y-4">
 					{comments.map((comment) => (
-						<div key={comment.id} className="flex items-start gap-4">
+						<div key={comment.id} className="flex items-start gap-4" data-testid="user-comment">
 							<UserAvatarNameComment user={comment.user} />
 							<div className="flex-1">
 								<div className="flex items-center justify-between">

@@ -12,6 +12,7 @@ logo.png
 /playwright-report
 /test-results
 storageState.json
+/tests/*.png
 
 # next.js
 /.next/

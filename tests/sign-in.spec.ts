@@ -32,6 +32,7 @@ test.describe("Task creation and closing", () => {
 		await page.click('button[type="submit"]');
 		await expect(page).toHaveURL("/");
 		await expect(page.getByTestId("firstName")).toContainText(user1firstName);
+		await page.screenshot({ path: "./tests/1-dashboard.png" });
 
 		// Save the storage state
 		await page.context().storageState({ path: storageStatePath });
@@ -49,11 +50,12 @@ test.describe("Task creation and closing", () => {
 		// Open the datepicker by clicking the "Pick a date" button and select 31 Dec 2025
 		await page.click('button:has-text("Pick a date")');
 		// Click Next Month until month and year are visible
-		while (!(await page.locator('text="December 2025"').isVisible())) await page.click('[aria-label="Go to next month"]');
+		while (!(await page.locator('text="December 2026"').isVisible())) await page.click('[aria-label="Go to next month"]');
+		await page.screenshot({ path: "./tests/2-task-creation.png" });
 		await page.click('button:has-text("31")');
-		const dueDateInput = await page.locator('input[name="dueDate"]');
+		const dueDateInput = page.locator('input[name="dueDate"]');
 		const value = await dueDateInput.inputValue();
-		expect(value).toContain("2025-12-31");
+		expect(value).toContain("2026-12-31");
 
 		// Select the user
 		await page.click('text="Select a user..."'); // Open the dropdown
@@ -62,6 +64,8 @@ test.describe("Task creation and closing", () => {
 		// Select the desired user by partial or exact text within the dropdown container
 		await page.locator('div[role="listbox"]').locator(`text=${user2firstName}`).click();
 		await page.click('button:has-text("Create Task")');
+		await page.waitForLoadState("networkidle");
+		await page.screenshot({ path: "./tests/3-new-task.png" });
 		await page.goto("/tasks");
 		await expect(page).toHaveURL("/tasks");
 		await expect(page.getByText(taskTitle)).toContainText(taskTitle);
@@ -69,7 +73,7 @@ test.describe("Task creation and closing", () => {
 		await context.close();
 	});
 
-	// TODO Third test: Write a comment to user2
+	// Third test: Write a comment to user2
 	test("Add task comment", async ({ browser }) => {
 		// Use the saved storage state
 		const context = await browser.newContext({ storageState: storageStatePath });
@@ -83,32 +87,39 @@ test.describe("Task creation and closing", () => {
 		await expect(taskTitleElement).toBeVisible();
 		// Wait for the page to be fully loaded
 		await page.waitForLoadState("networkidle");
-		// Click on the <a> element with taskTitle text and wait for URL to change
+		await page.screenshot({ path: "./tests/4-tasks-list.png" });
+		await page.waitForTimeout(300);
+		// Click the task title to navigate to the task page
 		await taskTitleElement.click();
+		await page.waitForURL(/\/tasks\/\d+/);
 		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(1000);
 
-		//! Take a screenshot of the page
-		await page.screenshot({ path: "task.png" });
+		await page.screenshot({ path: "./tests/5-task-view.png" });
 
 		// Expect the URL to contain the task ID
 		await expect(page).toHaveURL(/\/tasks\/\d+/);
 
-		// Ensure the textarea is visible and interactable
 		await page.waitForSelector('textarea[name="comment"]');
 		const commentTextarea = page.locator('textarea[name="comment"]');
-
 		await commentTextarea.focus();
+
 		// Type a comment with @ to trigger mention dropdown
 		await commentTextarea.fill(`This is a test comment @${user2firstName}`);
 		// Wait for the mentions list to appear
 		await page.waitForSelector('[data-testid="users-mentions-list"]');
-		await page.click(`li:has-text(${user2firstName})`);
+		await page.screenshot({ path: "./tests/6-comment-users.png" });
+		await page.waitForTimeout(300);
+		await page.click(`li:has-text("${user2firstName}")`);
 
 		await page.click('button:has-text("Post Comment")');
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(1000);
 
-		// Verify the user's mention appears in the comments field
-		const commentValue = await page.locator('textarea[name="comment"]').inputValue();
-		expect(commentValue).toContain(`@${user2firstName}`);
+		// Verify the user's mention appears in the comments section
+		const commentLocator = page.locator(`[data-testid="user-comment"]`);
+		await expect(commentLocator).toContainText(`@${user2firstName}`);
+		await page.screenshot({ path: "./tests/7-task-view.png" });
 
 		// Close the browser context
 		await context.close();
