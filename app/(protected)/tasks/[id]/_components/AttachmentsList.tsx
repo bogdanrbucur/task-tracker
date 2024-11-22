@@ -51,7 +51,7 @@ export default function AttachmentList({ attachments }: { attachments: Attachmen
 							{att.description}
 						</span>
 					) : (
-						<a href={`/api/attachments/${att.id}`} target="_blank" className="text-blue-600 hover:underline">
+						<a href={`/api/attachments/${att.id}`} target="_blank" className="text-blue-600 hover:underline" data-testid="completion-attachment">
 							{att.description}
 						</a>
 					)}

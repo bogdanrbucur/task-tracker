@@ -16,6 +16,9 @@ export const user2position = "Testing User Non-Admin";
 export const taskTitle = "***E2E Automated Test Task***";
 export const taskDescription = "This is a test task created during automated testing workflows.";
 export const taskComment = `This is a test comment added during automated testing workflows @${user2firstName}`;
+export const taskCompletionComment = `This is a test completion comment added during automated testing workflows`;
+export const testAttachmentPath = "./tests/test-att.txt";
+export const testAttachmentDescription = "Test text attachment";
 
 // Load .env.test file
 dotenv.config({ path: path.resolve(__dirname, "../.env.test") });

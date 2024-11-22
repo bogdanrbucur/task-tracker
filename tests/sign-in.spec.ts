@@ -3,11 +3,14 @@ import {
 	createTaskStatuses,
 	createTestUser,
 	deleteTestDb,
-	taskComment,
+	taskCompletionComment,
 	taskDescription,
 	taskTitle,
+	testAttachmentDescription,
+	testAttachmentPath,
 	user1email,
 	user1firstName,
+	user2email,
 	user2firstName,
 	usersPass,
 } from "./tests-setup";
@@ -29,6 +32,7 @@ test.describe("Task creation and closing", () => {
 		await page.goto("/sign-in");
 		await page.fill('input[name="email"]', user1email);
 		await page.fill('input[name="password"]', usersPass);
+		await page.screenshot({ path: "./tests/0-sign-in.png" });
 		await page.click('button[type="submit"]');
 		await expect(page).toHaveURL("/");
 		await expect(page.getByTestId("firstName")).toContainText(user1firstName);
@@ -73,7 +77,6 @@ test.describe("Task creation and closing", () => {
 		await context.close();
 	});
 
-	// Third test: Write a comment to user2
 	test("Add task comment", async ({ browser }) => {
 		// Use the saved storage state
 		const context = await browser.newContext({ storageState: storageStatePath });
@@ -125,14 +128,106 @@ test.describe("Task creation and closing", () => {
 		await context.close();
 	});
 
-	// TODO Fourth test: Sign out as user1
-	//
+	test("Admin user sign-out", async ({ browser }) => {
+		// Use the saved storage state
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
 
-	// TODO Fifth test: Sign in as user2
-	//
+		// Navigate to the dashboard
+		await page.goto("/");
+		// Click on button of type submit with text Sign Out
+		await expect(page.getByTestId("signout-button")).toBeVisible();
+		await page.click('button[type="submit"]:has-text("Sign Out")');
 
-	// TODO Sixth test: Complete the task created by user1 and add a completion attachment
-	//
+		await expect(page).toHaveURL("/sign-in");
+		await page.waitForLoadState("networkidle");
+		await page.screenshot({ path: "./tests/8-sign-out.png" });
+
+		// Close the browser context
+		await context.close();
+	});
+
+	test("Normal user sign-in", async ({ page }) => {
+		await page.goto("/sign-in");
+		await page.fill('input[name="email"]', user2email);
+		await page.fill('input[name="password"]', usersPass);
+		await page.click('button[type="submit"]');
+		await expect(page).toHaveURL("/");
+		await expect(page.getByTestId("firstName")).toContainText(user2firstName);
+
+		// Save the storage state
+		await page.context().storageState({ path: storageStatePath });
+	});
+
+	test("Complete task visible in dashboard", async ({ browser }) => {
+		// Use the saved storage state
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		// Navigate to the dashboard
+		await page.goto("/");
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(2000);
+		await page.screenshot({ path: "./tests/9-dashboard.png" });
+
+		// Expect that under the <div> with id status-chart there will be <g> with class="recharts-layer recharts-pie"
+		await expect(page.locator('div[id="status-chart"] g.recharts-layer.recharts-pie')).toBeVisible();
+
+		// Expect an h4 under a div with id my-tasks to have the task title
+		await expect(page.locator('div[id="my-tasks"]')).toContainText(taskTitle);
+		const taskTitleElement = page.locator(`text=${taskTitle}`);
+		await taskTitleElement.click();
+
+		expect(page).toHaveURL(/\/tasks\/\d+/);
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(500);
+
+		const completeButton = page.locator('button:has-text("Complete")');
+		expect(completeButton).toBeVisible();
+		await completeButton.click();
+
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(500);
+		await page.screenshot({ path: "./tests/10-task-completion.png" });
+
+		const commentLocator = page.locator(`[name="completeComment"]`);
+		await expect(commentLocator).toBeVisible();
+		const fileInput = page.locator("input[type=file]");
+		await expect(fileInput).toBeVisible();
+		const attachmentDescription = page.locator('input[name="newDescription"]');
+		await expect(attachmentDescription).toBeVisible();
+		const attachmentAddButton = page.locator('button:has-text("Add")');
+		await expect(attachmentAddButton).toBeVisible();
+		const attRemoveButton = page.locator('button:has-text("Remove")');
+
+		await commentLocator.fill(taskCompletionComment);
+		await fileInput.setInputFiles(testAttachmentPath);
+		await attachmentDescription.fill(testAttachmentDescription);
+		await attachmentAddButton.click();
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(2000);
+		const addedAttDescription = page.locator(`input[type="text"][disabled][value="${testAttachmentDescription}"]`);
+		await expect(addedAttDescription).toHaveValue(testAttachmentDescription);
+		expect(attRemoveButton).toBeVisible();
+		await page.screenshot({ path: "./tests/10-task-completion.png" });
+
+		const confirmButton = page.locator('button:has-text("Confirm")');
+		await confirmButton.click();
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(2000);
+
+		await page.screenshot({ path: "./tests/11-task-completed.png" });
+		await expect(page.getByTestId("completion-attachment")).toContainText(testAttachmentDescription);
+
+		// TODO check for the completion task history
+		//
+
+		// TODO check status to be Pending Review
+		//
+
+		// Close the browser context
+		await context.close();
+	});
 
 	// TODO Seventh test: Sign out as user2
 	//

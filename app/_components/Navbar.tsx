@@ -44,7 +44,7 @@ const Navbar = async () => {
 				)}
 				{user && (
 					<form action={signOut}>
-						<Button variant="outline" type="submit" size="sm" className="px-2 md:px-4">
+						<Button variant="outline" type="submit" size="sm" className="px-2 md:px-4" data-testid="signout-button">
 							Sign Out
 						</Button>
 					</form>
