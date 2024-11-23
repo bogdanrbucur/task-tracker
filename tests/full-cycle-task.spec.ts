@@ -76,7 +76,7 @@ test.describe("Task creation and closing", () => {
 		await test.step("Edit user details", async () => {
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(5000);
-			const ss1 = await page.screenshot({ path: "./tests/4-user-details.png" });
+			const ss = await page.screenshot({ path: "./tests/4-user-details.png" });
 			test.info().attach("user-details", { body: ss, contentType: "image/png" });
 
 			await page.click('a:has-text("Edit")');
