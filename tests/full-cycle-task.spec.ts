@@ -46,12 +46,13 @@ test.describe("Task creation and closing", () => {
 		await page.goto("/sign-in");
 		await page.fill('input[name="email"]', user1email);
 		await page.fill('input[name="password"]', usersPass);
-		await page.screenshot({ path: "./tests/0-sign-in.png" });
+		const ss = await page.screenshot({ path: "./tests/0-sign-in.png" });
+		test.info().attach("sign-in", { body: ss, contentType: "image/png" });
 		await page.click('button[type="submit"]');
 		await expect(page).toHaveURL("/");
 		await expect(page.getByTestId("firstName")).toContainText(user1firstName);
-		await page.screenshot({ path: "./tests/1-dashboard.png" });
-
+		const ss2 = await page.screenshot({ path: "./tests/1-dashboard.png" });
+		test.info().attach("dashboard", { body: ss2, contentType: "image/png" });
 		// Save the storage state
 		await page.context().storageState({ path: storageStatePath });
 	});
@@ -64,7 +65,8 @@ test.describe("Task creation and closing", () => {
 			await page.goto("/users");
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(2000);
-			await page.screenshot({ path: "./tests/3-users-list.png" });
+			const ss = await page.screenshot({ path: "./tests/3-users-list.png" });
+			test.info().attach("users-list", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Select Normal user", async () => {
@@ -74,18 +76,21 @@ test.describe("Task creation and closing", () => {
 		await test.step("Edit user details", async () => {
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(5000);
-			await page.screenshot({ path: "./tests/4-user-details.png" });
+			const ss1 = await page.screenshot({ path: "./tests/4-user-details.png" });
+			test.info().attach("user-details", { body: ss, contentType: "image/png" });
 
 			await page.click('a:has-text("Edit")');
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(2000);
-			await page.screenshot({ path: "./tests/5-user-edit.png" });
+			const ss2 = await page.screenshot({ path: "./tests/5-user-edit.png" });
+			test.info().attach("user-edit", { body: ss2, contentType: "image/png" });
 		});
 
 		await test.step("Select manager", async () => {
 			await page.click('text="Select a user..."');
 			await page.waitForSelector('div[role="listbox"]', { state: "visible" });
-			await page.screenshot({ path: "./tests/5-users-dropdown.png" });
+			const ss = await page.screenshot({ path: "./tests/5-users-dropdown.png" });
+			test.info().attach("users-dropdown", { body: ss, contentType: "image/png" });
 			await page.locator('div[role="listbox"]').locator(`text=${user1firstName}`).first().click();
 			await page.waitForTimeout(500);
 		});
@@ -100,7 +105,8 @@ test.describe("Task creation and closing", () => {
 			await page.click('button:has-text("Save User")');
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(3000);
-			await page.screenshot({ path: "./tests/6-user-updated.png" });
+			const ss = await page.screenshot({ path: "./tests/6-user-updated.png" });
+			test.info().attach("user-updated", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Verify manager is updated", async () => {
@@ -115,7 +121,8 @@ test.describe("Task creation and closing", () => {
 			expect(departmentExists).toBeTruthy();
 		});
 
-		await page.screenshot({ path: "./tests/6-user-updated.png" });
+		const ss = await page.screenshot({ path: "./tests/6-user-updated.png" });
+		test.info().attach("user-updated", { body: ss, contentType: "image/png" });
 		await context.close();
 	});
 
@@ -130,7 +137,8 @@ test.describe("Task creation and closing", () => {
 		await test.step("Select due date", async () => {
 			await page.click('button:has-text("Pick a date")');
 			while (!(await page.locator('text="December 2026"').isVisible())) await page.click('[aria-label="Go to next month"]');
-			await page.screenshot({ path: "./tests/7-task-creation.png" });
+			const ss = await page.screenshot({ path: "./tests/7-task-creation.png" });
+			test.info().attach("task-creation", { body: ss, contentType: "image/png" });
 			await page.click('button:has-text("31")');
 			const dueDateInput = page.locator('input[name="dueDate"]');
 			const value = await dueDateInput.inputValue();
@@ -146,7 +154,8 @@ test.describe("Task creation and closing", () => {
 		await test.step("Create task", async () => {
 			await page.click('button:has-text("Create Task")');
 			await page.waitForLoadState("networkidle");
-			await page.screenshot({ path: "./tests/8-new-task.png" });
+			const ss = await page.screenshot({ path: "./tests/8-new-task.png" });
+			test.info().attach("new-task", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Verify task is created", async () => {
@@ -167,13 +176,15 @@ test.describe("Task creation and closing", () => {
 			const taskTitleElement = page.locator(`text=${taskTitle}`);
 			await expect(taskTitleElement).toBeVisible();
 			await page.waitForLoadState("networkidle");
-			await page.screenshot({ path: "./tests/9-tasks-list.png" });
+			const ss = await page.screenshot({ path: "./tests/9-tasks-list.png" });
+			test.info().attach("task-list", { body: ss, contentType: "image/png" });
 			await page.waitForTimeout(300);
 			await taskTitleElement.click();
 			await page.waitForURL(/\/tasks\/\d+/);
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(1000);
-			await page.screenshot({ path: "./tests/10-task-view.png" });
+			const ss2 = await page.screenshot({ path: "./tests/10-task-view.png" });
+			test.info().attach("task-view", { body: ss2, contentType: "image/png" });
 			await expect(page).toHaveURL(/\/tasks\/\d+/);
 		});
 
@@ -186,7 +197,8 @@ test.describe("Task creation and closing", () => {
 
 		await test.step("Select user mention", async () => {
 			await page.waitForSelector('[data-testid="users-mentions-list"]');
-			await page.screenshot({ path: "./tests/11-comment-users.png" });
+			const ss = await page.screenshot({ path: "./tests/11-comment-users.png" });
+			test.info().attach("comment-users", { body: ss, contentType: "image/png" });
 			await page.waitForTimeout(300);
 			await page.click(`li:has-text("${user2firstName}")`);
 		});
@@ -200,7 +212,8 @@ test.describe("Task creation and closing", () => {
 		await test.step("Verify comment is added", async () => {
 			const commentLocator = page.locator(`[data-testid="user-comment"]`);
 			await expect(commentLocator).toContainText(`@${user2firstName}`);
-			await page.screenshot({ path: "./tests/12-task-view.png" });
+			const ss = await page.screenshot({ path: "./tests/12-task-view.png" });
+			test.info().attach("task-view", { body: ss, contentType: "image/png" });
 		});
 		await context.close();
 	});
@@ -215,7 +228,8 @@ test.describe("Task creation and closing", () => {
 			await page.click('button[type="submit"]:has-text("Sign Out")');
 			await expect(page).toHaveURL("/sign-in");
 			await page.waitForLoadState("networkidle");
-			await page.screenshot({ path: "./tests/13-sign-out.png" });
+			const ss = await page.screenshot({ path: "./tests/13-sign-out.png" });
+			test.info().attach("sign-out", { body: ss, contentType: "image/png" });
 		});
 		await context.close();
 	});
@@ -237,7 +251,8 @@ test.describe("Task creation and closing", () => {
 		await page.goto("/");
 		await page.waitForLoadState("networkidle");
 		await page.waitForTimeout(2000);
-		await page.screenshot({ path: "./tests/14-dashboard.png" });
+		const ss = await page.screenshot({ path: "./tests/14-dashboard.png" });
+		test.info().attach("dashboard", { body: ss, contentType: "image/png" });
 
 		await test.step("Status chart to be visible in dashboard", async () =>
 			await expect(page.locator('div[id="status-chart"] g.recharts-layer.recharts-pie')).toBeVisible());
@@ -266,7 +281,8 @@ test.describe("Task creation and closing", () => {
 			await completeButton.click();
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(500);
-			await page.screenshot({ path: "./tests/15-task-completion.png" });
+			const ss = await page.screenshot({ path: "./tests/15-task-completion.png" });
+			test.info().attach("task-completion", { body: ss, contentType: "image/png" });
 		});
 
 		const commentLocator = page.locator(`[name="completeComment"]`);
@@ -292,7 +308,8 @@ test.describe("Task creation and closing", () => {
 			const addedAttDescription = page.locator(`input[type="text"][disabled][value="${testAttachmentDescription}"]`);
 			await expect(addedAttDescription).toHaveValue(testAttachmentDescription);
 			expect(attRemoveButton).toBeVisible();
-			await page.screenshot({ path: "./tests/16-task-completion.png" });
+			const ss = await page.screenshot({ path: "./tests/16-task-completion.png" });
+			test.info().attach("task-completion", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Confirm task completion", async () => {
@@ -300,7 +317,8 @@ test.describe("Task creation and closing", () => {
 			await confirmButton.click();
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(2000);
-			await page.screenshot({ path: "./tests/17-task-completed.png" });
+			const ss = await page.screenshot({ path: "./tests/17-task-completed.png" });
+			test.info().attach("task-completed", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Completion attachment is visible", async () => await expect(page.getByTestId("completion-attachment")).toContainText(testAttachmentDescription));
@@ -341,7 +359,8 @@ test.describe("Task creation and closing", () => {
 		await page.goto("/");
 		await page.waitForLoadState("networkidle");
 		await page.waitForTimeout(2000);
-		await page.screenshot({ path: "./tests/18-dashboard.png" });
+		const ss = await page.screenshot({ path: "./tests/18-dashboard.png" });
+		test.info().attach("dashboard", { body: ss, contentType: "image/png" });
 
 		await test.step("Status chart to be visible in dashboard", async () => {
 			await expect(page.locator('div[id="status-chart"] g.recharts-layer.recharts-pie')).toBeVisible();
@@ -389,7 +408,8 @@ test.describe("Task creation and closing", () => {
 			await download.saveAs(downloadPath);
 
 			await page.waitForTimeout(2000);
-			await page.screenshot({ path: "./tests/19-task-attachment-download.png" });
+			const ss = await page.screenshot({ path: "./tests/19-task-attachment-download.png" });
+			test.info().attach("task-attachment-download", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Verify the downloaded file exists", async () => expect(fs.existsSync(downloadPath)).toBeTruthy());
@@ -417,7 +437,8 @@ test.describe("Task creation and closing", () => {
 			await closeTaskButton.click();
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(500);
-			await page.screenshot({ path: "./tests/20-task-closure.png" });
+			const ss = await page.screenshot({ path: "./tests/20-task-closure.png" });
+			test.info().attach("task-closure", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Fill in task closing text", async () => {
@@ -426,7 +447,8 @@ test.describe("Task creation and closing", () => {
 			await commentLocator.fill(taskClosingComment);
 			await page.waitForLoadState("networkidle");
 			await page.waitForTimeout(2000);
-			await page.screenshot({ path: "./tests/21-task-closure.png" });
+			const ss = await page.screenshot({ path: "./tests/21-task-closure.png" });
+			test.info().attach("task-closure", { body: ss, contentType: "image/png" });
 		});
 
 		await test.step("Confirm task closure", async () => {
@@ -443,7 +465,8 @@ test.describe("Task creation and closing", () => {
 				`Task closed by ${user1firstName} ${user1lastName}: ${taskClosingComment}`
 			));
 
-		await page.screenshot({ path: "./tests/22-task-closed.png" });
+		const ss = await page.screenshot({ path: "./tests/22-task-closed.png" });
+		test.info().attach("task-closed", { body: ss, contentType: "image/png" });
 		await context.close();
 	});
 });

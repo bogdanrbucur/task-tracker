@@ -12,5 +12,5 @@ export default defineConfig({
 		headless: true,
 		baseURL: "http://localhost:3535",
 	},
-	reporter: "html",
+	reporter: [["html", { outputFolder: "playwright-report", open: "always" }]],
 });
