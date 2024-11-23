@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs-extra";
 
+export const storageStatePath = "./tests/storageState.json";
 export const user1email = "bounced@resend.dev";
 export const user2email = "delivered@resend.dev";
 export const usersPass = "test_Passw0rd";
@@ -19,6 +20,7 @@ export const taskComment = `This is a test comment added during automated testin
 export const taskCompletionComment = `This is a test completion comment added during automated testing workflows`;
 export const testAttachmentPath = "./tests/test-att.txt";
 export const testAttachmentDescription = "Test text attachment";
+export const taskClosingComment = `This is a test closing comment added during automated testing workflows`;
 
 // Load .env.test file
 dotenv.config({ path: path.resolve(__dirname, "../.env.test") });
@@ -83,6 +85,17 @@ export async function deleteTestDb() {
 			console.log(`Database file ${dbPath} removed.`);
 		} else {
 			console.log(`Database file ${dbPath} does not exist.`);
+		}
+	}
+}
+
+export async function deleteExistingScreenshots() {
+	const screenshotsPath = "./tests/";
+	// Delete all .png files in the folder
+	const files = fs.readdirSync(screenshotsPath);
+	for (const file of files) {
+		if (file.endsWith(".png")) {
+			fs.unlinkSync(path.join(screenshotsPath, file));
 		}
 	}
 }
