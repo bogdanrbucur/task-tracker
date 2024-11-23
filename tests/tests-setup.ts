@@ -18,9 +18,11 @@ export const taskTitle = "***E2E Automated Test Task***";
 export const taskDescription = "This is a test task created during automated testing workflows.";
 export const taskComment = `This is a test comment added during automated testing workflows @${user2firstName}`;
 export const taskCompletionComment = `This is a test completion comment added during automated testing workflows`;
-export const testAttachmentPath = "./tests/test-att.txt";
+export const attachmentFilename = "test-att.txt";
+export const testAttachmentPath = `./tests/${attachmentFilename}`;
 export const testAttachmentDescription = "Test text attachment";
 export const taskClosingComment = `This is a test closing comment added during automated testing workflows`;
+export const departmentName = "Test Department";
 
 // Load .env.test file
 dotenv.config({ path: path.resolve(__dirname, "../.env.test") });
@@ -98,4 +100,14 @@ export async function deleteExistingScreenshots() {
 			fs.unlinkSync(path.join(screenshotsPath, file));
 		}
 	}
+}
+
+export async function createTestDepartment() {
+	const department = await prisma.department.create({
+		data: {
+			name: departmentName,
+		},
+	});
+
+	return department;
 }
