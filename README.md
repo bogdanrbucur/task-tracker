@@ -218,7 +218,7 @@ You can use a cron job to run the script at a specific interval. For example, to
 
 ### Testing
 
-Running `setup.sh` will create the test folders as well. To run the tests, use `npm run test`. A testing database will be created and destroyed for each test run.
+Running `setup.sh` will create the test folders as well. To run the tests, use `npm test`. A testing database will be created and destroyed for each test run.
 
 ### SFTP VS Code extension setup
 
