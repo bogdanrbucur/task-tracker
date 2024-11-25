@@ -10,6 +10,7 @@ const nextConfig = {
 			allowedOrigins: ["tasks.asm-maritime.com"],
 		},
 	},
+eslint: {ignoreDuringBuilds: true},
 };
 
 export default nextConfig;

@@ -35,7 +35,7 @@ export function CompleteTaskButton({ userId, taskId, taskAttachments }: { userId
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
-				<Button size="sm" className="gap-1">
+				<Button size="sm" className="gap-1" data-testid="complete-task-button">
 					Complete
 					<Check size="18" />
 				</Button>

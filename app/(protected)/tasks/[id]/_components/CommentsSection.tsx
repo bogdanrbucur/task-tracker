@@ -128,7 +128,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 			>
 				<section className="space-y-4">
 					{comments.map((comment) => (
-						<div key={comment.id} className="flex items-start gap-4">
+						<div key={comment.id} className="flex items-start gap-4" data-testid="user-comment">
 							<UserAvatarNameComment user={comment.user} />
 							<div className="flex-1">
 								<div className="flex items-center justify-between">
@@ -157,6 +157,7 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 							<ul
 								ref={mentionsListRef}
 								className="absolute z-10 py-1 list-disc gap-0 shadow-lg max-h-56 overflow-auto rounded-lg border bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-700"
+								data-testid="users-mentions-list"
 							>
 								{filteredUsers.map((user, index) => (
 									<li

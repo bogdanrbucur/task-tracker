@@ -1,7 +1,7 @@
+import { UserAvatarNameSmall } from "@/components/AvatarAndName";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
-import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAndName";
 import { UserExtended } from "../_actions/getUserById";
 
 export interface UsersQuery {
@@ -21,7 +21,7 @@ const UserTable = ({ searchParams, users }: Props) => {
 	const sortOrder = searchParams.sortOrder;
 
 	return (
-		<Table >
+		<Table>
 			<TableHeader>
 				<TableRow>
 					{columns.map((column) => (

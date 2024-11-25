@@ -9,6 +9,11 @@ logo.png
 
 # testing
 /coverage
+/playwright-report
+/test-results
+storageState.json
+/tests/*.png
+test-att.txt
 
 # next.js
 /.next/

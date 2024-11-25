@@ -118,15 +118,13 @@ Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tas
 10. `npm run build` to build the app and `npm start` to run in production mode
 11. `npx prisma studio` and manually add the statuses:
 
-| ID  | Name         | Display Name     | Color   |
-|-----|--------------|------------------|---------|
-| 1   | In Progress  | In Progress      | Blue    |
-| 2   | Completed    | Pending Review   | Green   |
-| 3   | Closed       | Closed           | Gray    |
-| 4   | Cancelled    | Cancelled        | Yellow  |
-| 5   | Overdue      | Overdue          | Red     |
-
-
+| ID  | Name        | Display Name   | Color  |
+| --- | ----------- | -------------- | ------ |
+| 1   | In Progress | In Progress    | Blue   |
+| 2   | Completed   | Pending Review | Green  |
+| 3   | Closed      | Closed         | Gray   |
+| 4   | Cancelled   | Cancelled      | Yellow |
+| 5   | Overdue     | Overdue        | Red    |
 
 ### Automatic start
 
@@ -217,6 +215,10 @@ You can use a cron job to run the script at a specific interval. For example, to
 
 1. `npx prisma studio` to open the studio
 2. To generate a password hash to insert in the database, change the `pass` const in `./lib/hashpass.js` and run `node ./lib/hashpass.js` to get the hash printed to the console
+
+### Testing
+
+Running `setup.sh` will create the test folders as well. To run the tests, use `npm test`. A testing database will be created and destroyed for each test run.
 
 ### SFTP VS Code extension setup
 
