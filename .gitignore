@@ -13,7 +13,6 @@ logo.png
 /test-results
 storageState.json
 /tests/*.png
-test-att.txt
 
 # next.js
 /.next/
