@@ -239,5 +239,6 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 
 ## Todo
 
-- [ ] [feat] Automatic database backups
-- [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
+- [ ] [feat] User stats
+
+![chart](./readme/user-stats.png)
