@@ -97,6 +97,19 @@ model User {
   createdUsers         User[]      @relation("CreatedByUser")
 }
 
+model userStats {
+  userId                                String @id @unique
+  noTasksCompleted                      Int?
+  noTasksReviewedClosed                 Int?
+  noTasksReviewedReopened               Int?
+  noTasksCreated                        Int?
+  noTasksCompletedBeforeOriginalDueDate Int?
+  noTasksCompletedBetweenDueDates       Int?
+  noTasksCompletedAfterDueDate          Int?
+  totalDaysWorkingOnTasks               Int?
+  totalDaysReviewingTasks               Int?
+}
+
 model Avatar {
   id     Int    @id @default(autoincrement())
   path   String
