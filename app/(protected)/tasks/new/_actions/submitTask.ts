@@ -84,11 +84,6 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			sourceAttachmentsDescriptions: formData.getAll("sourceAttachmentsDescriptions") as string[],
 		});
 
-		// Check the size of the avatar and reject if it's too large
-		// if (data.sourceAttachments && data.sourceAttachments.size > 5242880) {
-		// 	return { message: "Attachment is too large. Maximum size is 5 MB." };
-		// }
-
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.createdByUserId);
 

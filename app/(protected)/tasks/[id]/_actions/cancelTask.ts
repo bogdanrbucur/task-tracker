@@ -9,6 +9,7 @@ import prisma from "@/prisma/client";
 import log from "log-to-file";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import updateUserStats from "../../_actions/updateUserStats";
 import { recordTaskHistory } from "./recordTaskHistory";
 
 export default async function cancelTask(prevState: any, formData: FormData) {
@@ -61,6 +62,9 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 		// Add the changes to the task history
 		const cancellingComment = `Task cancelled by ${editor.firstName} ${editor.lastName}${data.cancelComment ? `: ${data.cancelComment}` : "."}`;
 		const newChange = await recordTaskHistory(cancelledTask, editor, [cancellingComment]);
+
+		// Update the user stats
+		await updateUserStats(data.userId, "cancel", cancelledTask);
 
 		// Email the user the task is assigned to and the manager
 		emailStatus = await sendEmail({

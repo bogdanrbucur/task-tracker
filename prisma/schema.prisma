@@ -103,6 +103,7 @@ model userStats {
   noTasksReviewedClosed                 Int?
   noTasksReviewedReopened               Int?
   noTasksCreated                        Int?
+  noTasksCancelled                      Int?
   noTasksCompletedBeforeOriginalDueDate Int?
   noTasksCompletedBetweenDueDates       Int?
   noTasksCompletedAfterDueDate          Int?

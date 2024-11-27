@@ -8,6 +8,7 @@ import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { recordTaskHistory } from "./recordTaskHistory";
+import updateUserStats from "../../_actions/updateUserStats";
 
 export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -62,6 +63,9 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		// Add the changes to the task history
 		const reopenComment = `Task reopened by ${editor.firstName} ${editor.lastName}${data.reopenComment ? `: ${data.reopenComment}` : "."}`;
 		const newChange = await recordTaskHistory(reopenedTask, editor, [reopenComment]);
+
+		// Update the user stats
+		await updateUserStats(data.userId, "reopen", reopenedTask);
 
 		// Email the user the task is assigned to
 		emailStatus = await sendEmail({

@@ -1,10 +1,10 @@
-import { EmailTask } from "@/app/email/email";
 import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import { Task } from "@prisma/client";
 import { differenceInCalendarDays } from "date-fns";
 import log from "log-to-file";
 
-export default async function updateUserStats(userId: string, taskAction: "create" | "complete" | "close" | "reopen", task: EmailTask) {
+export default async function updateUserStats(userId: string, taskAction: "create" | "complete" | "close" | "reopen" | "cancel", task: Task) {
 	const today = new Date();
 	// Check if the user exists in the stats table
 	const userStats = await prisma.userStats.findFirst({
@@ -19,6 +19,7 @@ export default async function updateUserStats(userId: string, taskAction: "creat
 			data: {
 				userId,
 				noTasksCompleted: taskAction === "complete" ? 1 : 0,
+				noTasksCancelled: taskAction === "cancel" ? 1 : 0,
 				totalDaysWorkingOnTasks: taskAction === "complete" ? differenceInCalendarDays(task.completedOn!, today) : 0,
 				totalDaysReviewingTasks: taskAction === "reopen" || taskAction === "close" ? differenceInCalendarDays(task.completedOn!, today) : 0,
 				noTasksCreated: taskAction === "create" ? 1 : 0,
@@ -39,6 +40,7 @@ export default async function updateUserStats(userId: string, taskAction: "creat
 			where: { userId },
 			data: {
 				noTasksCompleted: taskAction === "complete" ? userStats.noTasksCompleted! + 1 : userStats.noTasksCompleted,
+				noTasksCancelled: taskAction === "cancel" ? userStats.noTasksCancelled! + 1 : userStats.noTasksCancelled,
 				totalDaysWorkingOnTasks:
 					taskAction === "complete" ? userStats.totalDaysWorkingOnTasks! + differenceInCalendarDays(task.completedOn!, today) : userStats.totalDaysWorkingOnTasks,
 				totalDaysReviewingTasks:

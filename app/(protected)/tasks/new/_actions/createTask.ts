@@ -4,6 +4,7 @@ import prisma from "@/prisma/client";
 import log from "log-to-file";
 import { recordTaskHistory } from "../../[id]/_actions/recordTaskHistory";
 import { Editor, NewTask } from "./submitTask";
+import updateUserStats from "../../_actions/updateUserStats";
 
 // Create a new task in the database
 export async function createTask(task: NewTask, editingUser: Editor) {
@@ -28,6 +29,9 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 
 	console.log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`);
 	log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`, `${process.env.LOGS_PATH}/${logDate()}`);
+
+	// Update editingUser stats
+	await updateUserStats(editingUser.id, "create", newTask);
 
 	// Send email notification to the assigned user
 	const emailStatus = await sendEmail({
