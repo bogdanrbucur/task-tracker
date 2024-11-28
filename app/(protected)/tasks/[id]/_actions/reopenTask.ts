@@ -41,6 +41,9 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 			include: { assignedToUser: { select: { managerId: true, manager: { select: { firstName: true, lastName: true, id: true } } } } },
 		});
 
+		// Temporary store the task completion date to compute user stats
+		const taskCompletionDate = task?.completedOn;
+
 		// Get the details of the user who is reopening the task
 		const editor = await getUserDetails(data.userId);
 		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) {
@@ -64,8 +67,11 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		const reopenComment = `Task reopened by ${editor.firstName} ${editor.lastName}${data.reopenComment ? `: ${data.reopenComment}` : "."}`;
 		const newChange = await recordTaskHistory(reopenedTask, editor, [reopenComment]);
 
-		// Update the user stats
-		await updateUserStats(data.userId, "reopen", reopenedTask);
+		// Replace the task completion date with the temporary value
+		reopenedTask.completedOn = taskCompletionDate!;
+
+		// Update the user stats if reopening a completed task
+		if (task?.statusId === 2) await updateUserStats(data.userId, "reopen", reopenedTask);
 
 		// Email the user the task is assigned to
 		emailStatus = await sendEmail({
