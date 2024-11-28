@@ -98,7 +98,7 @@ See all changes made to tasks, enforcing accountability.
 ```env
 `RESEND_API_KEY="re_123"`
 `BASE_URL="https://example.com"`
-EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"
+`EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"`
 `DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"`
 `MAX_FAILED_ATTEMPTS_EMAIL=10`
 `MAX_FAILED_ATTEMPTS_IP=50`
