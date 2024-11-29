@@ -95,7 +95,7 @@ fi
 
 # Adjust permissions for restored files and folders
 echo "Setting ownership and permissions for restored files..."
-chown -R bogdan "$FILES_PATH" "$(dirname "$db_file_path")"
+chown -R appuser "$FILES_PATH" "$(dirname "$db_file_path")"
 chmod -R 755 "$FILES_PATH" "$(dirname "$db_file_path")"
 
 if [ $? -ne 0 ]; then
