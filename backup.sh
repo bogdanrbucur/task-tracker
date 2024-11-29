@@ -15,17 +15,31 @@ if [[ -z "$DATABASE_URL" || -z "$FILES_PATH" ]]; then
     exit 1
 fi
 
+# Parse DATABASE_URL to get the actual database file path
+db_file_path=$(echo "$DATABASE_URL" | sed -e 's/^file://')
+
+# Verify the database file exists
+if [ ! -f "$db_file_path" ]; then
+    echo "Database file not found at $db_file_path. Exiting."
+    exit 1
+fi
+
 # Get current date and time in the format YYYY-MM-DD_HH-MM-SS
 current_datetime=$(date +'%Y-%m-%d_%H-%M-%S')
 
 # Define the backup filename with the current date and time
 backup_filename="backup-${current_datetime}.tar.gz"
 
-# Define the correct database path and a temporary backup path
-db_backup_path="$(dirname "$DATABASE_URL")/backup-${current_datetime}.db"
+# Define the correct database backup path
+db_backup_path="$(dirname "$db_file_path")/backup-${current_datetime}.db"
 
 # Perform a safe SQLite backup using the .backup command
-sqlite3 "$DATABASE_URL" ".backup '${db_backup_path}'"
+sqlite3 "$db_file_path" ".backup '${db_backup_path}'"
+
+if [ $? -ne 0 ]; then
+    echo "Failed to create a backup of the database. Exiting."
+    exit 1
+fi
 
 # Paths to archive (add FILES_PATH and database backup path)
 paths_to_archive=(
@@ -36,8 +50,16 @@ paths_to_archive=(
 # Create the tar.gz archive, including the database backup and file storage
 tar -czvf "$backup_filename" "${paths_to_archive[@]}"
 
-# Remove the temporary database backup
+if [ $? -ne 0 ]; then
+    echo "Failed to create the tar.gz archive. Exiting."
+    exit 1
+fi
+
+# Remove the temporary database backup file
 rm "$db_backup_path"
+
+# Remove any leftover temporary database backup files in the same directory
+find "$(dirname "$db_file_path")" -type f -name 'backup-*.db' -delete
 
 # Output success message
 echo "Backup created: ${backup_filename}"
