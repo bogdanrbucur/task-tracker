@@ -174,7 +174,7 @@ You can use a cron job to run the script at a specific interval. For example, to
 You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 02:00, add the following line to your crontab by running `crontab -e`:
 
 ```bsh
-0 1 * * * cd /path/to/app/task-tracker/ && /db_backup.sh
+0 1 * * * cd /path/to/app/task-tracker/ && /backup.sh
 ```
 
 ### Restoring backups
