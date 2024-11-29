@@ -166,7 +166,7 @@ Schedule to run `npm run daily` to run all the daily tasks, just after midnight.
 You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 01:00, add the following line to your crontab by running `crontab -e`:
 
 ```bsh
-0 1 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run daily
+0 2 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run daily
 ```
 
 ### Scheduled daily database backups
@@ -174,7 +174,7 @@ You can use a cron job to run the script at a specific interval. For example, to
 You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 02:00, add the following line to your crontab by running `crontab -e`:
 
 ```bsh
-0 1 * * * cd /path/to/app/task-tracker/ && /backup.sh
+0 3 * * * cd /path/to/app/task-tracker/ && ./backup.sh
 ```
 
 ### Restoring backups
