@@ -177,6 +177,8 @@ You can use a cron job to run the script at a specific interval. For example, to
 0 3 * * * cd /path/to/app/task-tracker/ && ./backup.sh
 ```
 
+For network backups after the local backups, follow the instructions in `copy_backups.sh` and mount a network drive. You can then schedule the script to run after the local backups using a cron job.
+
 ### Restoring backups
 
 Set the application user in `restore_backup.sh` to the Linux environment user. Similar to the setup script.
