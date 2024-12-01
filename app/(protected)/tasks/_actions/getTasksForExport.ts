@@ -25,6 +25,7 @@ export async function setExportQuery(where: Prisma.TaskWhereInput | undefined, o
 			status: true,
 			createdByUser: true,
 			assignedToUser: {
+				//! select: prismaExtendedUserSelection,
 				select: prismaRestrictedUserSelection,
 			},
 		},
