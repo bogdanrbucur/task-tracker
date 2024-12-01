@@ -4,6 +4,8 @@ import { SearchIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+// TODO multiple queries are simultaneously making the same request to the server, which is not efficient. Fix it
+
 export function TaskSearchFilter() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -25,15 +27,14 @@ export function TaskSearchFilter() {
 			if (searchParams.get("status")) params.append("status", searchParams.get("status")!);
 			if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
 			if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
-			
+
 			// Add the selected search to the URL
 			if (search !== "") params.append("search", search);
 			if (search === "") params.delete("search");
-			
 
 			const query = params.toString() ? "?" + params.toString() : "";
 			router.push(`/tasks${query}`);
-		}, 350); // 250ms delay
+		}, 250); // 250ms delay
 	}, [search]);
 
 	// Focus the search filter on and off with CMD/CTRL + K
