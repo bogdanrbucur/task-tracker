@@ -20,6 +20,17 @@ const userIds = await prisma.user.findMany({
 
 const userIdsArray = userIds.map((user) => `'${user.id}'`);
 
+// Function to return a string made up of 2-5 words from the stored words array
+function generateRandomStrings() {
+	const words = ["seaborn", "whale", "redfin", "herring", "wordlings", "medusa", "puffin", "vessel", "incident", "anchovie"];
+	const randomStrings = [];
+	const randomStringsCount = Math.floor(Math.random() * 4) + 1;
+	for (let i = 0; i < randomStringsCount; i++) {
+		randomStrings.push(words[Math.floor(Math.random() * words.length)]);
+	}
+	return `'${randomStrings.join(" ")}'`;
+}
+
 async function insertDummyTasks() {
 	const tasks = [];
 	for (let i = 1; i <= 10000; i++) {
@@ -29,11 +40,11 @@ async function insertDummyTasks() {
 			).padStart(2, "0")}T00:00:00.000Z", "2025-02-${String((i % 28) + 1).padStart(2, "0")}T00:00:00.000Z", "2025-02-${String((i % 28) + 1).padStart(
 				2,
 				"0"
-			)}T00:00:00.000Z", ${userIdsArray[i % userIdsArray.length]})`
+			)}T00:00:00.000Z", ${userIdsArray[i % userIdsArray.length]}, ${userIdsArray[i % userIdsArray.length]}, ${generateRandomStrings()})`
 		);
 	}
 	const result = await prisma.$executeRawUnsafe(`
-    INSERT INTO Task (title, description, statusId, updatedAt, originalDueDate, dueDate, assignedToUserId)
+    INSERT INTO Task (title, description, statusId, updatedAt, originalDueDate, dueDate, assignedToUserId, createdByUserId, source)
     VALUES ${tasks.join(", ")}
   `);
 

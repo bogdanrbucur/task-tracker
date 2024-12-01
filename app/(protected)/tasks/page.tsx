@@ -62,6 +62,8 @@ export default async function TasksPage({ searchParams }: Props) {
 		searchTerms = searchTermsQuery.split(" ");
 	}
 
+	console.time(`Tasks search: ${searchTermsQuery ? searchTermsQuery : "no search terms"}`);
+
 	let where: Prisma.TaskWhereInput | undefined = undefined;
 	// If there's no search terminology, just filter by status and user
 	if ((statuses || taskUser || department) && !searchTerms) {
@@ -81,8 +83,8 @@ export default async function TasksPage({ searchParams }: Props) {
 					AND: searchTerms.map((term) => ({
 						OR: [
 							{ title: { contains: term } },
-							{ description: { contains: term } },
 							{ source: { contains: term } },
+							{ description: { contains: term } },
 							{
 								assignedToUser: {
 									OR: [
@@ -121,6 +123,8 @@ export default async function TasksPage({ searchParams }: Props) {
 	await setExportQuery(where, orderBy);
 
 	const taskCount = await prisma.task.count({ where });
+
+	console.timeEnd(`Tasks search: ${searchTermsQuery ? searchTermsQuery : "no search terms"}`);
 
 	return (
 		<Card className="container mx-auto px-0 md:px-0">

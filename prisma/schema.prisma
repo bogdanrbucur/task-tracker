@@ -36,9 +36,11 @@ model Task {
   attachments               Attachment[]
 
   @@index([assignedToUserId])
+  @@index([title])
   @@index([statusId])
   @@index([dueDate])
   @@index([createdAt])
+  @@index([source])
   @@index([assignedToUserId, statusId])
 }
 
@@ -100,6 +102,7 @@ model User {
   createdUsers         User[]      @relation("CreatedByUser")
 
   @@index([departmentId])
+  @@index([position])
   @@index([status])
   @@index([active])
   @@index([isAdmin])

@@ -1,5 +1,5 @@
 "use server";
-import { prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
+import { prismaExtendedUserSelection, prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { Prisma } from "@prisma/client";
 import { TaskExtended } from "../page";
@@ -25,7 +25,7 @@ export async function setExportQuery(where: Prisma.TaskWhereInput | undefined, o
 			status: true,
 			createdByUser: true,
 			assignedToUser: {
-				select: prismaExtendedUserSelection,
+				select: prismaRestrictedUserSelection,
 			},
 		},
 	};
