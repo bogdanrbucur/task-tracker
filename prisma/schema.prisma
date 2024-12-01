@@ -48,6 +48,9 @@ model Status {
   displayName String
   color       String
   tasks       Task[]
+
+  @@index([id])
+  @@index([displayName])
 }
 
 model Change {
@@ -95,6 +98,14 @@ model User {
   createdByUserId      String?
   createdByUser        User?       @relation("CreatedByUser", fields: [createdByUserId], references: [id])
   createdUsers         User[]      @relation("CreatedByUser")
+
+  @@index([departmentId])
+  @@index([status])
+  @@index([active])
+  @@index([isAdmin])
+  @@index([firstName])
+  @@index([lastName])
+  @@index([managerId])
 }
 
 model userStats {
@@ -139,6 +150,9 @@ model Department {
   id    Int    @id @default(autoincrement())
   name  String @unique
   users User[]
+
+  @@index([id])
+  @@index([name])
 }
 
 model PasswordResetToken {
