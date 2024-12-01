@@ -1,5 +1,5 @@
 import { getAuth } from "@/actions/auth/get-auth";
-import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
+import getUserDetails, { UserExtended, prismaExtendedUserSelection, prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
@@ -106,6 +106,7 @@ export default async function TasksPage({ searchParams }: Props) {
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;
 
+	// TODO improve this query
 	let tasks = await prisma.task.findMany({
 		where,
 		orderBy,
@@ -115,7 +116,8 @@ export default async function TasksPage({ searchParams }: Props) {
 			status: true,
 			createdByUser: true,
 			assignedToUser: {
-				select: prismaExtendedUserSelection,
+				//! select: prismaExtendedUserSelection,
+				select: prismaRestrictedUserSelection,
 			},
 		},
 	});

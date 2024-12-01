@@ -33,7 +33,7 @@ export function TaskSearchFilter() {
 
 			const query = params.toString() ? "?" + params.toString() : "";
 			router.push(`/tasks${query}`);
-		}, 250); // 250ms delay
+		}, 350); // 250ms delay
 	}, [search]);
 
 	// Focus the search filter on and off with CMD/CTRL + K
