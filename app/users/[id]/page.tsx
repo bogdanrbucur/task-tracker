@@ -60,6 +60,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	const tasksNumber = userDetails.assignedTasks.length;
 	const subordinatedNumber = activeSubordinates.length;
 	const canEdit = userPermissions?.isAdmin || userDetails.id === user?.id;
+	const canViewStats = userPermissions?.isAdmin || userDetails.manager?.id === user?.id;
 
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
@@ -116,6 +117,13 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 								<UserAvatarNameNormal user={subordinate} key={subordinate.id} />
 							))}
 						</div>
+					</div>
+				)}
+				{/* TODO User stats */}
+				{canViewStats && (
+					<div className="space-y-1">
+						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">User Performance</h4>
+						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">...</div>
 					</div>
 				)}
 				{userDetails.assignedTasks.length > 0 && (

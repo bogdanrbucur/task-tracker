@@ -1,5 +1,5 @@
 import { getAuth } from "@/actions/auth/get-auth";
-import getUserDetails, { UserExtended, prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
+import getUserDetails, { UserExtended, prismaExtendedUserSelection, prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
@@ -62,6 +62,8 @@ export default async function TasksPage({ searchParams }: Props) {
 		searchTerms = searchTermsQuery.split(" ");
 	}
 
+	console.time(`Tasks search: ${searchTermsQuery ? searchTermsQuery : "no search terms"}`);
+
 	let where: Prisma.TaskWhereInput | undefined = undefined;
 	// If there's no search terminology, just filter by status and user
 	if ((statuses || taskUser || department) && !searchTerms) {
@@ -81,8 +83,8 @@ export default async function TasksPage({ searchParams }: Props) {
 					AND: searchTerms.map((term) => ({
 						OR: [
 							{ title: { contains: term } },
-							{ description: { contains: term } },
 							{ source: { contains: term } },
+							{ description: { contains: term } },
 							{
 								assignedToUser: {
 									OR: [
@@ -104,6 +106,7 @@ export default async function TasksPage({ searchParams }: Props) {
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 12;
 
+	// TODO improve this query
 	let tasks = await prisma.task.findMany({
 		where,
 		orderBy,
@@ -113,7 +116,8 @@ export default async function TasksPage({ searchParams }: Props) {
 			status: true,
 			createdByUser: true,
 			assignedToUser: {
-				select: prismaExtendedUserSelection,
+				//! select: prismaExtendedUserSelection,
+				select: prismaRestrictedUserSelection,
 			},
 		},
 	});
@@ -121,6 +125,8 @@ export default async function TasksPage({ searchParams }: Props) {
 	await setExportQuery(where, orderBy);
 
 	const taskCount = await prisma.task.count({ where });
+
+	console.timeEnd(`Tasks search: ${searchTermsQuery ? searchTermsQuery : "no search terms"}`);
 
 	return (
 		<Card className="container mx-auto px-0 md:px-0">

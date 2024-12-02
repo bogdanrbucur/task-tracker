@@ -1,12 +1,15 @@
 "use server";
 
+import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
+import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import { log } from "console";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import updateUserStats from "../../_actions/updateUserStats";
 import { recordTaskHistory } from "./recordTaskHistory";
-import { getAuth } from "@/actions/auth/get-auth";
 
 export default async function completeTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
@@ -59,6 +62,9 @@ export default async function completeTask(prevState: any, formData: FormData) {
 		const completeComment = `Task completed by ${editor.firstName} ${editor.lastName}${data.completeComment ? `: ${data.completeComment}` : "."}`;
 		const newChange = await recordTaskHistory(completedTask, editor, [completeComment]);
 
+		// Update the user stats
+		await updateUserStats(data.userId, "complete", completedTask);
+
 		// Only send the email to the manager, if there is a manager
 		if (completedTask.assignedToUser && completedTask.assignedToUser.manager) {
 			// Email the manager
@@ -72,11 +78,17 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			});
 
 			// If email wasn't sent
-			if (!emailStatus) console.log("Task completed, but user not assigned, no email sent");
+			if (!emailStatus) {
+				console.log("Task completed, but user not assigned, no email sent");
+				log(`Task completed, but user not assigned, no email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
+			}
 			// If the email sent failed
-			else if (emailStatus && !emailStatus.success) console.log("Task completed, email error");
-			else {
+			else if (emailStatus && !emailStatus.success) {
+				console.log("Task completed, email error");
+				log(`Task completed, email error: ${emailStatus.error}`, `${process.env.LOGS_PATH}/${logDate()}`);
+			} else {
 				console.log("Task completed, email sent");
+				log(`Task completed, email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
 				const completedTask = await prisma.task.update({
 					where: { id: Number(data.taskId) },
 					data: {

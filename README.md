@@ -98,7 +98,7 @@ See all changes made to tasks, enforcing accountability.
 ```env
 `RESEND_API_KEY="re_123"`
 `BASE_URL="https://example.com"`
-EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"
+`EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"`
 `DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"`
 `MAX_FAILED_ATTEMPTS_EMAIL=10`
 `MAX_FAILED_ATTEMPTS_IP=50`
@@ -229,5 +229,6 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 
 ## Todo
 
-- [ ] [feat] Automatic database backups
-- [ ] [feat] Optimize db calls. Use Prisma transactions? Cache current user?
+- [ ] [feat] User stats
+
+![chart](./readme/user-stats.png)

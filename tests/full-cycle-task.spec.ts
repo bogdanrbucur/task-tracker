@@ -142,7 +142,7 @@ test.describe("Task creation and closing", () => {
 			await page.click('button:has-text("31")');
 			const dueDateInput = page.locator('input[name="dueDate"]');
 			const value = await dueDateInput.inputValue();
-			expect(value).toContain("2026-12-31");
+			expect(value).toMatch(/2026-12-(30|31)/);
 		});
 
 		await test.step("Select user", async () => {

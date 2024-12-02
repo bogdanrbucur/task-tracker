@@ -11,7 +11,7 @@ import StatusChart from "./_components/StatusChart";
 import TeamTasks from "./_components/TeamTasks";
 import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
 import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
-import getUserDetails, { prismaExtendedUserSelection } from "./users/_actions/getUserById";
+import getUserDetails, { prismaExtendedUserSelection, prismaRestrictedUserSelection } from "./users/_actions/getUserById";
 import { getTeamTasks, userTasks } from "./users/_actions/userAndTeamTasks";
 import { headers } from "next/headers";
 
@@ -38,7 +38,8 @@ export default async function Home() {
 			status: true,
 			createdByUser: true,
 			assignedToUser: {
-				select: prismaExtendedUserSelection,
+				//! select: prismaExtendedUserSelection,
+				select: prismaRestrictedUserSelection,
 			},
 		},
 	})) as TaskExtended[];
