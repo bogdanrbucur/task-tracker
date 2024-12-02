@@ -60,7 +60,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	const tasksNumber = userDetails.assignedTasks.length;
 	const subordinatedNumber = activeSubordinates.length;
 	const canEdit = userPermissions?.isAdmin || userDetails.id === user?.id;
-	const canViewStats = userPermissions?.isAdmin || userDetails.manager?.id === user?.id;
+
+	// TODO to be implemented
+	// const canViewStats = userPermissions?.isAdmin || userDetails.manager?.id === user?.id;
+	const canViewStats = false;
 
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
