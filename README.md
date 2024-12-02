@@ -126,9 +126,7 @@ Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tas
 | 4   | Cancelled   | Cancelled      | Yellow |
 | 5   | Overdue     | Overdue        | Red    |
 
-### Automatic start
-
-#### Linux - systemd
+### Automatic start with systemd
 
 1. Create a service file `/etc/systemd/system/task-tracker.service` with the following content:
 
@@ -161,41 +159,33 @@ WantedBy=multi-user.target
 7. Check the status with `sudo systemctl status task-tracker`
 8. If running a blue-green deployment, append `-blue` or `-green` to the service name
 
-#### Windows - Task Scheduler
-
-Create a basic start that will run at start-up with the following settings:
-
-Program/script: "Powershell"
-Add arguments (optional): `cd "C:\path\to\script\" | npm start`
-
 ### Scheduled daily tasks
 
 Schedule to run `npm run daily` to run all the daily tasks, just after midnight. This will clear unused password reset tokens and check for overdue and due soon tasks and send the email notifications.
 
-#### Linux
-
 You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 01:00, add the following line to your crontab by running `crontab -e`:
 
 ```bsh
-0 1 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run daily
+0 2 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run daily
 ```
 
-#### Windows
-
-You can use Task Scheduler to run the script at a specific interval. Create a new basic task with the following settings:
-
-Program/script: "Powershell"
-Add arguments (optional): `cd "C:\path\to\script\" | npm run daily`
-
 ### Scheduled daily database backups
-
-#### Linux
 
 You can use a cron job to run the script at a specific interval. For example, to run the script every daily at 02:00, add the following line to your crontab by running `crontab -e`:
 
 ```bsh
-0 1 * * * cd /path/to/app/task-tracker/ && /db_backup.sh
+0 3 * * * cd /path/to/app/task-tracker/ && ./backup.sh
 ```
+
+For network backups after the local backups, follow the instructions in `copy_backups.sh` and mount a network drive. You can then schedule the script to run after the local backups using a cron job.
+
+### Restoring backups
+
+Set the application user in `restore_backup.sh` to the Linux environment user. Similar to the setup script.
+
+Use the existing `backup-[date].tar.gz` in the working directory or copy them from another location to the working directory.
+
+Run `sudo ./restore_backup.sh` to restore the database and files folders. This will use the latest backup file found in the working directory to gracefully restore the database, task attachments and user avatars.
 
 ### Using Primsa with SQLite
 
