@@ -232,3 +232,8 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - [ ] [feat] User stats
 
 ![chart](./readme/user-stats.png)
+
+
+## Changelog
+
+1.0.1 - Added missing users page pagination controls

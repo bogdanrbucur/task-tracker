@@ -7,6 +7,7 @@ import { getPermissions } from "../../actions/auth/get-permissions";
 import { UserExtended, prismaExtendedUserSelection } from "./_actions/getUserById";
 import UserTable, { UsersQuery, columnNames } from "./_components/UserTable";
 import UsersTopSection from "./_components/UsersTopSection";
+import Pagination from "@/components/Pagination";
 
 interface Props {
 	searchParams: UsersQuery;
@@ -108,6 +109,7 @@ export default async function UsersPage({ searchParams }: Props) {
 			<div className="fade-in container mx-auto p-2 md:px-7">
 				<UsersTopSection />
 				<UserTable searchParams={searchParams} users={users as UserExtended[]} />
+				<Pagination itemCount={userCount} pageSize={pageSize} currentPage={page} />
 			</div>
 		</Card>
 	);
