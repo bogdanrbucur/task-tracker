@@ -237,3 +237,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 ## Changelog
 
 1.0.1 - Added missing users page pagination controls
+1.0.2 - Fixed new user manager selection

@@ -39,7 +39,6 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const avatar = user?.avatar ? `/api/avatars/${user.id}` : undefined;
 	useEffect(() => {
 		if (avatar) setImageUrl(avatar);
-		console.log(imageUrl);
 	}, [avatar]);
 
 	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
