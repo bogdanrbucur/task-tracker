@@ -43,9 +43,6 @@ next-env.d.ts
 # Logging
 /logs/*
 
-# Loader.io
-/public/*.txt
-
 # Database file, avatars and attachments
 *.db
 /avatars
