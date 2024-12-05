@@ -1,11 +1,10 @@
 import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
+import Footer from "./_components/Footer";
 import Navbar from "./_components/Navbar";
 import "./globals.css";
-
-import { cn } from "@/lib/utils";
-import Footer from "./_components/Footer";
 
 const fontSans = FontSans({
 	subsets: ["latin"],
@@ -15,6 +14,10 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
 	title: "Task Tracker",
 	description: "Create, assign and manage tasks with ease.",
+	robots: {
+		index: false, // Prevent indexing
+		follow: false, // Prevent following links
+	},
 };
 
 export default function RootLayout({
