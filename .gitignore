@@ -52,3 +52,6 @@ next-env.d.ts
 
 # SFTP
 sftp.json
+
+# Loader.io
+/public/loaderio-*.txt
