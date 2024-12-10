@@ -56,7 +56,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		dueDate: z.string().datetime({ message: "Due date is required." }),
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
 		createdByUserId: z.string().length(25),
-		source: z.string().max(50, { message: "Source must be at most 50 characters." }).optional(),
+		source: z.string().max(100, { message: "Source must be at most 100 characters." }).optional(),
 		sourceLink: z
 			.string()
 			.max(255, { message: "Source link must be at most 255 characters." })
