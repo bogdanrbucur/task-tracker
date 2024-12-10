@@ -238,3 +238,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.0.1 - Added missing users page pagination controls
 1.0.2 - Fixed new user manager selection
 1.0.3 - No indexing in robots.txt and metadata
+1.0.4 - Increased source field character limit to 100 and reduced tasks items per page to 10
