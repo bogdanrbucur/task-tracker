@@ -6,7 +6,8 @@ import { isIPv4, isIPv6 } from "net";
 import sharp from "sharp";
 
 export function formatDate(date: Date) {
-	return format(date, "dd MMM yyyy");
+	const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+	return format(localDate, "dd MMM yyyy");
 }
 
 export function datesAreEqual(date1: Date, date2: Date) {
