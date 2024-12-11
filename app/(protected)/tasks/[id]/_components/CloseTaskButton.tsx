@@ -1,4 +1,5 @@
 "use client";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -12,14 +13,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Check } from "lucide-react";
-import closeTask from "../_actions/closeTask";
+import { AlertCircle, Check } from "lucide-react";
 import { useFormState } from "react-dom";
+import closeTask from "../_actions/closeTask";
+
 const initialState = {
 	message: null,
 };
 
-export async function CloseTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+export function CloseTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
 	const [state, formAction] = useFormState(closeTask, initialState);
 
 	return (
@@ -36,6 +38,12 @@ export async function CloseTaskButton({ userId, taskId }: { userId: string | und
 						<AlertDialogTitle>Close the task</AlertDialogTitle>
 						<AlertDialogDescription>You hereby confirm the task is completed and can be closed. You may provide an optional closing comment.</AlertDialogDescription>
 					</AlertDialogHeader>
+					{state?.message && (
+						<Alert variant="destructive" className="mt-2">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>{state?.message}</AlertTitle>
+						</Alert>
+					)}
 					<Textarea name="closeComment" draggable="false" className="my-3" placeholder="Optional comment..." />
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
