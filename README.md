@@ -241,3 +241,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.0.4 - Increased source field character limit to 100 and reduced tasks items per page to 10
 1.0.5 - Show dates in local time
 1.0.6 - Fixed Close Task button being async
+1.0.7 - Fixed `totalDaysWorkingOnTasks` user stat calculation
