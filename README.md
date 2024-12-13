@@ -242,3 +242,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.0.5 - Show dates in local time
 1.0.6 - Fixed Close Task button being async
 1.0.7 - Fixed `totalDaysWorkingOnTasks` user stat calculation
+1.0.8 - Fixed daily tasks `dueSoonTasks` fetching logic

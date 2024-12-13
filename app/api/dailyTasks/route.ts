@@ -1,7 +1,7 @@
 import { sendEmail } from "@/app/email/email";
 import { logDate } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { subDays, subHours } from "date-fns";
+import { addDays, subDays, subHours } from "date-fns";
 import log from "log-to-file";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 	//
 	const dueSoonTasks = await prisma.task.findMany({
 		where: {
-			AND: [{ statusId: 1 }, { completedOn: null }, { dueSoonReminderSent: false }, { dueDate: { gte: subDays(new Date(), dueSoonDays) } }],
+			AND: [{ statusId: 1 }, { completedOn: null }, { dueSoonReminderSent: false }, { dueDate: { lte: addDays(new Date(), dueSoonDays) } }],
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
