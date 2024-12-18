@@ -1,5 +1,5 @@
+import { formatDate } from "@/lib/utilityFunctions";
 import { Change } from "@prisma/client";
-import { format } from "date-fns";
 import { CardContent } from "../../../../../components/ui/card";
 
 const TaskHistory = ({ changes }: { changes: Change[] }) => {
@@ -9,7 +9,7 @@ const TaskHistory = ({ changes }: { changes: Change[] }) => {
 				<div key={change.id} className="space-y-1.5">
 					<div className="flex items-center gap-2">
 						<ClockIcon />
-						<div className="text-xs text-gray-500 dark:text-gray-400">{format(change.time, "dd MMM yyyy HH:mm")}</div>
+						<div className="text-xs text-gray-500 dark:text-gray-400">{formatDate(change.time)}</div>
 					</div>
 					<div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{change.changes}</div>
 				</div>
