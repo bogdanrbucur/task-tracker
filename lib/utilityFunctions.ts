@@ -10,6 +10,11 @@ export function formatDate(date: Date) {
 	return format(localDate, "dd MMM yyyy");
 }
 
+export function formatDateWithTime(date: Date) {
+	const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+	return format(localDate, "dd MMM yyyy HH:mm");
+}
+
 export function datesAreEqual(date1: Date, date2: Date) {
 	return isSameDay(date1, date2);
 }
