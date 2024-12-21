@@ -1,0 +1,13 @@
+
+Features:
+  ☐ Don't show add more attachment if already 5
+  ☐ Logging user visits on tasks page
+  ☐ Logging the environment on user visit
+  Logging if the user came from email or not:
+    ☐ Add a query parameter to the email link
+    ☐ Check if the query parameter is present in the task page
+  User stats:
+    ☐ Avg. task completion time vs avg. completion time for all users
+    ☐ Percentake tasks completed on time vs completed after due date
+    ☐ Percentage tasks completed within original due date vs after
+Bugfixes:

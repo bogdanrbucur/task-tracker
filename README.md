@@ -227,10 +227,6 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 }
 ```
 
-## Todo
-
-- [ ] [feat] User stats
-
 ![chart](./readme/user-stats.png)
 
 ## Changelog
