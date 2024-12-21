@@ -1,6 +1,7 @@
 
 Features:
   ☐ Don't show add more attachment if already 5
+  ☐ Logging users tasks search queries
   ✔ Logging user visits on tasks page @started(24-12-21 19:18) @done(24-12-21 19:33) @lasted(15m42s)
   ✔ Logging the environment on user visit @started(24-12-21 19:18) @done(24-12-21 19:36) @lasted(18m5s)
   Logging if the user came from email or not:
@@ -13,4 +14,4 @@ Features:
     ☐ Avg. task completion time vs avg. completion time for all users
     ☐ Percentake tasks completed on time vs completed after due date
     ☐ Percentage tasks completed within original due date vs after
-Bugfixes:
+Bugs:
