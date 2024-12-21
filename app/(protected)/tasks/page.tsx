@@ -1,13 +1,13 @@
 import { getAuth } from "@/actions/auth/get-auth";
-import getUserDetails, { UserExtended, prismaExtendedUserSelection, prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
+import getUserDetails, { UserExtended, prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
 import Pagination from "@/components/Pagination";
 import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { Department, Prisma, Status, Task, User } from "@prisma/client";
 import { notFound } from "next/navigation";
+import { setExportQuery } from "./_actions/getTasksForExport";
 import TaskTable, { columnNames } from "./_components/TaskTable";
 import TaskTopSection from "./_components/TaskTopSection";
-import { setExportQuery } from "./_actions/getTasksForExport";
 
 export interface TaskExtended extends Task {
 	assignedToUser?: UserExtended;
@@ -28,11 +28,7 @@ export interface TasksQuery {
 	dept: string;
 }
 
-interface Props {
-	searchParams: TasksQuery;
-}
-
-export default async function TasksPage({ searchParams }: Props) {
+export default async function TasksPage({ searchParams }: { searchParams: TasksQuery }) {
 	// Check user permissions
 	const { user } = await getAuth();
 	if (!user) return notFound();

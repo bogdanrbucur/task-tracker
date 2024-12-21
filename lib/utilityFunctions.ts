@@ -1,8 +1,12 @@
 import { sendEmail } from "@/app/email/email";
+import getUserDetails from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { differenceInCalendarDays, format, isPast, isSameDay, isToday } from "date-fns";
+import log from "log-to-file";
+import { User } from "lucia";
 import { isIPv4, isIPv6 } from "net";
+import { headers } from "next/headers";
 import sharp from "sharp";
 
 export function formatDate(date: Date) {
@@ -106,4 +110,37 @@ export function normalizeIP(ip: string): string {
 		return ip;
 	}
 	return ip;
+}
+
+export type NavigationSourceTypes = "emailNewTask" | "emailTaskDueSoon" | "emailTaskOverdue" | "emailTaskReadyForReview" | null;
+
+export async function logVisitor(user: User | null, page: string, source: string | null) {
+	// Get client IP address
+	const headersList = headers();
+	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
+	const ip = normalizeIP(rawIP);
+
+	let userDetails;
+	const sourceTexts = {
+		emailNewTask: " from New Task email",
+		emailTaskDueSoon: " from Task Due Soon email",
+		emailTaskOverdue: " from Task Overdue email",
+		emailTaskCompleted: " from Task Ready for Review email",
+		emailCommentMention: " from Comment Mention email",
+		emailTaskReopened: " from Task Reopened email",
+	};
+	const sourceText = !source ? null : sourceTexts[source as keyof typeof sourceTexts];
+
+	if (!user) {
+		console.log(`A guest visitor accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
+		log(`A guest visitor accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+		return;
+	}
+
+	userDetails = await getUserDetails(user.id);
+	console.log(`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
+	log(
+		`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`,
+		`${process.env.LOGS_PATH}/${logDate()}`
+	);
 }

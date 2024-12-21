@@ -1,5 +1,5 @@
 import { dueColor, formatDate } from "@/lib/utilityFunctions";
-import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Tailwind, Text } from "@react-email/components";
 import { EmailTask } from "../email";
 
 interface CommentMentionEmailProps {
@@ -67,7 +67,7 @@ export const CommentMentionEmail = ({ userFirstName, userLastName, comment, base
 										}}
 									>
 										<a
-											href={`${baseUrl}/tasks/${task.id}`}
+											href={`${baseUrl}/tasks/${task.id}?from=emailCommentMention`}
 											style={{
 												color: "#ffffff",
 												fontSize: "14px",

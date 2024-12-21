@@ -65,7 +65,7 @@ export const TaskCompletedEmail = ({ userFirstName, userLastName, baseUrl, task 
 										}}
 									>
 										<a
-											href={`${baseUrl}/tasks/${task.id}`}
+											href={`${baseUrl}/tasks/${task.id}?from=emailTaskCompleted`}
 											style={{
 												color: "#ffffff",
 												fontSize: "14px",

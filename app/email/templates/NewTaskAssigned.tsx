@@ -60,7 +60,7 @@ export const NewTaskEmail = ({ baseUrl, task }: NewTaskEmailProps) => {
 										}}
 									>
 										<a
-											href={`${baseUrl}/tasks/${task.id}`}
+											href={`${baseUrl}/tasks/${task.id}?from=emailNewTask`}
 											style={{
 												color: "#ffffff",
 												fontSize: "14px",

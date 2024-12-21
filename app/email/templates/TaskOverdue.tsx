@@ -60,7 +60,7 @@ export const TaskOverdueEmail = ({ baseUrl, task }: TaskOverdueEmailProps) => {
 										}}
 									>
 										<a
-											href={`${baseUrl}/tasks/${task.id}`}
+											href={`${baseUrl}/tasks/${task.id}?from=emailTaskOverdue`}
 											style={{
 												color: "#ffffff",
 												fontSize: "14px",

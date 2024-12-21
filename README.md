@@ -240,3 +240,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.0.7 - Fixed `totalDaysWorkingOnTasks` user stat calculation
 1.0.8 - Fixed daily tasks `dueSoonTasks` fetching logic
 1.0.9 - Fixed Task History timestamps
+1.0.10 - Better user logging

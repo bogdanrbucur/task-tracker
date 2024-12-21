@@ -13,7 +13,7 @@ import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { completedColor, datesAreEqual, dueColor, formatDate, originalDueColor } from "@/lib/utilityFunctions";
+import { completedColor, datesAreEqual, dueColor, formatDate, logVisitor, NavigationSourceTypes, originalDueColor } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Calendar as CalendarIcon, SquarePen } from "lucide-react";
 import Link from "next/link";
@@ -31,6 +31,7 @@ interface Props {
 	searchParams: {
 		toastUser?: "success" | "fail";
 		toastManager?: "success" | "fail";
+		from: NavigationSourceTypes;
 	};
 }
 
@@ -41,7 +42,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 	// Check user permissions
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
-
+	await logVisitor(user, `task ${params.id}`, searchParams.from);
 	// Get the task details, along with the assigned user details
 	const task = await prisma.task.findUnique({
 		where: { id: Number(params.id) },

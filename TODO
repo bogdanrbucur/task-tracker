@@ -1,11 +1,14 @@
 
 Features:
   ☐ Don't show add more attachment if already 5
-  ☐ Logging user visits on tasks page
-  ☐ Logging the environment on user visit
+  ✔ Logging user visits on tasks page @started(24-12-21 19:18) @done(24-12-21 19:33) @lasted(15m42s)
+  ✔ Logging the environment on user visit @started(24-12-21 19:18) @done(24-12-21 19:36) @lasted(18m5s)
   Logging if the user came from email or not:
-    ☐ Add a query parameter to the email link
-    ☐ Check if the query parameter is present in the task page
+    ✔ Add a query parameter to the email link for each type of email @started(24-12-21 20:08) @done(24-12-21 20:11) @lasted(3m52s)
+    ✔ Check if the query parameter is present in the task page @started(24-12-21 19:38) @done(24-12-21 19:56) @lasted(18m49s)
+    ✔ Log if the user came from email or not @done(24-12-21 19:56)
+    ✔ Log the email type if the user came from email @started(24-12-21 20:07) @done(24-12-21 20:08) @lasted(1m45s)
+    ✔ Extract the email types into an interface @started(24-12-21 19:59) @done(24-12-21 20:07) @lasted(8m6s)
   User stats:
     ☐ Avg. task completion time vs avg. completion time for all users
     ☐ Percentake tasks completed on time vs completed after due date

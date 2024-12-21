@@ -1,8 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { logDate, normalizeIP } from "@/lib/utilityFunctions";
+import { logVisitor, NavigationSourceTypes } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import fs from "fs-extra";
-import log from "log-to-file";
 import { getAuth } from "../actions/auth/get-auth";
 import { TaskExtended } from "./(protected)/tasks/page";
 import DepartmentsChart from "./_components/DepartmentsChart";
@@ -11,9 +9,8 @@ import StatusChart from "./_components/StatusChart";
 import TeamTasks from "./_components/TeamTasks";
 import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
 import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
-import getUserDetails, { prismaExtendedUserSelection, prismaRestrictedUserSelection } from "./users/_actions/getUserById";
+import getUserDetails, { prismaRestrictedUserSelection } from "./users/_actions/getUserById";
 import { getTeamTasks, userTasks } from "./users/_actions/userAndTeamTasks";
-import { headers } from "next/headers";
 
 export type StatusColors = {
 	inprogress: string;
@@ -21,16 +18,18 @@ export type StatusColors = {
 	overdue: string;
 };
 
-export default async function Home() {
-	// Get client IP address
-	const headersList = headers();
-	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
-	const ip = normalizeIP(rawIP);
-
+export default async function Home({
+	searchParams,
+}: {
+	searchParams: {
+		from: NavigationSourceTypes;
+	};
+}) {
 	// Check user permissions
 	const { user } = await getAuth();
+	await logVisitor(user, "the home page", searchParams.from);
 
-	let userDetails = undefined;
+	let userDetails;
 	let hasSubordinates = false;
 
 	const allTasks = (await prisma.task.findMany({
@@ -47,17 +46,9 @@ export default async function Home() {
 	const deptTasksChartData = departmentTasks(activeTasks);
 	const statusTasksChartData = statusTasks(activeTasks);
 
-	if (!user) {
-		console.log(`A guest visitor accessed the home page from ${ip}.`);
-		log(`A guest visitor accessed the home page from ${ip}.`, `${process.env.LOGS_PATH}/${logDate()}`);
-	}
-
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);
-
-	console.log(`User ${userDetails.email} accessed the home page from ${ip}.`);
-	log(`User ${userDetails.email} accessed the home page from ${ip}.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");
 	if (activeSubordinates.length > 0) hasSubordinates = true;
