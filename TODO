@@ -15,3 +15,4 @@ Features:
     ☐ Percentake tasks completed on time vs completed after due date
     ☐ Percentage tasks completed within original due date vs after
 Bugs:
+  ✔ noTasksReviewedClosed stat not updating @started(24-12-21 19:39) @done(24-12-21 19:47) @lasted(8m28s)

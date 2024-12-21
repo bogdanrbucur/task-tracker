@@ -5,6 +5,7 @@ import getUserDetails from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import updateUserStats from "../../_actions/updateUserStats";
 import { recordTaskHistory } from "./recordTaskHistory";
 
 export default async function closeTask(prevState: any, formData: FormData) {
@@ -56,6 +57,9 @@ export default async function closeTask(prevState: any, formData: FormData) {
 
 		// Add the changes to the task history
 		const newChange = await recordTaskHistory(closedTask, editor, [closingComment]);
+
+		// Update the user stats for closing the task
+		await updateUserStats(data.userId, "close", closedTask);
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {
