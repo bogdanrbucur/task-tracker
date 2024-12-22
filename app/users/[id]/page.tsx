@@ -13,11 +13,13 @@ import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import getUserDetails from "../_actions/getUserById";
+import getUserStats from "./_actions/getUserStats";
 import ChangePasswordButton from "./_components/ChangePasswordButton";
 import DeleteUserButton from "./_components/DeleteUserButton";
 import ResendWelcomeEmailButton from "./_components/ResendWelcomeEmailButton";
 import ResetPasswordButton from "./_components/ResetPasswordButton";
 import ToggleUserButton from "./_components/ToggleUserButton";
+import UserStats from "./_components/UserStats/UserStats";
 
 export const revalidate = 2;
 
@@ -60,10 +62,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	const tasksNumber = userDetails.assignedTasks.length;
 	const subordinatedNumber = activeSubordinates.length;
 	const canEdit = userPermissions?.isAdmin || userDetails.id === user?.id;
-
-	// TODO to be implemented
-	// const canViewStats = userPermissions?.isAdmin || userDetails.manager?.id === user?.id;
-	const canViewStats = false;
+	const canViewStats = userPermissions?.isAdmin || userDetails.manager?.id === user?.id;
+	const userStats = await getUserStats(userDetails.id);
 
 	return (
 		<Card className="container w-full max-w-5xl p-0 md:px-7">
@@ -115,7 +115,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 				{activeSubordinates.length > 0 && (
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Subordinates</h4>
-						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 							{activeSubordinates.map((subordinate) => (
 								<UserAvatarNameNormal user={subordinate} key={subordinate.id} />
 							))}
@@ -123,12 +123,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					</div>
 				)}
 				{/* TODO User stats */}
-				{canViewStats && (
-					<div className="space-y-1">
-						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">User Performance</h4>
-						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">...</div>
-					</div>
-				)}
+				{canViewStats && <UserStats userStats={userStats} />}
 				{userDetails.assignedTasks.length > 0 && (
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Open Tasks</h4>
