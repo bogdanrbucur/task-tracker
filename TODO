@@ -17,4 +17,5 @@ Features:
     ✔ Percentage tasks completed within original due date vs after @started(24-12-22 15:50) @done(24-12-22 17:40) @lasted(1h50m21s)
 Bugs:
   ✔ noTasksReviewedClosed stat not updating @started(24-12-21 19:39) @done(24-12-21 19:47) @lasted(8m28s)
-  ☐ User stats for reviewed tasks with 0 days for review not displaying
+  ✔ User stats for reviewed tasks with 0 days for review not displaying @started(24-12-22 18:10) @done(24-12-22 18:18) @lasted(8m49s)
+  ✔ Wrong average time for completion and reviewing tasks @started(24-12-22 18:08) @done(24-12-22 18:08) @lasted(44s)
