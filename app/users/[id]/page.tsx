@@ -122,7 +122,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 						</div>
 					</div>
 				)}
-				{/* TODO User stats */}
 				{canViewStats && <UserStats userStats={userStats} />}
 				{userDetails.assignedTasks.length > 0 && (
 					<div className="space-y-1">

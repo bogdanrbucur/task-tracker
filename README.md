@@ -243,3 +243,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.0.10 - Better user logging
 1.0.11 - `noTasksReviewedClosed` not updating
 1.1.0 - Added user stats
+1.1.1 - Fixed NaN task completion stats

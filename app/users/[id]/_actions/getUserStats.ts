@@ -27,18 +27,19 @@ export default async function getUserStats(userId: string): Promise<UserStatsInt
 	return {
 		// Normalized task completion time vs average: avgComanyCompletionTime / (avgUserCompletionTime + avgComanyCompletionTime)
 		taskCompletionTimeVsAvg:
-			avgTaskCompletionTime / (userStats.totalDaysWorkingOnTasks! / userStats.noTasksCompleted! + avgTaskCompletionTime)
+			avgTaskCompletionTime / (userStats.totalDaysWorkingOnTasks! / userStats.noTasksCompleted! + avgTaskCompletionTime) && userStats.noTasksCompleted! > 0
 				? avgTaskCompletionTime / (userStats.totalDaysWorkingOnTasks! / userStats.noTasksCompleted! + avgTaskCompletionTime)
 				: null,
 		taskReviewTimeVsAvg:
-			avgTaskReviewTime / ((userStats.noTasksReviewedClosed! + userStats.noTasksReviewedReopened!) / userStats.totalDaysReviewingTasks! + avgTaskReviewTime)
+			avgTaskReviewTime / ((userStats.noTasksReviewedClosed! + userStats.noTasksReviewedReopened!) / userStats.totalDaysReviewingTasks! + avgTaskReviewTime) &&
+			userStats.noTasksReviewedClosed! + userStats.noTasksReviewedReopened! > 0
 				? avgTaskReviewTime / ((userStats.noTasksReviewedClosed! + userStats.noTasksReviewedReopened!) / userStats.totalDaysReviewingTasks! + avgTaskReviewTime)
 				: null,
 		avgTaskCompletionTime: avgTaskCompletionTime,
 		avgTaskReviewTime: avgTaskReviewTime,
 		// Percentage of tasks completed before current due date
-		completedBeforeDueDate: 1 - userStats.noTasksCompletedAfterDueDate! / userStats.noTasksCompleted!,
+		completedBeforeDueDate: userStats.noTasksCompleted! > 0 ? 1 - userStats.noTasksCompletedAfterDueDate! / userStats.noTasksCompleted! : null,
 		// Percentage of tasks completed before original due date
-		completedBeforeOriginalDueDate: userStats.noTasksCompletedBeforeOriginalDueDate! / userStats.noTasksCompleted!,
+		completedBeforeOriginalDueDate: userStats.noTasksCompleted! > 0 ? userStats.noTasksCompletedBeforeOriginalDueDate! / userStats.noTasksCompleted! : null,
 	};
 }
