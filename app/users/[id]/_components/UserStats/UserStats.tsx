@@ -8,10 +8,10 @@ function UserStats({ userStats }: { userStats: UserStatsInterface | null }) {
 			<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">User Statistics</h4>
 			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 				{userStats?.taskCompletionTimeVsAvg && (
-					<UserStatBarChart data={userStats?.taskCompletionTimeVsAvg} title="Average task completion time" rawNumber={userStats.avgTaskCompletionTime} />
+					<UserStatBarChart data={userStats?.taskCompletionTimeVsAvg} title="Average task completion time" rawNumber={userStats.userAvgTaskCompletionTime} />
 				)}
 				{userStats?.taskReviewTimeVsAvg !== null && (
-					<UserStatBarChart data={userStats?.taskReviewTimeVsAvg} title="Average task review time" rawNumber={userStats.avgTaskReviewTime} />
+					<UserStatBarChart data={userStats?.taskReviewTimeVsAvg} title="Average task review time" rawNumber={userStats.userAvgTaskReviewTime} />
 				)}
 				{userStats?.completedBeforeOriginalDueDate !== null && (
 					<UserStatBarChart data={userStats?.completedBeforeOriginalDueDate} title="Tasks completed within original due date" />

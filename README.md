@@ -245,3 +245,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.1.0 - Added user stats
 1.1.1 - Fixed NaN task completion stats
 1.1.2 - Fixed User stats average times
+1.1.3 - Fixed average task review time calculation
