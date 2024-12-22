@@ -11,8 +11,9 @@ Features:
     ✔ Log the email type if the user came from email @started(24-12-21 20:07) @done(24-12-21 20:08) @lasted(1m45s)
     ✔ Extract the email types into an interface @started(24-12-21 19:59) @done(24-12-21 20:07) @lasted(8m6s)
   User stats:
-    ☐ Avg. task completion time vs avg. completion time for all users
-    ☐ Percentake tasks completed on time vs completed after due date
-    ☐ Percentage tasks completed within original due date vs after
+    ✔ Backend function to calculate user stats @started(24-12-22 12:40) @done(24-12-22 12:59) @lasted(19m46s)
+    ✔ Avg. task completion time vs avg. completion time for all users @started(24-12-22 13:37) @done(24-12-22 15:50) @lasted(2h13m25s)
+    ✔ Percentake tasks completed on time vs completed after due date @started(24-12-22 15:50) @done(24-12-22 15:50) @lasted(37s)
+    ✔ Percentage tasks completed within original due date vs after @started(24-12-22 15:50) @done(24-12-22 17:40) @lasted(1h50m21s)
 Bugs:
   ✔ noTasksReviewedClosed stat not updating @started(24-12-21 19:39) @done(24-12-21 19:47) @lasted(8m28s)
