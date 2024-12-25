@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,12 +17,7 @@ model Task {
   sourceLink                String?
   createdAt                 DateTime     @default(now())
   updatedAt                 DateTime     @updatedAt
-  createdByUser             User?        @relation("CreatedByUser", fields: [createdByUserId], references: [id])
-  assignedToUser            User?        @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
   statusId                  Int          @default(1)
-  status                    Status       @relation(fields: [statusId], references: [id])
-  changes                   Change[]     @relation("Changes") // New relation to Change model
-  comments                  Comment[]    @relation("Comments") // New relation to Comment model
   dueDate                   DateTime
   originalDueDate           DateTime
   completedOn               DateTime?
@@ -34,6 +26,11 @@ model Task {
   lastOverdueReminderSentOn DateTime?
   lastReadyForReviewSentOn  DateTime?
   attachments               Attachment[]
+  changes                   Change[]     @relation("Changes")
+  comments                  Comment[]    @relation("Comments")
+  status                    Status       @relation(fields: [statusId], references: [id])
+  assignedToUser            User?        @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
+  createdByUser             User?        @relation("CreatedByUser", fields: [createdByUserId], references: [id])
 
   @@index([assignedToUserId])
   @@index([title])
@@ -58,22 +55,22 @@ model Status {
 
 model Change {
   id      Int      @id @default(autoincrement())
-  taskId  Int // Foreign key to Task model
-  task    Task     @relation("Changes", fields: [taskId], references: [id])
+  taskId  Int
   time    DateTime @default(now())
-  changes String // Field to store the changes as a string
+  changes String
   userId  String
   user    User     @relation("ChangeUser", fields: [userId], references: [id])
+  task    Task     @relation("Changes", fields: [taskId], references: [id])
 }
 
 model Comment {
   id      Int      @id @default(autoincrement())
-  taskId  Int // Foreign key to Task model
-  task    Task     @relation("Comments", fields: [taskId], references: [id])
-  userId  String // Foreign key to User model
-  user    User     @relation("UserComment", fields: [userId], references: [id])
+  taskId  Int
+  userId  String
   time    DateTime @default(now())
-  comment String // Field to store the comment
+  comment String
+  user    User     @relation("UserComment", fields: [userId], references: [id])
+  task    Task     @relation("Comments", fields: [taskId], references: [id])
 }
 
 model User {
@@ -82,25 +79,25 @@ model User {
   lastName             String
   position             String
   email                String      @unique
-  sessions             Session[]
   isAdmin              Boolean?    @default(false)
-  createdTasks         Task[]      @relation("CreatedByUser")
-  assignedTasks        Task[]      @relation("AssignedToUser")
-  department           Department? @relation(fields: [departmentId], references: [id])
   departmentId         Int?
   hashedPassword       String?
-  comments             Comment[]   @relation("UserComment")
-  changes              Change[]    @relation("ChangeUser")
   managerId            String?
-  manager              User?       @relation("ManagerToUser", fields: [managerId], references: [id])
-  subordinates         User[]      @relation("ManagerToUser")
-  avatar               Avatar?
-  status               String      @default("unverified") // unverified, confirmed, inactive
+  status               String      @default("unverified")
   lastWelcomeEmailSent DateTime?
   active               Boolean     @default(false)
   createdByUserId      String?
+  avatar               Avatar?
+  changes              Change[]    @relation("ChangeUser")
+  comments             Comment[]   @relation("UserComment")
+  sessions             Session[]
+  assignedTasks        Task[]      @relation("AssignedToUser")
+  createdTasks         Task[]      @relation("CreatedByUser")
   createdByUser        User?       @relation("CreatedByUser", fields: [createdByUserId], references: [id])
   createdUsers         User[]      @relation("CreatedByUser")
+  manager              User?       @relation("ManagerToUser", fields: [managerId], references: [id])
+  subordinates         User[]      @relation("ManagerToUser")
+  department           Department? @relation(fields: [departmentId], references: [id])
 
   @@index([departmentId])
   @@index([position])
@@ -135,19 +132,19 @@ model Avatar {
 
 model Attachment {
   id          String   @id
-  taskId      Int // Foreign key to Task model
-  task        Task     @relation(fields: [taskId], references: [id])
+  taskId      Int
   path        String
-  description String?
   time        DateTime @default(now())
   type        String
+  description String?
+  task        Task     @relation(fields: [taskId], references: [id])
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
   userId    String
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Department {

@@ -15,7 +15,6 @@ export default async function getUserStats(userId: string): Promise<UserStatsInt
 			userId: userId,
 		},
 	});
-
 	if (!userStats) return null;
 
 	const statsAllUsers = await prisma.userStats.findMany();
@@ -30,7 +29,6 @@ export default async function getUserStats(userId: string): Promise<UserStatsInt
 	const userAvgTaskReviewTime = userStats.totalDaysReviewingTasks! / (userStats.noTasksReviewedClosed! + userStats.noTasksReviewedReopened!);
 
 	// Compute the stats
-
 	return {
 		// Normalized task completion time vs average: avgComanyCompletionTime / (avgUserCompletionTime + avgComanyCompletionTime)
 		taskCompletionTimeVsAvg:

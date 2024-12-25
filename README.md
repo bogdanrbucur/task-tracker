@@ -247,3 +247,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.1.2 - Fixed User stats average times
 1.1.3 - Fixed average task review time calculation
 1.2.0 - Task reviewing days changed from Int to Float
+1.2.1 - Fixed task reviewing days calculation and display
