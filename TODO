@@ -20,3 +20,4 @@ Bugs:
   ✔ User stats for reviewed tasks with 0 days for review not displaying @started(24-12-22 18:10) @done(24-12-22 18:18) @lasted(8m49s)
   ✔ Wrong average time for completion and reviewing tasks @started(24-12-22 18:08) @done(24-12-22 18:08) @lasted(44s)
   ✔ Task review time should be in hours? Nobody takes days... @done(24-12-25 10:17)
+  ☐ Task review time on the user page approximately wrong or not displayed at all
