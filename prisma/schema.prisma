@@ -123,7 +123,7 @@ model userStats {
   noTasksCompletedBetweenDueDates       Int?
   noTasksCompletedAfterDueDate          Int?
   totalDaysWorkingOnTasks               Int?
-  totalDaysReviewingTasks               Int?
+  totalDaysReviewingTasks               Float?
 }
 
 model Avatar {
