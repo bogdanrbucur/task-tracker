@@ -22,7 +22,7 @@ export default async function completeTask(prevState: any, formData: FormData) {
 	// Define the Zod schema for the form data
 	const schema = z.object({
 		taskId: z.string(),
-		completeComment: z.string().min(4, { message: "Comment must be at least 4 characters." }).max(200, { message: "Comment must be at most 200 characters." }),
+		completeComment: z.string().min(4, { message: "Comment must be at least 4 characters." }).max(1000, { message: "Comment must be at most 1000 characters." }),
 		userId: z.string().length(25, { message: "User is required." }),
 	});
 
