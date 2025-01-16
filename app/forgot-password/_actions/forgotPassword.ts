@@ -27,6 +27,9 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 
 		if (!data.email) return;
 
+		// Set email to lower case
+		data.email = data.email.toLowerCase();
+
 		console.log(`Password reset request received for email address ${data.email}`);
 		log(`Password reset request received for email address ${data.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
 
