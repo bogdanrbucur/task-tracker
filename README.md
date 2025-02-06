@@ -251,3 +251,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.2.2 - Increased the closing comment character limit from 200 to 1000
 1.2.3 - If the task review/completion time is 0 days, display it in hours
 1.2.4 - Fixed forget user password being case sensitive for email
+1.3.0 - Added task closing comments in the reviewer email

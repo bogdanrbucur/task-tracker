@@ -5,11 +5,12 @@ import { EmailTask } from "../email";
 interface TaskCompletedEmailProps {
 	userFirstName: string;
 	userLastName: string;
+	comment: string;
 	baseUrl: string;
 	task: EmailTask;
 }
 
-export const TaskCompletedEmail = ({ userFirstName, userLastName, baseUrl, task }: TaskCompletedEmailProps) => {
+export const TaskCompletedEmail = ({ userFirstName, userLastName, comment, baseUrl, task }: TaskCompletedEmailProps) => {
 	const previewText = `Task completed and ready for review - ${task.title}`;
 
 	return (
@@ -47,6 +48,9 @@ export const TaskCompletedEmail = ({ userFirstName, userLastName, baseUrl, task 
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
 								Due on <span className={dueColor(task)}>{formatDate(task.dueDate)}</span>
+							</Text>
+							<Text className="text-black text-[14px] leading-[24px]">
+								<strong>Completion comment:</strong> {comment}
 							</Text>
 							<Text className="text-black text-[14px] leading-[24px]">
 								Completed on <span className={completedColor(task)}>{formatDate(task.completedOn!)}</span>

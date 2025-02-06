@@ -84,6 +84,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			emailTemplate = TaskCompletedEmail({
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
+				comment: comment!,
 				baseUrl,
 				task: task!,
 			});
