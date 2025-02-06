@@ -83,8 +83,11 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 	// Set the hyperlinks for columns 5
 	for (let row = 1; row < dataArray.length; row++) {
 		const cellAddress = XLSX.utils.encode_cell({ r: row, c: 5 });
-		if (ws[cellAddress]) {
-			ws[cellAddress].l = { Target: dataArray[row][5] };
+		const link = dataArray[row][5];
+		// Check that the link is a string and starts with http
+		if (link && typeof link === "string" && link.startsWith("http")) {
+			ws[cellAddress] = ws[cellAddress] || {};
+			ws[cellAddress].l = { Target: link };
 			ws[cellAddress].s = { font: { color: { rgb: "0000FF" }, underline: true } };
 		}
 	}
@@ -102,7 +105,7 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 }
 
 // create a Blob from the binary data
-function s2ab(s: any) {
+function s2ab(s: string) {
 	const buf = new ArrayBuffer(s.length);
 	const view = new Uint8Array(buf);
 	for (let i = 0; i < s.length; i++) {

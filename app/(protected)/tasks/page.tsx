@@ -110,9 +110,9 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 		take: pageSize,
 		include: {
 			status: true,
-			createdByUser: true,
+			// createdByUser: true,
 			assignedToUser: {
-				//! select: prismaExtendedUserSelection,
+				// select: prismaExtendedUserSelection,
 				select: prismaRestrictedUserSelection,
 			},
 		},
