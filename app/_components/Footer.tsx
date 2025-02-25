@@ -28,9 +28,9 @@ export default function Footer() {
 						</svg>
 					</div>
 				</div>
-				<Link href="https://tetrabit.dev" target="_blank">
+				{/* <Link href="https://tetrabit.dev" target="_blank">
 					<Globe size="16" />
-				</Link>
+				</Link> */}
 				<Link href="https://github.com/bogdanrbucur" target="_blank">
 					<Github size="16" />
 				</Link>
