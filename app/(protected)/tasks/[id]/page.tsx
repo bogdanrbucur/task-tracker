@@ -168,9 +168,9 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 							)}
 							{task.sourceLink && (
 								<div id="source">
-									<Link className="mb-1 md:mb-2 text-blue-600 hover:underline" href={task.sourceLink} target="_blank">
+									<a className="mb-1 md:mb-2 text-blue-600 hover:underline" href={task.sourceLink} target="_blank" rel="noopener noreferrer">
 										Source Link
-									</Link>
+									</a>
 								</div>
 							)}
 							{task.attachments.filter((t) => t.type === "source").length > 0 && (
