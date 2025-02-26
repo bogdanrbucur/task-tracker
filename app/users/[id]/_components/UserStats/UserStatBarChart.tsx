@@ -4,7 +4,7 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 const CustomLabel = ({ value, rawNumber }: any) => {
 	const displayValue = rawNumber > 1 ? `${rawNumber.toFixed(1)} days` : rawNumber <= 1 ? `${(rawNumber * 24).toFixed(1)} hours` : `${(value * 100).toFixed(0)}%`;
 	return (
-		<div style={{ position: "absolute", width: "100%", textAlign: "center", top: "50%", transform: "translateY(-50%)", zIndex: 100 }}>
+		<div style={{ position: "absolute", width: "100%", textAlign: "center", top: "50%", transform: "translateY(-50%)", zIndex: 50 }}>
 			<span style={{ color: "#ffffff" }}>{displayValue}</span>
 		</div>
 	);
