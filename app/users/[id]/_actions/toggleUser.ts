@@ -36,9 +36,15 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 			where: { id: data.id },
 			select: { id: true, status: true, subordinates: true, assignedTasks: true, hashedPassword: true },
 		});
+
 		if (!user) throw new Error("User not found.");
 		if (user.subordinates.length > 0) throw new Error("User has subordinates.");
-		if (user.assignedTasks.length > 0) throw new Error("User has assigned tasks.");
+
+		// Check if the user has assigned tasks and they are either In Progress, Pending Review or Overdue
+		const tasksInProgress = user.assignedTasks.filter((task) => task.statusId === 1);
+		const tasksPendingReview = user.assignedTasks.filter((task) => task.statusId === 2);
+		const tasksOverdue = user.assignedTasks.filter((task) => task.statusId === 5);
+		if (tasksInProgress.length > 0 || tasksPendingReview.length > 0 || tasksOverdue.length > 0) throw new Error("User has assigned tasks.");
 
 		const updatedUser = await prisma.user.update({
 			where: { id: data.id },

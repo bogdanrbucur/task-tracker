@@ -55,7 +55,7 @@ export default function ToggleUserButton({
 			</form>
 			{dialogOpen && (
 				<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-					<AlertDialogContent>
+					<AlertDialogContent className="z-50">
 						<AlertDialogHeader>
 							<AlertDialogTitle>Unable to deactivate user</AlertDialogTitle>
 							<AlertDialogDescription>
