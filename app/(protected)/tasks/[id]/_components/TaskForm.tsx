@@ -117,11 +117,9 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 	);
 };
 
-// SubmitButton component that uses useFormStatus to be able to access the pending state
+// Button component that uses useFormStatus to be able to access the pending state
 function SubmitButton({ task }: { task?: any }) {
 	const { pending } = useFormStatus();
-	console.log("Submit button pending:", pending); // This will show the form pending state
-
 	return (
 		<Button type="submit" disabled={pending}>
 			{pending ? "Saving..." : task ? "Save Task" : "Create Task"}

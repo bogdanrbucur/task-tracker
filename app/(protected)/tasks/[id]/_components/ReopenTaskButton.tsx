@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, DoorOpen } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import reopenTask from "../_actions/reopenTask";
 
 const initialState = {
@@ -46,7 +46,7 @@ export function ReopenTaskButton({ userId, taskId }: { userId: string | undefine
 					<Textarea name="reopenComment" draggable="false" className="my-3" placeholder="Your comment..." />
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<Button type="submit">Confirm</Button>
+						<ConfirmTaskReopenButton />
 					</AlertDialogFooter>
 					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />
@@ -55,3 +55,15 @@ export function ReopenTaskButton({ userId, taskId }: { userId: string | undefine
 		</AlertDialog>
 	);
 }
+
+// Button component that uses useFormStatus to be able to access the pending state
+function ConfirmTaskReopenButton() {
+	const { pending } = useFormStatus();
+	return (
+		<Button type="submit" disabled={pending}>
+			Confirm
+		</Button>
+	);
+}
+
+export default ConfirmTaskReopenButton;

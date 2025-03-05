@@ -256,3 +256,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 1.3.2 - Replaced `<Link>` with `<a>` for Source Link
 1.3.3 - Fixed bug with deactivating users with assigned but completed tasks
 1.3.4 - Fixed task submission button allowing multiple submissions by disabling the button while submitting
+1.3.5 - Fixed task completion and reopen Confirm buttons allowing multiple submissions by disabling the button while submitting

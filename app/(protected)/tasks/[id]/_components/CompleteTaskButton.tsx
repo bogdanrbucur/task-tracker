@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import completeTask from "../_actions/completeTask";
 import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
 
@@ -59,14 +59,22 @@ export function CompleteTaskButton({ userId, taskId, taskAttachments }: { userId
 					<AttachmentsUpload taskId={taskId} taskAttachments={taskAttachments} type="completion" />
 					<AlertDialogFooter className="pt-4">
 						<AlertDialogCancel onClick={handleRevalidate}>Close</AlertDialogCancel>
-						<Button type="submit" onClick={handleRevalidate}>
-							Confirm
-						</Button>
+						<ConfirmTaskCompleteButton handleRevalidate={handleRevalidate} />
 					</AlertDialogFooter>
 					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />
 				</form>
 			</AlertDialogContent>
 		</AlertDialog>
+	);
+}
+
+// Button component that uses useFormStatus to be able to access the pending state
+function ConfirmTaskCompleteButton({ handleRevalidate }: { handleRevalidate: () => void }) {
+	const { pending } = useFormStatus();
+	return (
+		<Button type="submit" disabled={pending} onClick={handleRevalidate}>
+			Confirm
+		</Button>
 	);
 }
