@@ -12,7 +12,7 @@ import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import submitTask from "../../new/_actions/submitTask";
 import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
 
@@ -106,7 +106,7 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 							</Button>
 						</div>
 						<div className="flex justify-center md:justify-end">
-							<Button type="submit">{task ? "Save Task" : "Create Task"}</Button>
+							<SubmitButton task={task} />
 						</div>
 					</div>
 					{task && <input type="hidden" name="taskId" value={task.id} />}
@@ -116,5 +116,17 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 		</Card>
 	);
 };
+
+// SubmitButton component that uses useFormStatus to be able to access the pending state
+function SubmitButton({ task }: { task?: any }) {
+	const { pending } = useFormStatus();
+	console.log("Submit button pending:", pending); // This will show the form pending state
+
+	return (
+		<Button type="submit" disabled={pending}>
+			{pending ? "Saving..." : task ? "Save Task" : "Create Task"}
+		</Button>
+	);
+}
 
 export default TaskForm;
