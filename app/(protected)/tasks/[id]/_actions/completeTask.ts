@@ -54,7 +54,6 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			data: {
 				statusId: 2,
 				completedOn: new Date(),
-				// TODO update completionComment
 				completionComment: data.completeComment,
 			},
 			include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
