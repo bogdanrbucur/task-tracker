@@ -21,6 +21,7 @@ model Task {
   dueDate                   DateTime
   originalDueDate           DateTime
   completedOn               DateTime?
+  completionComment         String?
   closedOn                  DateTime?
   dueSoonReminderSent       Boolean      @default(false)
   lastOverdueReminderSentOn DateTime?
