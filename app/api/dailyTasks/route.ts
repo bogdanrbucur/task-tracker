@@ -30,12 +30,15 @@ export async function POST(req: NextRequest) {
 	//
 	// Check for overduetasks
 	//
-	const overdueTasks = await prisma.task.findMany({
+	let overdueTasks = await prisma.task.findMany({
 		where: {
 			AND: [{ statusId: 1 }, { dueDate: { lte: new Date() } }, { completedOn: null }],
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
+
+	//! DEBUG - check only one particular task
+	// overdueTasks = overdueTasks.filter((t) => t.id === 479);
 
 	console.log(`Overdue tasks retrieved: ${overdueTasks.length}...`);
 	log(`Overdue tasks retrieved: ${overdueTasks.length}...`, `${process.env.LOGS_PATH}/${logDate()}`);
@@ -65,12 +68,15 @@ export async function POST(req: NextRequest) {
 	//
 	// Check for due today tasks...
 	//
-	const dueSoonTasks = await prisma.task.findMany({
+	let dueSoonTasks = await prisma.task.findMany({
 		where: {
 			AND: [{ statusId: 1 }, { completedOn: null }, { dueSoonReminderSent: false }, { dueDate: { lte: addDays(new Date(), dueSoonDays) } }],
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
+
+	//! DEBUG - check only one particular task
+	// dueSoonTasks = dueSoonTasks.filter((t) => t.id === 479);
 
 	console.log(`Tasks due soon retrieved: ${dueSoonTasks.length}...`);
 	log(`Tasks due soon retrieved: ${dueSoonTasks.length}...`, `${process.env.LOGS_PATH}/${logDate()}`);
@@ -103,7 +109,7 @@ export async function POST(req: NextRequest) {
 
 	// Check for overdue tasks overdue for more than overdueForMoreThanDays days and without lastOverdueReminderSentOn
 	// OR with lastOverdueReminderSentOn more than 7 days ago
-	const overdueTasksForReminder = await prisma.task.findMany({
+	let overdueTasksForReminder = await prisma.task.findMany({
 		where: {
 			AND: [
 				{ statusId: 5 },
@@ -116,6 +122,9 @@ export async function POST(req: NextRequest) {
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
+
+	//! DEBUG - check only one particular task
+	// overdueTasksForReminder = overdueTasksForReminder.filter((t) => t.id === 479);
 
 	// For each task, send the overdue reminder email
 	for (const task of overdueTasksForReminder) {
@@ -144,7 +153,7 @@ export async function POST(req: NextRequest) {
 	//
 
 	// Check for tasks that are ready for review and the last email was sent more than 7 days ago
-	const tasksReadyForReview = await prisma.task.findMany({
+	let tasksReadyForReview = await prisma.task.findMany({
 		where: {
 			AND: [{ statusId: 2 }, { lastReadyForReviewSentOn: { lte: subDays(new Date(), overdueReminderEvery) } }],
 		},
@@ -159,6 +168,9 @@ export async function POST(req: NextRequest) {
 			},
 		},
 	});
+
+	//! DEBUG - check only one particular task
+	// tasksReadyForReview = tasksReadyForReview.filter((t) => t.id === 479);
 
 	for (const task of tasksReadyForReview) {
 		console.log(`Task ${task.id} is ready for review!`);
@@ -178,6 +190,7 @@ export async function POST(req: NextRequest) {
 			emailType: "taskCompleted",
 			userFirstName: task.assignedToUser.firstName,
 			userLastName: task.assignedToUser.lastName,
+			comment: task.completionComment!,
 			task,
 		});
 
