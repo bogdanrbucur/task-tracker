@@ -47,11 +47,16 @@ next-env.d.ts
 *.db
 /avatars
 /attachments
+/files
 *.tar.gz
 *.tar
+/db
 
 # SFTP
 sftp.json
 
 # Loader.io
 /public/loaderio-*.txt
+
+# Logs
+/logs
