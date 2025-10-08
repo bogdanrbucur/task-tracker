@@ -108,22 +108,26 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 			// Reset the form
 			formRef.current?.reset();
 			toast.info(`Emailing mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}...`);
+			// Save the email id in local storage to check the status later
+			localStorage.setItem("emailId", formState.id);
 		}
 		if (formState?.queued === false) {
 			toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
 		}
 		// If the email was queued, poll the emailStatus API to check if the email was sent successfully
 		// TODO save the email ID in local storage and check the status only if there is an email ID saved
-		if (formState?.queued && formState?.id) {
+		if (formState?.queued && formState?.id && localStorage.getItem("emailId") === formState.id) {
 			const interval = setInterval(async () => {
 				const res = await fetch(`/api/emailStatus?id=${formState.id}`);
 				const data = await res.json();
 				if (data.status === "sent") {
 					toast.success(`Mentioned user${mentionedUsersIds.length === 1 ? "" : "s"} emailed successfully.`);
 					clearInterval(interval);
+					localStorage.removeItem("emailId");
 				} else if (data.status === "failed") {
 					toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
 					clearInterval(interval);
+					localStorage.removeItem("emailId");
 				}
 			}, 1000); // Poll every second
 			return () => clearInterval(interval);
