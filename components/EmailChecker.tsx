@@ -6,9 +6,7 @@ export default function EmailChecker() {
 	const emailIdRef = useRef<string | null>(localStorage.getItem("emailId"));
 
 	useEffect(() => {
-		const handleStorageChange = () => {
-			emailIdRef.current = localStorage.getItem("emailId");
-		};
+		const handleStorageChange = () => emailIdRef.current = localStorage.getItem("emailId");
 
 		// Listen for storage changes
 		window.addEventListener("storage", handleStorageChange);
@@ -19,11 +17,14 @@ export default function EmailChecker() {
 			if (currentEmailId) {
 				const res = await fetch(`/api/emailStatus?id=${currentEmailId}`);
 				const data = await res.json();
+
 				if (data.status === "sent") {
 					toast.success(`Email sent successfully.`);
 					localStorage.removeItem("emailId");
 					emailIdRef.current = null; // Clear emailId from ref
-				} else if (data.status === "failed") {
+				}
+        
+        else if (data.status === "failed") {
 					toast.error(`Failed to send email.`);
 					localStorage.removeItem("emailId");
 					emailIdRef.current = null; // Clear emailId from ref
