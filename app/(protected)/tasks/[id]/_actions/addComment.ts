@@ -83,18 +83,18 @@ export default async function addComment(prevState: any, formData: FormData) {
 				recipientFirstName: recipient?.firstName,
 			});
 
-			// If the email sent failed
-			if (!emailStatus.success) {
+			// If the email queueing failed
+			if (!emailStatus.queued) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("User was mentioned in comment, but email failed.");
 				log("User was mentioned in comment, but email failed.", `${process.env.LOGS_PATH}/${logDate()}`);
-				return { success, emailSent: emailStatus.success, message: emailStatus.error };
+				return { queued: emailStatus.queued, id: emailStatus.id };
 				// Else it succeded
 			} else {
-				console.log("User was mentioned in comment, email sent.");
-				log("User was mentioned in comment, email sent.", `${process.env.LOGS_PATH}/${logDate()}`);
+				console.log("User was mentioned in comment, email queued.");
+				log("User was mentioned in comment, email queued.", `${process.env.LOGS_PATH}/${logDate()}`);
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				return { success, emailSent: emailStatus.success };
+				return { queued: emailStatus.queued, id: emailStatus.id };
 			}
 		}
 	} catch (error) {

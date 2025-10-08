@@ -159,6 +159,42 @@ WantedBy=multi-user.target
 7. Check the status with `sudo systemctl status task-tracker`
 8. If running a blue-green deployment, append `-blue` or `-green` to the service name
 
+### Email worker
+
+An email worker is required to send emails in the background. Schedule this worker with systemd.
+
+1. Create a service file `/etc/systemd/system/email-worker.service` with the following content:
+
+```ini
+[Unit]
+Description=Email worker
+
+[Service]
+WorkingDirectory=/path/to/app/task-tracker
+ExecStart=/usr/bin/npm run email-worker
+```
+
+2. Create a timer file `/etc/systemd/system/email-worker.timer` with the following content:
+
+```ini
+[Unit]
+Description=Run email worker every 5 seconds
+[Timer]
+OnBootSec=5seconds
+OnUnitActiveSec=5seconds
+Unit=email-worker.service
+[Install]
+WantedBy=timers.target
+```
+
+3. Start the timer with `sudo systemctl start email-worker.timer`
+4. Enable the timer to start at boot with `sudo systemctl enable email-worker.timer`
+5. Check the status with `sudo systemctl status email-worker.timer`
+
+```bsh
+0 2 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run email-worker
+```
+
 ### Scheduled daily tasks
 
 Schedule to run `npm run daily` to run all the daily tasks, just after midnight. This will clear unused password reset tokens and check for overdue and due soon tasks and send the email notifications.

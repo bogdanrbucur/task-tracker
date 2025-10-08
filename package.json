@@ -6,6 +6,7 @@
 		"dev": "next dev",
 		"dev-test": "dotenv -e .env.test -e .env.local -- sh -c 'npx prisma migrate deploy && next dev -p 3535'",
 		"build": "next build",
+		"email-worker": "dotenv -e .env.local -- tsx ./lib/email-worker.ts",
 		"start": "dotenv -e .env.local -- sh -c 'next start -p $PORT'",
 		"lint": "next lint",
 		"daily": "node ./lib/dailyTasks.js",
@@ -73,6 +74,7 @@
 		"prisma": "^5.21.1",
 		"start-server-and-test": "^2.0.8",
 		"tailwindcss": "^3.4.1",
+		"tsx": "^4.20.6",
 		"typescript": "^5"
 	}
 }

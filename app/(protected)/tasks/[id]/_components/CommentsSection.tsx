@@ -17,9 +17,9 @@ import CommentSkeleton from "./CommentSkeleton";
 import PostCommentButton from "./PostCommentButton";
 
 const initialState = {
+	queued: undefined,
+	id: undefined,
 	message: null,
-	success: undefined,
-	emailSent: undefined,
 };
 
 export type CommentUser = {
@@ -104,13 +104,29 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 
 	// Watch for the success state to show a toast notification
 	useEffect(() => {
-		if (formState?.success && formState?.emailSent) {
+		if (formState?.queued && formState?.id) {
 			// Reset the form
 			formRef.current?.reset();
-			toast.success(`Email sent to mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
+			toast.info(`Emailing mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}...`);
 		}
-		if (formState?.success && formState?.message && !formState?.emailSent) {
-			toast.error("Failed to send email.");
+		if (formState?.queued === false) {
+			toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
+		}
+		// If the email was queued, poll the emailStatus API to check if the email was sent successfully
+		// TODO save the email ID in local storage and check the status only if there is an email ID saved
+		if (formState?.queued && formState?.id) {
+			const interval = setInterval(async () => {
+				const res = await fetch(`/api/emailStatus?id=${formState.id}`);
+				const data = await res.json();
+				if (data.status === "sent") {
+					toast.success(`Mentioned user${mentionedUsersIds.length === 1 ? "" : "s"} emailed successfully.`);
+					clearInterval(interval);
+				} else if (data.status === "failed") {
+					toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
+					clearInterval(interval);
+				}
+			}, 1000); // Poll every second
+			return () => clearInterval(interval);
 		}
 	}, [formState]);
 
