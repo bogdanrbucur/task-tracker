@@ -191,10 +191,6 @@ WantedBy=timers.target
 4. Enable the timer to start at boot with `sudo systemctl enable email-worker.timer`
 5. Check the status with `sudo systemctl status email-worker.timer`
 
-```bsh
-0 2 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run email-worker
-```
-
 ### Scheduled daily tasks
 
 Schedule to run `npm run daily` to run all the daily tasks, just after midnight. This will clear unused password reset tokens and check for overdue and due soon tasks and send the email notifications.
