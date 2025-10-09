@@ -142,6 +142,6 @@ export async function logVisitor(user: User | null, page: string, source: string
 
 // Simple logger function to log to console and file
 export function logger(message: string) {
-	logger(message);
+	console.log(message);
 	log(message, `${process.env.LOGS_PATH}/${logDate()}`);
 }
