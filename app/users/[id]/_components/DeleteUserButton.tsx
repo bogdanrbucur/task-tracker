@@ -20,7 +20,7 @@ import deleteUser from "../_actions/deleteUser";
 const initialState = {
 	message: null,
 	dialogOpen: undefined,
-	emailSent: undefined,
+	success: undefined,
 };
 
 export default function DeleteUserButton({ userId }: { userId: string }) {
@@ -29,15 +29,14 @@ export default function DeleteUserButton({ userId }: { userId: string }) {
 
 	// Watch for the success state to show a toast notification
 	useEffect(() => {
-		console.log(formState);
-		if (!formState?.message && formState?.emailSent === "success") {
+		if (!formState?.message && formState?.success) {
 			toast.success("User deleted succesfully.");
 			// Redirect to the users page after 1000 ms
 			setTimeout(() => {
 				window.location.href = "/users";
 			}, 1000);
 		}
-		if (formState?.emailSent === "fail") toast.error("Failed to delete user.");
+		if (formState?.success === false) toast.error("Failed to delete user.");
 	}, [formState]);
 
 	return (

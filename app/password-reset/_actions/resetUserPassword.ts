@@ -6,8 +6,8 @@ import { Argon2id } from "oslo/password";
 import { z } from "zod";
 
 export default async function resetUserPassword(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// logger(rawFormData);
 
 	const passwordSchema = z
 		.string()
@@ -38,9 +38,7 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 		});
 		if (!user) throw new Error("Incorrect email or password.");
 
-		if (data.newPassword !== data.confirmPassword) {
-			return { message: "Passwords do not match." };
-		}
+		if (data.newPassword !== data.confirmPassword) return { message: "Passwords do not match." };
 
 		// Randomly generated salt for the password hashing, no need to provide one
 		const hashedPassword = await new Argon2id().hash(data.newPassword);
@@ -61,13 +59,8 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 		return { success: true, message: null };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { success: false, message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { success: false, message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { success: false, message: subError.message };
+		// Handle other errors
+		else return { success: false, message: (error as any).message };
 	}
 }

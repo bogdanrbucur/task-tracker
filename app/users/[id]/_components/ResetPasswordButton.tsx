@@ -14,11 +14,13 @@ const initialState = {
 export default function ResetPasswordButton({ userId }: { userId: string }) {
 	const [formState, formAction] = useFormState(passResetToken, initialState);
 
-	// Watch for the success state to show a toast notification
+	// Watch if the email was queued and show a toast
 	useEffect(() => {
-		console.log(formState);
-		if (!formState?.message && formState?.emailSent === "success") toast.success("Password reset email sent.");
-		if (formState?.emailSent === "fail") toast.error("Failed to send password reset email.");
+		if (formState?.queued && formState?.emailId) {
+			toast.info("Sending password reset email...");
+			localStorage.setItem("emailId", formState.emailId); // Save the email id in local storage to check the status in EmailChecker.tsx
+		}
+		if (formState?.queued === false) toast.error("Failed to send password reset email.");
 	}, [formState]);
 
 	return (

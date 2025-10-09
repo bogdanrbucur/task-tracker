@@ -1,8 +1,7 @@
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { differenceInCalendarDays, differenceInMinutes } from "date-fns";
-import log from "log-to-file";
 
 export default async function updateUserStats(userId: string, taskAction: "create" | "complete" | "close" | "reopen" | "cancel", task: Task) {
 	const today = new Date();
@@ -31,8 +30,7 @@ export default async function updateUserStats(userId: string, taskAction: "creat
 			},
 		});
 
-		console.log(`User stats entry for ${userId} created.`);
-		log(`User stats entry for ${userId} created.`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`User stats entry for ${userId} created.`);
 	}
 
 	// If the user exists, update the stats
@@ -64,7 +62,6 @@ export default async function updateUserStats(userId: string, taskAction: "creat
 			},
 		});
 
-		console.log(`User stats entry for ${userId} updated.`);
-		log(`User stats entry for ${userId} updated.`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`User stats entry for ${userId} updated.`);
 	}
 }

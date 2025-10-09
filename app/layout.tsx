@@ -5,6 +5,7 @@ import { Inter as FontSans } from "next/font/google";
 import Footer from "./_components/Footer";
 import Navbar from "./_components/Navbar";
 import "./globals.css";
+import EmailChecker from "@/components/EmailChecker";
 
 const fontSans = FontSans({
 	subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<div className="flex flex-col" style={{ minHeight: "calc(100vh - 0px)" }}>
 						<Navbar />
+						<EmailChecker />
 						<main className="p-3 flex-1">{children}</main>
 						<Footer />
 					</div>

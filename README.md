@@ -159,6 +159,42 @@ WantedBy=multi-user.target
 7. Check the status with `sudo systemctl status task-tracker`
 8. If running a blue-green deployment, append `-blue` or `-green` to the service name
 
+### Email worker
+
+An email worker is required to send emails in the background. Schedule this worker with systemd.
+
+1. Create a service file `/etc/systemd/system/email-worker.service` with the following content:
+
+```ini
+[Unit]
+Description=Email worker
+
+[Service]
+WorkingDirectory=/path/to/app/task-tracker
+ExecStart=/usr/bin/npm run email-worker
+```
+
+2. Create a timer file `/etc/systemd/system/email-worker.timer` with the following content:
+
+```ini
+[Unit]
+Description=Run email worker every 5 seconds
+[Timer]
+OnBootSec=5seconds
+OnUnitActiveSec=5seconds
+Unit=email-worker.service
+[Install]
+WantedBy=timers.target
+```
+
+3. Start the timer with `sudo systemctl start email-worker.timer`
+4. Enable the timer to start at boot with `sudo systemctl enable email-worker.timer`
+5. Check the status with `sudo systemctl status email-worker.timer`
+
+```bsh
+0 2 * * * cd /path/to/app/task-tracker/ && /usr/bin/npm run email-worker
+```
+
 ### Scheduled daily tasks
 
 Schedule to run `npm run daily` to run all the daily tasks, just after midnight. This will clear unused password reset tokens and check for overdue and due soon tasks and send the email notifications.
@@ -229,31 +265,37 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 
 ## Changelog
 
-* 1.0.1 - Added missing users page pagination controls
-* 1.0.2 - Fixed new user manager selection
-* 1.0.3 - No indexing in robots.txt and metadata
-* 1.0.4 - Increased source field character limit to 100 and reduced tasks items per page to 10
-* 1.0.5 - Show dates in local time
-* 1.0.6 - Fixed Close Task button being async
-* 1.0.7 - Fixed `totalDaysWorkingOnTasks` user stat calculation
-* 1.0.8 - Fixed daily tasks `dueSoonTasks` fetching logic
-* 1.0.9 - Fixed Task History timestamps
-* 1.0.10 - Better user logging
-* 1.0.11 - `noTasksReviewedClosed` not updating
-* 1.1.0 - Added user stats
-* 1.1.1 - Fixed NaN task completion stats
-* 1.1.2 - Fixed User stats average times
-* 1.1.3 - Fixed average task review time calculation
-* 1.2.0 - Task reviewing days changed from Int to Float
-* 1.2.1 - Fixed task reviewing days calculation and display
-* 1.2.2 - Increased the closing comment character limit from 200 to 1000
-* 1.2.3 - If the task review/completion time is 0 days, display it in hours
-* 1.2.4 - Fixed forget user password being case sensitive for email
-* 1.3.0 - Added task closing comments in the reviewer email
-* 1.3.1 - Improved task free text search performance
-* 1.3.2 - Replaced `<Link>` with `<a>` for Source Link
-* 1.3.3 - Fixed bug with deactivating users with assigned but completed tasks
-* 1.3.4 - Fixed task submission button allowing multiple submissions by disabling the button while submitting
-* 1.3.5 - Fixed task completion and reopen Confirm buttons allowing multiple submissions by disabling the button while submitting
-* 1.4.0 - Added task completion comments in the schema for Ready for Review email reminders
-* 1.4.1 - Update Next.js to 14.2.25 to fix [CVE-2025-29927](https://zeropath.com/blog/nextjs-middleware-cve-2025-29927-auth-bypass)
+- 1.0.1 - Added missing users page pagination controls
+- 1.0.2 - Fixed new user manager selection
+- 1.0.3 - No indexing in robots.txt and metadata
+- 1.0.4 - Increased source field character limit to 100 and reduced tasks items per page to 10
+- 1.0.5 - Show dates in local time
+- 1.0.6 - Fixed Close Task button being async
+- 1.0.7 - Fixed `totalDaysWorkingOnTasks` user stat calculation
+- 1.0.8 - Fixed daily tasks `dueSoonTasks` fetching logic
+- 1.0.9 - Fixed Task History timestamps
+- 1.0.10 - Better user logging
+- 1.0.11 - `noTasksReviewedClosed` not updating
+- 1.1.0 - Added user stats
+- 1.1.1 - Fixed NaN task completion stats
+- 1.1.2 - Fixed User stats average times
+- 1.1.3 - Fixed average task review time calculation
+- 1.2.0 - Task reviewing days changed from Int to Float
+- 1.2.1 - Fixed task reviewing days calculation and display
+- 1.2.2 - Increased the closing comment character limit from 200 to 1000
+- 1.2.3 - If the task review/completion time is 0 days, display it in hours
+- 1.2.4 - Fixed forget user password being case sensitive for email
+- 1.3.0 - Added task closing comments in the reviewer email
+- 1.3.1 - Improved task free text search performance
+- 1.3.2 - Replaced `<Link>` with `<a>` for Source Link
+- 1.3.3 - Fixed bug with deactivating users with assigned but completed tasks
+- 1.3.4 - Fixed task submission button allowing multiple submissions by disabling the button while submitting
+- 1.3.5 - Fixed task completion and reopen Confirm buttons allowing multiple submissions by disabling the button while submitting
+- 1.4.0 - Added task completion comments in the schema for Ready for Review email reminders
+- 1.4.1 - Update Next.js to 14.2.25 to fix [CVE-2025-29927](https://zeropath.com/blog/nextjs-middleware-cve-2025-29927-auth-bypass)
+- 1.5.0 - Added email outbox and email worker for improved email reliability
+- 1.5.1 - Refactored logging functions
+- 1.5.2 - Idempotency for emails
+- 1.5.3 - Clear the toast URL params after the toast is shown
+- 1.6.0 - Display the task ID in the task list and details page and make it searchable
+- 1.6.1 - Fixed reading localStorage outside useEffect

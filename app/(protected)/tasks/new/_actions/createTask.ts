@@ -1,10 +1,9 @@
 import { sendEmail } from "@/app/email/email";
-import { checkIfTaskOverdue, logDate } from "@/lib/utilityFunctions";
+import { checkIfTaskOverdue, logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { recordTaskHistory } from "../../[id]/_actions/recordTaskHistory";
-import { Editor, NewTask } from "./submitTask";
 import updateUserStats from "../../_actions/updateUserStats";
+import { Editor, NewTask } from "./submitTask";
 
 // Create a new task in the database
 export async function createTask(task: NewTask, editingUser: Editor) {
@@ -27,8 +26,7 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 	// Check if the task is overdue
 	await checkIfTaskOverdue(newTask.id);
 
-	console.log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`);
-	log(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`, `${process.env.LOGS_PATH}/${logDate()}`);
+	logger(`Task ${newTask.id} assigned to ${newTask.assignedToUser?.email} created by ${newTask.createdByUserId} successfully`);
 
 	// Update editingUser stats
 	await updateUserStats(editingUser.id, "create", newTask);

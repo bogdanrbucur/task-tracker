@@ -1,15 +1,14 @@
 // server function to add new task
 "use server";
 
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export default async function editDept(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// logger(rawFormData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -39,8 +38,7 @@ export default async function editDept(prevState: any, formData: FormData) {
 					name: data.deptName,
 				},
 			});
-			console.log(`Department renamed from ${dept.name} to ${updatedDept.name}`);
-			log(`Department renamed from ${dept.name} to ${updatedDept.name}`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`Department renamed from ${dept.name} to ${updatedDept.name}`);
 		} else {
 			// Create a new department
 			const newDept = await prisma.department.create({
@@ -48,20 +46,14 @@ export default async function editDept(prevState: any, formData: FormData) {
 					name: data.deptName,
 				},
 			});
-			console.log(`New department created: ${newDept.name}`);
-			log(`New department created: ${newDept.name}`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`New department created: ${newDept.name}`);
 		}
 		return { dialogOpen: false, success: true };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	// refresh the page
 	revalidatePath(`/departments`);

@@ -3,16 +3,15 @@
 
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import fs from "fs-extra";
-import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export default async function toggleUser(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
+	// logger(rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -20,16 +19,12 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 	if (!userPermissions.isAdmin) return { message: "You do not have permission to perform this action." };
 
 	// Define the Zod schema for the form data
-	const schema = z.object({
-		id: z.string().length(25, { message: "Invalid user ID." }),
-	});
+	const schema = z.object({ id: z.string().length(25, { message: "Invalid user ID." }) });
 
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
-		const data = schema.parse({
-			id: formData.get("id") as string,
-		});
+		const data = schema.parse({ id: formData.get("id") as string });
 
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
@@ -53,32 +48,22 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 				active: user.status === "inactive" && user.hashedPassword ? true : user.status === "inactive" && !user.hashedPassword ? false : false,
 			},
 		});
-		if (updatedUser.status === "active") {
-			console.log(`User  ${updatedUser.email} activated.`);
-			log(`User  ${updatedUser.email} activated.`, `${process.env.LOGS_PATH}/${logDate()}`);
-		} else {
+		if (updatedUser.status === "active") logger(`User ${updatedUser.email} activated.`);
+		else {
 			// Delete the user's avatar
-			await prisma.avatar.deleteMany({
-				where: { userId: data.id },
-			});
+			await prisma.avatar.deleteMany({ where: { userId: data.id } });
+
 			// Check if the avatar file exists before deleting it
-			if (fs.existsSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`)) {
+			if (fs.existsSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`))
+				// Delete the user's avatar file
 				fs.unlinkSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`);
-			}
-			// Delete the user's avatar file
-			console.log(`User ${updatedUser.email} deactivated. Avatar deleted.`);
-			log(`User ${updatedUser.email} deactivated. Avatar deleted.`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`User ${updatedUser.email} deactivated. Avatar deleted.`);
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	// refresh the page
 	revalidatePath(`/users/${formData.get("id")}`);

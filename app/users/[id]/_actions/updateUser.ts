@@ -4,6 +4,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { UpdateUser } from "@/app/users/new/submitUser";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { notFound, redirect } from "next/navigation";
 
@@ -26,23 +27,14 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 			},
 		});
 		// First check if the user has an avatar
-		const currentAvatar = await prisma.avatar.findFirst({
-			where: {
-				userId: data.id,
-			},
-		});
+		const currentAvatar = await prisma.avatar.findFirst({ where: { userId: data.id } });
 
 		// Update the avatar if a new one was uploaded
 		if (data.avatarPath) {
 			// Delete the current avatar if a new one was uploaded
-			if (currentAvatar) {
+			if (currentAvatar)
 				// Delete the database entry
-				await prisma.avatar.delete({
-					where: {
-						userId: currentAvatar.userId,
-					},
-				});
-			}
+				await prisma.avatar.delete({ where: { userId: currentAvatar.userId } });
 
 			const newAvatar = await prisma.avatar.create({
 				data: {
@@ -54,8 +46,8 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 
 		if (!updatedUser) throw new Error("Failed to update user.");
 		return updatedUser;
-	} catch (error) {
-		console.log(error);
+	} catch (error: any) {
+		logger(error?.message ? error.message : "Error updating user");
 	}
 	redirect("/");
 }

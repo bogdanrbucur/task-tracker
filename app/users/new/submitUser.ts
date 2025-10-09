@@ -4,9 +4,8 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import createUser from "@/app/users/_actions/createUser";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import { User } from "@prisma/client";
-import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -39,7 +38,7 @@ export type Editor = { firstName: string; lastName: string; id: string };
 
 export default async function submitUser(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
+	// logger(rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -75,7 +74,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			editor: formData.get("editor") as string,
 			isAdmin: formData.get("isAdmin"),
 			avatar: formData.get("avatar") as File | null,
-			// avatarBuffer: undefined as Buffer | undefined,
 		});
 
 		// If no user ID is provided, means a new user is being created
@@ -96,46 +94,32 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		}
 
 		// Check the size of the avatar and reject if it's too large
-		if (data.avatar && data.avatar.size > 5242880) {
-			return { message: "Avatar file is too large. Maximum size is 5 MB." };
-		}
+		if (data.avatar && data.avatar.size > 5242880) return { message: "Avatar file is too large. Maximum size is 5 MB." };
 
 		// Get the created by user object by the ID
 		const editingUser = await getUserDetails(data.editor);
 
-		// TODO clean-up... this is a mess
 		// If a user ID is provided, update the existing user
 		if (data.id) {
 			const oldUser = await getUserDetails(data.id);
 			newUser = await updateUser(data as UpdateUser, editingUser!);
 
-			console.log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
-			console.log(
+			logger(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
+			logger(
 				`OLD USER: ${oldUser.firstName} ${oldUser.lastName} / ${oldUser.email}, dept: ${oldUser.department?.id}, manager: ${oldUser.manager?.id}, admin: ${oldUser.isAdmin}`
 			);
-			console.log(
+			logger(
 				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`
 			);
-			log(`User updated: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `${process.env.LOGS_PATH}/${logDate()}`);
-			log(
-				`OLD USER: ${oldUser.firstName} ${oldUser.lastName} / ${oldUser.email}, dept: ${oldUser.department?.id}, manager: ${oldUser.manager?.id}, admin: ${oldUser.isAdmin}`,
-				`${process.env.LOGS_PATH}/${logDate()}`
-			);
-			log(
-				`NEW USER: ${newUser.firstName} ${newUser.lastName} / ${newUser.email}, dept: ${newUser.departmentId}, manager: ${newUser.managerId}, admin: ${newUser.isAdmin}`,
-				`${process.env.LOGS_PATH}/${logDate()}`
-			);
 		}
+
 		// If no user ID is provided, create a new user
 		else {
 			const { newUser: tempUsr, emailStatus, error } = await createUser(data as NewUser, editingUser);
 			if (error instanceof Error) throw new Error(error.message);
 			newUser = tempUsr ?? null;
 
-			if (newUser) {
-				console.log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
-				log(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`, `${process.env.LOGS_PATH}/${logDate()}`);
-			}
+			if (newUser) logger(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
 		}
 
 		// Save the avatar locally
@@ -145,15 +129,11 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
+
 	revalidatePath(`/users${formData.get("id") ? `/${formData.get("id")}` : ""}`);
 	redirect(newUser ? `/users/${String(newUser.id)}` : `/users/${formData.get("id")}`);
 }

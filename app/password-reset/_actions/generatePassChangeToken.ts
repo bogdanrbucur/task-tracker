@@ -1,6 +1,6 @@
 import prisma from "@/prisma/client";
 import { User } from "@prisma/client";
-import { generateRandomString, alphabet, sha256 } from "oslo/crypto";
+import { alphabet, generateRandomString, sha256 } from "oslo/crypto";
 import { encodeHex } from "oslo/encoding";
 
 export default async function generatePassChangeToken(user: User, minutes: number = 15): Promise<string> {
@@ -10,7 +10,7 @@ export default async function generatePassChangeToken(user: User, minutes: numbe
 	const shaArrayBuffer = await sha256(encodedText);
 	const token = encodeHex(shaArrayBuffer);
 
-	console.log(token);
+	// logger(token);
 
 	// Write the token to the database and give it a 15 min expiry
 	const newToken = await prisma.passwordResetToken.create({

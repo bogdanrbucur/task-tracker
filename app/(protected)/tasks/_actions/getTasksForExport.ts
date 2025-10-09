@@ -1,5 +1,5 @@
 "use server";
-import { prismaExtendedUserSelection, prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
+import { prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { Prisma } from "@prisma/client";
 import { TaskExtended } from "../page";

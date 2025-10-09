@@ -1,14 +1,12 @@
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
-import log from "log-to-file";
 import { Editor } from "../../new/_actions/submitTask";
 
 export async function recordTaskHistory(task: Task, editingUser: Editor, changes?: string[]) {
 	// Get the assignedToUser object by the ID
 	const assignedToUser = await getUserDetails(task.assignedToUserId!);
-
 	const editingUserFullName = `${editingUser.firstName} ${editingUser.lastName}`;
 
 	// Add the changes to the task
@@ -22,8 +20,7 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 					changes: change,
 				},
 			});
-			console.log(`Task ${newChange.taskId} changed: ${newChange.changes}`);
-			log(`Task ${newChange.taskId} changed: ${newChange.changes}`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`Task ${newChange.taskId} changed: ${newChange.changes}`);
 		}
 		return;
 	}
@@ -38,7 +35,6 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 		},
 	});
 
-	console.log(`New task ${newChange.taskId}: ${newChange.changes}`);
-	log(`New task ${newChange.taskId}: ${newChange.changes}`, `${process.env.LOGS_PATH}/${logDate()}`);
+	logger(`New task ${newChange.taskId}: ${newChange.changes}`);
 	return newChange;
 }

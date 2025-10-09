@@ -1,15 +1,14 @@
 // server function to add new task
 "use server";
 
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export default async function deleteDept(prevState: any, formData: FormData) {
-	const rawFormData = Object.fromEntries(formData.entries());
-	console.log(rawFormData);
+	// const rawFormData = Object.fromEntries(formData.entries());
+	// logger(rawFormData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -36,15 +35,13 @@ export default async function deleteDept(prevState: any, formData: FormData) {
 				where: { departmentId: Number(data.id) },
 			});
 
-			if (employees.length > 0) {
-				return { message: "Unable to delete department. Users are assigned to it." };
-			}
+			if (employees.length > 0) return { message: "Unable to delete department. Users are assigned to it." };
+
 			// If not, delete
 			await prisma.department.delete({
 				where: { id: Number(data.id) },
 			});
-			console.log(`Department ${dept.name} deleted`);
-			log(`Department ${dept.name} deleted`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`Department ${dept.name} deleted`);
 		}
 		return { dialogOpen: false, success: true };
 	} catch (error) {

@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { updateTask } from "../../[id]/_actions/updateTask";
 import { createTask } from "./createTask";
+import { logger } from "@/lib/utilityFunctions";
 
 export type NewTask = {
 	title: string;
@@ -33,7 +34,7 @@ export type Attachment = z.infer<typeof Attachment>;
 
 export default async function submitTask(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log("raw data", rawFormData);
+	// logger("raw data", rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -91,7 +92,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		if (data.id) {
 			// For some retarded reason, the descriptions are return as an array of the same string, so we split the first one
 			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
-			console.log("attDescriptions:", attachmentsDescriptions);
+			logger(`attDescriptions: ${attachmentsDescriptions}`);
 			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachmentsDescriptions);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
@@ -103,22 +104,24 @@ export default async function submitTask(prevState: any, formData: FormData) {
 		}
 
 		// If email wasn't sent
-		if (!emailStatus) console.log("Task updated, but user not changed, no email sent");
+		if (!emailStatus) logger("Task updated, but user not changed, no email sent");
 		// If the email sent failed
-		else if (emailStatus && !emailStatus.success) console.log("Task assigned user changed, email error");
-		else console.log("Task assigned user changed, email sent");
+		else if (emailStatus?.queued === false) logger("Task assigned user changed, email error");
+		else logger("Task assigned user changed, email sent");
 
 		// Redirect to the task page, either for the updated task or the new task
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
 		// Handle other errors
 		else return { message: (error as any).message };
 	}
-	console.log(emailStatus);
-	redirect(newTask ? `/tasks/${String(newTask.id)}${emailStatus && !emailStatus.success ? "?toastUser=fail" : emailStatus ? "?toastUser=success" : ""}` : "");
+
+	redirect(
+		newTask
+			? `/tasks/${String(newTask.id)}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${
+					emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+			  }`
+			: ""
+	);
 }

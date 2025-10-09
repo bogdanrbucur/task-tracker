@@ -2,17 +2,15 @@
 "use server";
 
 import { getAuth } from "@/actions/auth/get-auth";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { Argon2id } from "oslo/password";
 import { z } from "zod";
 
 export default async function changeUserPassword(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
-
+	// logger(rawFormData);
 	// Check user permissions
 	const { user: agent } = await getAuth();
 	if (!agent) return { message: "You do not have permission to perform this action." };
@@ -50,13 +48,9 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 
 		// Verify the password using Argon2id
 		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.oldPassword);
-		if (!validPassword) {
-			return { message: "Incorrect password." };
-		}
+		if (!validPassword) return { message: "Incorrect password." };
 
-		if (data.newPassword !== data.confirmPassword) {
-			return { message: "Passwords do not match." };
-		}
+		if (data.newPassword !== data.confirmPassword) return { message: "Passwords do not match." };
 
 		// Randomly generated salt for the password hashing, no need to provide one
 		const hashedPassword = await new Argon2id().hash(data.newPassword);
@@ -67,20 +61,14 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 			},
 		});
 
-		console.log(`User ${updatedUser.email} changed their password.`);
-		log(`User ${updatedUser.email} changed their password.`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`User ${updatedUser.email} changed their password.`);
 
 		return { dialogOpen: false };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	// refresh the page
 	revalidatePath(`/users/${formData.get("id")}`);

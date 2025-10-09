@@ -17,9 +17,9 @@ import CommentSkeleton from "./CommentSkeleton";
 import PostCommentButton from "./PostCommentButton";
 
 const initialState = {
+	queued: undefined,
+	emailId: undefined,
 	message: null,
-	success: undefined,
-	emailSent: undefined,
 };
 
 export type CommentUser = {
@@ -102,15 +102,15 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 	// Watch if the comment section contains a user mention to add/remove the user from the form payload
 	useCommentsMentionedUsers(users, inputValue, mentionedUsersIds, setMentionedUsersIds, mentionedUserNames, setMentionedUserNames);
 
-	// Watch for the success state to show a toast notification
+	// Watch if the email was queued and show a toast
 	useEffect(() => {
-		if (formState?.success && formState?.emailSent) {
-			// Reset the form
-			formRef.current?.reset();
-			toast.success(`Email sent to mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
+		if (formState?.queued && formState?.emailId) {
+			formRef.current?.reset(); // Reset the form - clear the comment
+			toast.info(`Emailing mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}...`);
+			localStorage.setItem("emailId", formState.emailId); // Save the email id in local storage to check the status in EmailChecker.tsx
 		}
-		if (formState?.success && formState?.message && !formState?.emailSent) {
-			toast.error("Failed to send email.");
+		if (formState?.queued === false) {
+			toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
 		}
 	}, [formState]);
 

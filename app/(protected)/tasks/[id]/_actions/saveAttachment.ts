@@ -1,3 +1,4 @@
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { randomUUID } from "crypto";
@@ -23,7 +24,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 		// Save the attachment locally
 		fs.writeFile(`${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`, new Uint8Array(attachmentBuffer));
 
-		console.log(`Attachment saved to ${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`);
+		logger(`Attachment saved to ${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`);
 
 		// Update the attachment path in the database if it already exists
 		const existingAttachment = await prisma.attachment.findFirst({
@@ -49,7 +50,7 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 			});
 
 			response = existingAttachment;
-			console.log(`Replaced attachment ${type}_${attachment.name} for task ${task.id}`);
+			logger(`Replaced attachment ${type}_${attachment.name} for task ${task.id}`);
 		} else {
 			const addedAttachment = await prisma.attachment.create({
 				data: {
@@ -62,8 +63,8 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 			});
 			response = addedAttachment;
 		}
-	} catch (error) {
-		console.log(error);
+	} catch (error: any) {
+		logger(error?.message ? error.message : "Error saving attachment");
 	}
 	return response;
 }

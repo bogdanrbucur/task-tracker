@@ -10,7 +10,7 @@ import { recordTaskHistory } from "./recordTaskHistory";
 
 export default async function closeTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
-	// console.log(rawData);
+	// logger(rawData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -40,9 +40,7 @@ export default async function closeTask(prevState: any, formData: FormData) {
 
 		// Get the details of the user who is reopening the task
 		const editor = await getUserDetails(data.userId);
-		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) {
-			return { message: "You are not authorized to reopen this task." };
-		}
+		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) return { message: "You are not authorized to reopen this task." };
 
 		// Close the task
 		const closedTask = await prisma.task.update({
@@ -62,14 +60,9 @@ export default async function closeTask(prevState: any, formData: FormData) {
 		await updateUserStats(data.userId, "close", closedTask);
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	revalidatePath(`/tasks/${formData.get("taskId")}`);
 }

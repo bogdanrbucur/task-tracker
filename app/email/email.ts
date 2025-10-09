@@ -1,7 +1,7 @@
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
+import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
-import log from "log-to-file";
-import { Resend } from "resend";
+import { render } from "@react-email/render";
 import CommentMentionEmail from "./templates/CommentMention";
 import NewTaskEmail from "./templates/NewTaskAssigned";
 import NewUserNotConfirmedEmail from "./templates/NewUserNotConfirmed";
@@ -12,9 +12,7 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
-import { render } from "@react-email/render";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { createEmailIdempotencyKey } from "@/lib/utilityFunctions";
 
 type Props = {
 	userFirstName?: string;
@@ -40,8 +38,8 @@ export interface EmailTask extends Task {
 }
 
 export interface EmailResponse {
-	success: boolean;
-	error: string | null;
+	queued: boolean;
+	id: string;
 }
 
 const baseUrl = process.env.BASE_URL!;
@@ -62,8 +60,7 @@ export type EmailType =
 export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task, recipientFirstName }: Props): Promise<EmailResponse> {
 	// Choose the email template based on the emailType
 
-	console.log(`Sending ${emailType} email to ${recipients}...`);
-	log(`Sending ${emailType} email to ${recipients}...`, `${process.env.LOGS_PATH}/${logDate()}`);
+	logger(`Sending ${emailType} email to ${recipients}...`);
 
 	let emailTemplate;
 	let subject = "";
@@ -153,27 +150,30 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	// Convert HTML email to plaintext
 	const plainTextBody = await render(emailTemplate!, { plainText: true });
 
+	let email;
+	const idempotencyKey = createEmailIdempotencyKey(emailType, subject, recipients, plainTextBody);
 	try {
-		const { data, error } = await resend.emails.send({
-			from: process.env.EMAILS_FROM!,
-			to: recipients,
-			cc: cc,
-			subject,
-			react: emailTemplate,
-			text: plainTextBody,
-		});
+		const existing = await prisma.emailOutbox.findUnique({ where: { idempotencyKey } });
 
-		if (error) {
-			console.log(`Email not sent: ${error.message}`);
-			log(`Email not sent: ${error.message}`, `${process.env.LOGS_PATH}/${logDate()}`);
-			return { success: false, error: error.message };
+		if (!existing) {
+			email = await prisma.emailOutbox.create({
+				data: {
+					recipient: Array.isArray(recipients) ? recipients.join(", ") : recipients,
+					cc: cc ? (Array.isArray(cc) ? cc.join(", ") : cc) : null,
+					subject,
+					bodyHtml: render(emailTemplate!),
+					bodyPlain: plainTextBody,
+					idempotencyKey,
+				},
+			});
+			logger(`Email queued successfully to ${recipients}`);
+			return { queued: true, id: email.id };
+		} else {
+			logger(`Duplicate email detected to ${recipients}. Email not queued again.`);
+			return { queued: false, id: existing.id };
 		}
-
-		console.log(`Email sent succesfully: ${JSON.stringify(data)}`);
-		log(`Email sent succesfully: ${JSON.stringify(data)}`, `${process.env.LOGS_PATH}/${logDate()}`);
-		return { success: true, error: null };
 	} catch (error: any) {
-		console.log(error);
-		return { success: false, error: error.message };
+		logger(`Failed to queue email to ${recipients}: ${error.message}`);
+		return { queued: false, id: email?.id ?? null! };
 	}
 }

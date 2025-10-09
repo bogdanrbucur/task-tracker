@@ -8,16 +8,20 @@ import passResetToken from "../_actions/passResetToken";
 
 const initialState = {
 	message: null,
+	emailId: undefined,
+	queued: undefined,
 };
 
 export default function ResendWelcomeEmailButton({ userId }: { userId: string }) {
 	const [formState, formAction] = useFormState(passResetToken, initialState);
 
-	// Watch for the success state to show a toast notification
+	// Watch if the email was queued and show a toast
 	useEffect(() => {
-		console.log(formState);
-		if (!formState?.message && formState?.emailSent === "success") toast.success("Welcome email resent.");
-		if (formState?.emailSent === "fail") toast.error("Failed to resend welcome email.");
+		if (formState?.queued && formState?.emailId) {
+			toast.info("Resending welcome email...");
+			localStorage.setItem("emailId", formState.emailId); // Save the email id in local storage to check the status in EmailChecker.tsx
+		}
+		if (formState?.queued === false) toast.error("Failed to resend welcome email.");
 	}, [formState]);
 
 	return (

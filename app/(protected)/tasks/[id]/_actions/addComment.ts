@@ -2,9 +2,8 @@
 "use server";
 import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -51,8 +50,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 			where: { id: data.userId },
 		});
 
-		console.log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`);
-		log(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`);
 
 		// If there are users mentioned in the comment
 		if (mentionedUsersArray && mentionedUsersArray.length > 0) {
@@ -83,18 +81,16 @@ export default async function addComment(prevState: any, formData: FormData) {
 				recipientFirstName: recipient?.firstName,
 			});
 
-			// If the email sent failed
-			if (!emailStatus.success) {
+			// If the email queueing failed
+			if (!emailStatus.queued) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				console.log("User was mentioned in comment, but email failed.");
-				log("User was mentioned in comment, but email failed.", `${process.env.LOGS_PATH}/${logDate()}`);
-				return { success, emailSent: emailStatus.success, message: emailStatus.error };
+				logger("User was mentioned in comment, but email failed.");
+				return { queued: emailStatus.queued, emailId: emailStatus.id };
 				// Else it succeded
 			} else {
-				console.log("User was mentioned in comment, email sent.");
-				log("User was mentioned in comment, email sent.", `${process.env.LOGS_PATH}/${logDate()}`);
+				logger("User was mentioned in comment, email queued.");
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				return { success, emailSent: emailStatus.success };
+				return { queued: emailStatus.queued, emailId: emailStatus.id };
 			}
 		}
 	} catch (error) {

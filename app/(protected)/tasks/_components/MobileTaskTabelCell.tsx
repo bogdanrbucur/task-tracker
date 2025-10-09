@@ -11,7 +11,10 @@ const MobileTaskTabelCell = ({ task, viewableUsers }: { task: TaskExtended; view
 	return (
 		<TableCell className="space-y-1 py-1 px-1">
 			{/* Make the title clickable and dynamically build the URL to the issue page */}
-			<Link href={`/tasks/${task.id}`}>{task.title}</Link>
+			<Link href={`/tasks/${task.id}`} className="flex gap-2">
+				<div className="text-gray-500 dark:text-gray-400 flex gap-x-1 md:hidden">#{task.id}</div>
+				{task.title}
+			</Link>
 			{/* visible on mobile but hidden on medium devices and higher */}
 			<div className="md:hidden px-0">
 				<div className="flex justify-between py-1">

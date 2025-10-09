@@ -170,3 +170,20 @@ model FailedLoginAttempt {
   ipAddress String
   timestamp DateTime @default(now())
 }
+
+model EmailOutbox {
+  id             String   @id @default(uuid())
+  recipient      String
+  cc             String?
+  subject        String
+  bodyHtml       String
+  bodyPlain      String
+  status         String   @default("queued") // queued | processing | sent | failed
+  attempts       Int      @default(0)
+  maxAttempts    Int      @default(5)
+  lastError      String?
+  idempotencyKey String   @unique
+  nextTryAt      DateTime @default(now())
+  createdAt      DateTime @default(now())
+  sentAt         DateTime?
+}

@@ -1,9 +1,8 @@
 // server function to add new task
 "use server";
 
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { sendEmail } from "../../email/email";
@@ -11,7 +10,7 @@ import generatePassChangeToken from "../../password-reset/_actions/generatePassC
 
 export default async function forgotUserPassword(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
+	// logger(rawFormData);
 
 	// Define the Zod schema for the form data
 	const schema = z.object({
@@ -30,8 +29,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		// Set email to lower case
 		data.email = data.email.toLowerCase();
 
-		console.log(`Password reset request received for email address ${data.email}`);
-		log(`Password reset request received for email address ${data.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`Password reset request received for email address ${data.email}`);
 
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
@@ -39,8 +37,7 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		});
 
 		if (!user) {
-			console.log(`No active user found with email address ${data.email}`);
-			log(`No active user found with email address ${data.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`No active user found with email address ${data.email}`);
 			return { success: true };
 		}
 
@@ -60,12 +57,12 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) {
 			for (const subError of error.errors) {
-				console.log("Password reset request error:", subError.message);
+				logger(`Password reset request error: ${subError.message}`);
 				return { success: false, message: subError.message };
 			}
 		} else {
 			// Handle other errors
-			console.log("Password reset request error:", error);
+			logger(`Password reset request error: ${error}`);
 			return { success: false, message: (error as any).message };
 		}
 	}
