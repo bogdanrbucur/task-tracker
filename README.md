@@ -296,3 +296,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.5.0 - Added email outbox and email worker for improved email reliability
 - 1.5.1 - Refactored logging functions
 - 1.5.2 - Idempotency for emails
+- 1.5.3 - Clear the toast URL params after the toast is shown
