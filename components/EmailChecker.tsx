@@ -3,9 +3,10 @@ import { useEffect, useRef } from "react";
 import { Toaster, toast } from "sonner";
 
 export default function EmailChecker() {
-	const emailIdRef = useRef<string | null>(localStorage.getItem("emailId"));
+	const emailIdRef = useRef<string | null>(null);
 
 	useEffect(() => {
+		emailIdRef.current = localStorage.getItem("emailId");
 		const handleStorageChange = () => emailIdRef.current = localStorage.getItem("emailId");
 
 		// Listen for storage changes
