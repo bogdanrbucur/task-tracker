@@ -88,13 +88,13 @@ export default async function addComment(prevState: any, formData: FormData) {
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
 				console.log("User was mentioned in comment, but email failed.");
 				log("User was mentioned in comment, but email failed.", `${process.env.LOGS_PATH}/${logDate()}`);
-				return { queued: emailStatus.queued, id: emailStatus.id };
+				return { queued: emailStatus.queued, emailId: emailStatus.id };
 				// Else it succeded
 			} else {
 				console.log("User was mentioned in comment, email queued.");
 				log("User was mentioned in comment, email queued.", `${process.env.LOGS_PATH}/${logDate()}`);
 				revalidatePath(`/tasks/${formData.get("taskId")}`);
-				return { queued: emailStatus.queued, id: emailStatus.id };
+				return { queued: emailStatus.queued, emailId: emailStatus.id };
 			}
 		}
 	} catch (error) {

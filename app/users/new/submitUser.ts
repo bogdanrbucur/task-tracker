@@ -126,6 +126,7 @@ export default async function submitUser(prevState: any, formData: FormData) {
 				`${process.env.LOGS_PATH}/${logDate()}`
 			);
 		}
+
 		// If no user ID is provided, create a new user
 		else {
 			const { newUser: tempUsr, emailStatus, error } = await createUser(data as NewUser, editingUser);

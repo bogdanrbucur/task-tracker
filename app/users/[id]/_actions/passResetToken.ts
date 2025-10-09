@@ -55,7 +55,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 				comment: token,
 			});
 
-			return { emailSent: emailStatus.success ? "success" : "fail", message: null };
+			return { queued: emailStatus.queued, emailId: emailStatus.id };
 		} else if (user.status === "unverified") {
 			console.log("User is inactive, sending welcome email with a password set link");
 			log("User is inactive, sending welcome email with a password set link", `${process.env.LOGS_PATH}/${logDate()}`);
@@ -77,7 +77,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 				},
 			});
 
-			return { emailSent: emailStatus.success ? "success" : "fail", message: null };
+			return { queued: emailStatus.queued, emailId: emailStatus.id };
 		}
 
 		// return { dialogOpen: false };

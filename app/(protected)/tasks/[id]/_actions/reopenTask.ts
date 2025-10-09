@@ -86,7 +86,7 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		// If email wasn't sent
 		if (!emailStatus) console.log("Task reopened, but user not assigned, no email sent");
 		// If the email sent failed
-		else if (emailStatus && !emailStatus.success) console.log("Task reopened, email error");
+		else if (emailStatus?.queued === false) console.log("Task reopened, email error");
 		else console.log("Task reopened, email sent");
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
@@ -99,5 +99,9 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
-	redirect(`/tasks/${formData.get("taskId")}${emailStatus && !emailStatus.success ? "?toastUser=fail" : emailStatus ? "?toastUser=success" : ""}`);
+	redirect(
+		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${
+			emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+		}`
+	);
 }

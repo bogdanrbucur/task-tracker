@@ -19,7 +19,7 @@ export default function EmailChecker() {
 				const data = await res.json();
 
 				if (data.status === "sent") {
-					toast.success(`Email sent successfully.`);
+					toast.success(`Email successfully sent.`);
 					localStorage.removeItem("emailId");
 					emailIdRef.current = null; // Clear emailId from ref
 				}
@@ -30,7 +30,7 @@ export default function EmailChecker() {
 					emailIdRef.current = null; // Clear emailId from ref
 				}
 			}
-		}, 5000);
+		}, 2500);
 
 		// Cleanup the event listener and interval on component unmount
 		return () => {

@@ -18,7 +18,7 @@ import PostCommentButton from "./PostCommentButton";
 
 const initialState = {
 	queued: undefined,
-	id: undefined,
+	emailId: undefined,
 	message: null,
 };
 
@@ -102,35 +102,15 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 	// Watch if the comment section contains a user mention to add/remove the user from the form payload
 	useCommentsMentionedUsers(users, inputValue, mentionedUsersIds, setMentionedUsersIds, mentionedUserNames, setMentionedUserNames);
 
-	// Watch for the success state to show a toast notification
+	// Watch if the email was queued and show a toast
 	useEffect(() => {
-		if (formState?.queued && formState?.id) {
-			// Reset the form
-			formRef.current?.reset();
+		if (formState?.queued && formState?.emailId) {
+			formRef.current?.reset(); // Reset the form - clear the comment
 			toast.info(`Emailing mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}...`);
-			// Save the email id in local storage to check the status later
-			localStorage.setItem("emailId", formState.id);
+			localStorage.setItem("emailId", formState.emailId); // Save the email id in local storage to check the status in EmailChecker.tsx
 		}
 		if (formState?.queued === false) {
 			toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
-		}
-		// If the email was queued, poll the emailStatus API to check if the email was sent successfully
-		// TODO save the email ID in local storage and check the status only if there is an email ID saved
-		if (formState?.queued && formState?.id && localStorage.getItem("emailId") === formState.id) {
-			const interval = setInterval(async () => {
-				const res = await fetch(`/api/emailStatus?id=${formState.id}`);
-				const data = await res.json();
-				if (data.status === "sent") {
-					toast.success(`Mentioned user${mentionedUsersIds.length === 1 ? "" : "s"} emailed successfully.`);
-					clearInterval(interval);
-					localStorage.removeItem("emailId");
-				} else if (data.status === "failed") {
-					toast.error(`Failed to email mentioned user${mentionedUsersIds.length === 1 ? "" : "s"}.`);
-					clearInterval(interval);
-					localStorage.removeItem("emailId");
-				}
-			}, 1000); // Poll every second
-			return () => clearInterval(interval);
 		}
 	}, [formState]);
 

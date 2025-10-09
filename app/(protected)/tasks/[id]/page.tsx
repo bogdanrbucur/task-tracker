@@ -32,6 +32,7 @@ interface Props {
 		toastUser?: "success" | "fail";
 		toastManager?: "success" | "fail";
 		from: NavigationSourceTypes;
+		emailId?: string;
 	};
 }
 
@@ -206,18 +207,20 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 			<ClientToast
 				status={searchParams.toastUser}
 				message={
-					searchParams.toastUser === "success" ? "Email sent to assigned user." : searchParams.toastUser === "fail" ? "Failed to send email to assigned user." : undefined
+					searchParams.toastUser === "success"
+						? "Sending email to assigned user..."
+						: searchParams.toastUser === "fail"
+						? "Failed to send email to assigned user."
+						: undefined
 				}
+				emailId={searchParams.emailId}
 			/>
 			<ClientToast
 				status={searchParams.toastManager}
 				message={
-					searchParams.toastManager === "success"
-						? "Email sent to the manager."
-						: searchParams.toastManager === "fail"
-						? "Failed to send email to the manager."
-						: undefined
+					searchParams.toastManager === "success" ? "Emailing the manager..." : searchParams.toastManager === "fail" ? "Failed to send email to the manager." : undefined
 				}
+				emailId={searchParams.emailId}
 			/>
 		</Card>
 	);

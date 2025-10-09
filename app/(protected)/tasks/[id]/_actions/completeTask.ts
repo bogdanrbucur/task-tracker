@@ -84,9 +84,9 @@ export default async function completeTask(prevState: any, formData: FormData) {
 				log(`Task completed, but user not assigned, no email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
 			}
 			// If the email sent failed
-			else if (emailStatus && !emailStatus.success) {
+			else if (emailStatus.queued === false) {
 				console.log("Task completed, email error");
-				log(`Task completed, email error: ${emailStatus.error}`, `${process.env.LOGS_PATH}/${logDate()}`);
+				log(`Task completed, email error`, `${process.env.LOGS_PATH}/${logDate()}`);
 			} else {
 				console.log("Task completed, email sent");
 				log(`Task completed, email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
@@ -110,5 +110,9 @@ export default async function completeTask(prevState: any, formData: FormData) {
 		}
 	}
 	console.log(emailStatus);
-	redirect(`/tasks/${formData.get("taskId")}${emailStatus && !emailStatus.success ? "?toastManager=fail" : emailStatus ? "?toastManager=success" : ""}`);
+	redirect(
+		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastManager=fail" : emailStatus?.queued ? "?toastManager=success" : ""}${
+			emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+		}`
+	);
 }

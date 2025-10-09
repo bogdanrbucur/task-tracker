@@ -83,7 +83,7 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 			log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
 		}
 		// If the email sent failed
-		else if (emailStatus && !emailStatus.success) {
+		else if (emailStatus.queued === false) {
 			console.log("Task cancelled, email error");
 			log("Task cancelled, email error", `${process.env.LOGS_PATH}/${logDate()}`);
 		} else {
@@ -101,5 +101,9 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 			return { message: (error as any).message };
 		}
 	}
-	redirect(`/tasks/${formData.get("taskId")}${emailStatus && !emailStatus.success ? "?toastUser=fail" : emailStatus ? "?toastUser=success" : ""}`);
+	redirect(
+		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${
+			emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+		}`
+	);
 }

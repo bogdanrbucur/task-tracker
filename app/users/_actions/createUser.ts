@@ -47,9 +47,6 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 			},
 		});
 
-		// const session = await lucia.createSession(newUser.id, {});
-		// const sessionCookie = lucia.createSessionCookie(session.id);
-		// cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 		return { newUser, emailStatus };
 	} catch (error) {
 		console.log(error);

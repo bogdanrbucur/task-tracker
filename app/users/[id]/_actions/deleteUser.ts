@@ -50,17 +50,19 @@ export default async function deleteUser(prevState: any, formData: FormData) {
 			await prisma.avatar.deleteMany({
 				where: { userId: data.id },
 			});
+
 			// Check if the avatar file exists before deleting it
 			if (fs.existsSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`)) {
 				fs.unlinkSync(`${process.env.FILES_PATH}/avatars/${data.id}.jpg`);
 			}
+
 			// Delete the user's avatar file
 			console.log(`User ${deletedUser.email} deleted. Avatar deleted.`);
 			log(`User ${deletedUser.email} deleted. Avatar deleted.`, `${process.env.LOGS_PATH}/${logDate()}`);
 
-			return { message: null, emailSent: "success" };
+			return { message: null, success: true };
 		} else {
-			return { message: null, emailSent: "fail" };
+			return { message: null, success: false };
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client

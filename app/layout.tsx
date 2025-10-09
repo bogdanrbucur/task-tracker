@@ -29,7 +29,6 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-				{/* TODO Component to check email ID in local storage and if available check the status */}
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<div className="flex flex-col" style={{ minHeight: "calc(100vh - 0px)" }}>
 						<Navbar />
