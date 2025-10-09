@@ -299,3 +299,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.5.3 - Clear the toast URL params after the toast is shown
 - 1.6.0 - Display the task ID in the task list and details page and make it searchable
 - 1.6.1 - Fixed reading localStorage outside useEffect
+- 1.6.2 - Fixed `email-worker.ts` dependencies so it can run standalone
