@@ -49,6 +49,7 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 			<TableBody>
 				{tasks.map((task) => (
 					<TableRow key={task.id}>
+						<TableCell className="hidden py-1 md:table-cell">{task.id}</TableCell>
 						<MobileTaskTabelCell task={task} viewableUsers={viewableUsers} />
 						<TableCell className="hidden py-1 md:table-cell">
 							<StatusBadge statusObj={task.status} size="xs" />
@@ -80,6 +81,7 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 export default TaskTable;
 
 const columns: { label: string; value: keyof Task; className?: string }[] = [
+	{ label: "#", value: "id", className: "hidden md:table-cell py-1" },
 	{ label: "Title", value: "title", className: "py-1" },
 	{
 		label: "Status",

@@ -297,3 +297,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.5.1 - Refactored logging functions
 - 1.5.2 - Idempotency for emails
 - 1.5.3 - Clear the toast URL params after the toast is shown
+- 1.6.0 - Display the task ID in the task list and details page and make it searchable

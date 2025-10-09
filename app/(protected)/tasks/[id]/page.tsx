@@ -88,7 +88,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 				<div>
 					<div className="space-y-4">
 						<div>
-							<h1 className="text-xl md:text-2xl font-bold">{task.id}</h1>
+							<h3 className="text-gray-500 dark:text-gray-400 md:text-l font-bold">#{task.id}</h3>
 							<h1 className="text-xl md:text-2xl font-bold">{task.title}</h1>
 							<p className="text-gray-500 dark:text-gray-400 whitespace-pre-wrap text-sm md:text-base">{task.description}</p>
 						</div>

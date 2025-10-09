@@ -76,8 +76,13 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 			AND: [
 				{
 					// for each search term, search in title, description, assignedToUser, and status
-					AND: searchTerms.map((term) => ({
-						OR: [
+					// * This whole exercise is because the id field is a number, and the rest are strings.
+					// * So we can't just search all fields together, we need to create separate filters for id and the rest.
+					// * Then combine them with OR, and finally combine all terms with AND.
+					// * This way, if the term is a number, it will search by id as well as the other fields.
+					// * Normally, we'd just have an OR filter with all fields, but Prisma doesn't allow mixing types in a single filter.
+					AND: searchTerms.map((term) => {
+						const orFilters: Prisma.TaskWhereInput[] = [
 							{ title: { contains: term } },
 							{ source: { contains: term } },
 							{ description: { contains: term } },
@@ -92,8 +97,11 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 								},
 							},
 							{ status: { displayName: { contains: term } } },
-						],
-					})),
+						];
+						// If the term is a number, also search by task ID
+						if (!isNaN(Number(term))) orFilters.unshift({ id: Number(term) }); // add id filter at the start
+						return { OR: orFilters };
+					}),
 				},
 			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
@@ -102,7 +110,6 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 	const page = searchParams.page ? parseInt(searchParams.page) : 1;
 	const pageSize = 10;
 
-	// TODO improve this query
 	let tasks = await prisma.task.findMany({
 		where,
 		orderBy,
