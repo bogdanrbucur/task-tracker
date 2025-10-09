@@ -12,6 +12,7 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
+import { createEmailIdempotencyKey } from "@/lib/utilityFunctions";
 
 type Props = {
 	userFirstName?: string;
@@ -150,19 +151,27 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	const plainTextBody = await render(emailTemplate!, { plainText: true });
 
 	let email;
+	const idempotencyKey = createEmailIdempotencyKey(emailType, subject, recipients, plainTextBody);
 	try {
-		email = await prisma.emailOutbox.create({
-			data: {
-				recipient: Array.isArray(recipients) ? recipients.join(", ") : recipients,
-				cc: cc ? (Array.isArray(cc) ? cc.join(", ") : cc) : null,
-				subject,
-				bodyHtml: render(emailTemplate!),
-				bodyPlain: plainTextBody,
-				idempotencyKey: `${emailType}-${Date.now()}`,
-			},
-		});
-		logger(`Email queued successfully to ${recipients}`);
-		return { queued: true, id: email.id };
+		const existing = await prisma.emailOutbox.findUnique({ where: { idempotencyKey } });
+
+		if (!existing) {
+			email = await prisma.emailOutbox.create({
+				data: {
+					recipient: Array.isArray(recipients) ? recipients.join(", ") : recipients,
+					cc: cc ? (Array.isArray(cc) ? cc.join(", ") : cc) : null,
+					subject,
+					bodyHtml: render(emailTemplate!),
+					bodyPlain: plainTextBody,
+					idempotencyKey,
+				},
+			});
+			logger(`Email queued successfully to ${recipients}`);
+			return { queued: true, id: email.id };
+		} else {
+			logger(`Duplicate email detected to ${recipients}. Email not queued again.`);
+			return { queued: false, id: existing.id };
+		}
 	} catch (error: any) {
 		logger(`Failed to queue email to ${recipients}: ${error.message}`);
 		return { queued: false, id: email?.id ?? null! };

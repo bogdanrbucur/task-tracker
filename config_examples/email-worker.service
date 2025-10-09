@@ -1,0 +1,6 @@
+[Unit]
+Description=Email worker
+
+[Service]
+WorkingDirectory=/path/to/app/task-tracker
+ExecStart=/usr/bin/npm run email-worker

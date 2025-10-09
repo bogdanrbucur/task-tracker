@@ -8,6 +8,7 @@ import { User } from "lucia";
 import { isIPv4, isIPv6 } from "net";
 import { headers } from "next/headers";
 import sharp from "sharp";
+import crypto from "crypto";
 
 export function formatDate(date: Date) {
 	const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -144,4 +145,10 @@ export async function logVisitor(user: User | null, page: string, source: string
 export function logger(message: string) {
 	console.log(message);
 	log(message, `${process.env.LOGS_PATH}/${logDate()}`);
+}
+
+// Function to create idempotency key for emails
+export function createEmailIdempotencyKey(emailType: string, subject: string, recipients: string | string[], bodyHtml: string) {
+	const recipientsAsString = Array.isArray(recipients) ? recipients.join(", ") : recipients;
+	return crypto.createHash("sha256").update([emailType, subject, recipientsAsString, bodyHtml].join("|")).digest("hex");
 }

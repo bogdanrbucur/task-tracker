@@ -1,0 +1,8 @@
+[Unit]
+Description=Run email worker every 5 seconds
+[Timer]
+OnBootSec=5seconds
+OnUnitActiveSec=5seconds
+Unit=email-worker.service
+[Install]
+WantedBy=timers.target
