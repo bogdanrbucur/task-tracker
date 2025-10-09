@@ -1,8 +1,7 @@
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { render } from "@react-email/render";
-import log from "log-to-file";
 import CommentMentionEmail from "./templates/CommentMention";
 import NewTaskEmail from "./templates/NewTaskAssigned";
 import NewUserNotConfirmedEmail from "./templates/NewUserNotConfirmed";
@@ -60,8 +59,7 @@ export type EmailType =
 export async function sendEmail({ userFirstName, userLastName, recipients, cc, emailType, comment, task, recipientFirstName }: Props): Promise<EmailResponse> {
 	// Choose the email template based on the emailType
 
-	console.log(`Sending ${emailType} email to ${recipients}...`);
-	log(`Sending ${emailType} email to ${recipients}...`, `${process.env.LOGS_PATH}/${logDate()}`);
+	logger(`Sending ${emailType} email to ${recipients}...`);
 
 	let emailTemplate;
 	let subject = "";
@@ -151,7 +149,6 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	// Convert HTML email to plaintext
 	const plainTextBody = await render(emailTemplate!, { plainText: true });
 
-	// TODO replace sending the email with writting to the queue table in the database
 	let email;
 	try {
 		email = await prisma.emailOutbox.create({
@@ -164,36 +161,10 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 				idempotencyKey: `${emailType}-${Date.now()}`,
 			},
 		});
-		console.log(`Email queued successfully to ${recipients}`);
-		log(`Email queued successfully to ${recipients}`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`Email queued successfully to ${recipients}`);
 		return { queued: true, id: email.id };
 	} catch (error: any) {
-		console.log(`Failed to queue email to ${recipients}: ${error.message}`);
-		log(`Failed to queue email to ${recipients}: ${error.message}`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`Failed to queue email to ${recipients}: ${error.message}`);
 		return { queued: false, id: email?.id ?? null! };
 	}
-
-	// try {
-	// 	const { data, error } = await resend.emails.send({
-	// 		from: process.env.EMAILS_FROM!,
-	// 		to: recipients,
-	// 		cc: cc,
-	// 		subject,
-	// 		react: emailTemplate,
-	// 		text: plainTextBody,
-	// 	});
-
-	// 	if (error) {
-	// 		console.log(`Email not sent: ${error.message}`);
-	// 		log(`Email not sent: ${error.message}`, `${process.env.LOGS_PATH}/${logDate()}`);
-	// 		return { success: false, error: error.message };
-	// 	}
-
-	// 	console.log(`Email sent succesfully: ${JSON.stringify(data)}`);
-	// 	log(`Email sent succesfully: ${JSON.stringify(data)}`, `${process.env.LOGS_PATH}/${logDate()}`);
-	// 	return { success: true, error: null };
-	// } catch (error: any) {
-	// 	console.log(error);
-	// 	return { success: false, error: error.message };
-	// }
 }

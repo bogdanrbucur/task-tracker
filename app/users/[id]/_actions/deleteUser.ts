@@ -3,17 +3,15 @@
 
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import fs from "fs-extra";
-import log from "log-to-file";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export default async function deleteUser(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
-
+	// logger(rawFormData);
 	// Check user permissions
 	const { user: agent } = await getAuth();
 	const userPermissions = await getPermissions(agent?.id);
@@ -57,23 +55,15 @@ export default async function deleteUser(prevState: any, formData: FormData) {
 			}
 
 			// Delete the user's avatar file
-			console.log(`User ${deletedUser.email} deleted. Avatar deleted.`);
-			log(`User ${deletedUser.email} deleted. Avatar deleted.`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`User ${deletedUser.email} deleted. Avatar deleted.`);
 
 			return { message: null, success: true };
-		} else {
-			return { message: null, success: false };
-		}
+		} else return { message: null, success: false };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	// refresh the page
 	redirect(`/users`);

@@ -1,5 +1,5 @@
 import { sendEmail } from "@/app/email/email";
-import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
+import { checkIfTaskOverdue, logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
@@ -54,15 +54,16 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 	for (const att of oldAttachments) {
 		const newDesc = attDescriptions[oldAttachments.indexOf(att)];
 		if (att.description !== newDesc && newDesc !== "") {
-			console.log(`Description updated from ${att.description} to ${newDesc}`);
 			await prisma.attachment.update({
 				where: { id: att.id },
 				data: { description: newDesc },
 			});
+
+			logger(`Description updated from ${att.description} to ${newDesc}`);
 		}
 	}
 
-	console.log(`Task ${task.id} updated successfully`);
+	logger(`Task ${task.id} updated successfully`);
 
 	// Determine what was changed
 	const changes = await compareTasks(oldTask!, updatedTask, editingUser);

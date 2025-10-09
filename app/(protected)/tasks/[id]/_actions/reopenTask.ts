@@ -3,16 +3,16 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
+import { checkIfTaskOverdue, logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { recordTaskHistory } from "./recordTaskHistory";
 import updateUserStats from "../../_actions/updateUserStats";
+import { recordTaskHistory } from "./recordTaskHistory";
 
 export default async function reopenTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
-	// console.log(rawData);
+	// logger(rawData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -46,9 +46,7 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 
 		// Get the details of the user who is reopening the task
 		const editor = await getUserDetails(data.userId);
-		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) {
-			return { message: "You are not authorized to reopen this task." };
-		}
+		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) return { message: "You are not authorized to reopen this task." };
 
 		// Reopen the task
 		const reopenedTask = await prisma.task.update({
@@ -84,20 +82,14 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		});
 
 		// If email wasn't sent
-		if (!emailStatus) console.log("Task reopened, but user not assigned, no email sent");
+		if (!emailStatus || emailStatus.queued === false) logger("Task reopened, email error");
 		// If the email sent failed
-		else if (emailStatus?.queued === false) console.log("Task reopened, email error");
-		else console.log("Task reopened, email sent");
+		else logger("Task reopened, email sent");
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	redirect(
 		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${

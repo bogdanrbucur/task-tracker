@@ -4,9 +4,8 @@ import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import updateUserStats from "../../_actions/updateUserStats";
@@ -14,7 +13,7 @@ import { recordTaskHistory } from "./recordTaskHistory";
 
 export default async function cancelTask(prevState: any, formData: FormData) {
 	// const rawData = Object.fromEntries(f.entries());
-	// console.log(rawData);
+	// logger(rawData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -46,9 +45,7 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 
 		// Get the details of the user who is reopening the task
 		const editor = await getUserDetails(data.userId);
-		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) {
-			return { message: "You are not authorized to cancel this task." };
-		}
+		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) return { message: "You are not authorized to cancel this task." };
 
 		// Close the task
 		const cancelledTask = await prisma.task.update({
@@ -78,28 +75,13 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 		});
 
 		// If email wasn't sent
-		if (!emailStatus) {
-			console.log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`);
-			log(`Task ${data.taskId} cancelled, but user not assigned, no email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
-		}
-		// If the email sent failed
-		else if (emailStatus.queued === false) {
-			console.log("Task cancelled, email error");
-			log("Task cancelled, email error", `${process.env.LOGS_PATH}/${logDate()}`);
-		} else {
-			console.log("Task cancelled, email sent");
-			log("Task cancelled, email sent", `${process.env.LOGS_PATH}/${logDate()}`);
-		}
+		if (!emailStatus || emailStatus.queued === false) logger(`Task ${data.taskId} cancelled, but user not assigned, no email sent`);
+		else logger("Task cancelled, email sent");
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	redirect(
 		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${

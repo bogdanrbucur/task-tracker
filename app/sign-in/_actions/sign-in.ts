@@ -2,9 +2,8 @@
 "use server";
 
 import { lucia } from "@/lib/lucia";
-import { logDate, normalizeIP } from "@/lib/utilityFunctions";
+import { logger, normalizeIP } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import log from "log-to-file";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Argon2id } from "oslo/password";
@@ -59,13 +58,11 @@ export default async function signIn(prevState: any, formData: FormData) {
 		});
 
 		if (Number(failedAttemptsEmail) >= Number(maxFailedAttemptsEmail)) {
-			console.log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`);
-			log(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`${data.email} from ${ip} reached the maximum number of failed attempts per user: ${failedAttemptsEmail}.`);
 			throw new Error("Too many failed login attempts. Please try again later.");
 		}
 		if (Number(failedAttemptsIP) >= Number(maxFailedAttemptsIP)) {
-			console.log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`);
-			log(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`${data.email} from ${ip} reached the maximum number of failed attempts per IP: ${failedAttemptsIP}.`);
 			throw new Error("Too many failed login attempts. Please try again later.");
 		}
 
@@ -74,10 +71,8 @@ export default async function signIn(prevState: any, formData: FormData) {
 			where: { email: data.email, active: true },
 		});
 		if (!user) {
-			console.log(`${data.email} attempting to login from ${ip}, but user does not exist.`);
-			log(`${data.email} attempting to login from ${ip}, but user does not exist.`, `${process.env.LOGS_PATH}/${logDate()}`);
-
 			// Log failed attempt
+			logger(`${data.email} attempting to login from ${ip}, but user does not exist.`);
 			await prisma.failedLoginAttempt.create({
 				data: {
 					email: data.email,
@@ -90,10 +85,8 @@ export default async function signIn(prevState: any, formData: FormData) {
 		// Verify the password using Argon2id
 		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.password);
 		if (!validPassword) {
-			console.log(`Valid user ${data.email} attempting to login from ${ip} with wrong password.`);
-			log(`Valid user ${data.email} attempting to login from ${ip} with wrong password.`, `${process.env.LOGS_PATH}/${logDate()}`);
-
 			// Log failed attempt
+			logger(`Valid user ${data.email} attempting to login from ${ip} with wrong password.`);
 			await prisma.failedLoginAttempt.create({
 				data: {
 					email: data.email,
@@ -116,23 +109,19 @@ export default async function signIn(prevState: any, formData: FormData) {
 		// Create a session cookie and set it in the response headers
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-
-		console.log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`);
-		log(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`);
 
 		redirect("/");
 	} catch (error) {
 		// Handle Zod validation errors
 		if (error instanceof z.ZodError) {
 			for (const subError of error.errors) {
-				console.log(subError.message);
-				log(subError.message, `${process.env.LOGS_PATH}/${logDate()}`);
+				logger(subError.message);
 				return { message: subError.message };
 			}
 		} else {
 			// Handle other errors
-			console.log((error as any).message);
-			log((error as any).message, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger((error as any).message);
 			return { message: (error as any).message };
 		}
 	}

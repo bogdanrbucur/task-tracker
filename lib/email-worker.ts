@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
-import log from "log-to-file";
 import { Resend } from "resend";
 import prisma from "../prisma/client";
+import { logger } from "./utilityFunctions";
 
 // Load environment variables from .env.local
 dotenv.config({ path: ".env.local" });
@@ -22,8 +22,7 @@ async function sendEmail(limit = 10) {
 	});
 	if (emails.length === 0) return;
 
-	console.log(`Found ${emails.length} email(s) to process.`);
-	log(`Found ${emails.length} email(s) to process.`, `${process.env.LOGS_PATH}/${logDate()}`);
+	logger(`Found ${emails.length} email(s) to process.`);
 
 	for (const e of emails) {
 		// Lock the email for processing to prevent race conditions (duplicate sends)
@@ -33,8 +32,7 @@ async function sendEmail(limit = 10) {
 		});
 		// If the email was already processed by another worker, skip it
 		if (locked.count === 0) continue;
-		console.log(`Processing email ID ${e.id} to ${e.recipient}...`);
-		log(`Processing email ID ${e.id} to ${e.recipient}...`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`Processing email ID ${e.id} to ${e.recipient}...`);
 
 		// Send the email using the Resend API
 		try {
@@ -47,12 +45,11 @@ async function sendEmail(limit = 10) {
 				text: e.bodyPlain,
 			});
 
-			if(sent.error) throw new Error(sent.error.message);
+			if (sent.error) throw new Error(sent.error.message);
 
 			// If the email was sent successfully, mark it as sent
 			await prisma.emailOutbox.update({ where: { id: e.id }, data: { status: "sent", sentAt: new Date(), lastError: null } });
-			console.log(`Email ID ${e.id} sent successfully to ${e.recipient}.`);
-			log(`Email ID ${e.id} sent successfully to ${e.recipient}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`Email ID ${e.id} sent successfully to ${e.recipient}.`);
 		} catch (error: any) {
 			// If the email failed to send, increment the attempts counter and set the next try time with exponential backoff
 			// Max backoff is 15 minutes
@@ -70,8 +67,7 @@ async function sendEmail(limit = 10) {
 					nextTryAt: new Date(Date.now() + backoffSec * 1000),
 				},
 			});
-			console.log(`Failed to send email ID ${e.id} to ${e.recipient}: ${error?.message || error}.`);
-			log(`Failed to send email ID ${e.id} to ${e.recipient}: ${error?.message || error}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+			logger(`Failed to send email ID ${e.id} to ${e.recipient}: ${error?.message || error}.`);
 		}
 	}
 }

@@ -1,19 +1,18 @@
 // server function to create a password reset token and email the user a link to reset their password
 "use server";
 
-import generatePassChangeToken from "@/app/password-reset/_actions/generatePassChangeToken";
+import { getAuth } from "@/actions/auth/get-auth";
+import { getPermissions } from "@/actions/auth/get-permissions";
 import { sendEmail } from "@/app/email/email";
+import generatePassChangeToken from "@/app/password-reset/_actions/generatePassChangeToken";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import log from "log-to-file";
-import { logDate } from "@/lib/utilityFunctions";
-import { getAuth } from "@/actions/auth/get-auth";
-import { getPermissions } from "@/actions/auth/get-permissions";
 
 export default async function passResetToken(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
-	// console.log(rawFormData);
+	// logger(rawFormData);
 
 	// Check user permissions
 	const { user: agent } = await getAuth();
@@ -38,13 +37,11 @@ export default async function passResetToken(prevState: any, formData: FormData)
 		});
 		if (!user) throw new Error("Incorrect email or password.");
 
-		console.log(`Password reset requested for user ${user.email}`);
-		log(`Password reset requested for user ${user.email}`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`Password reset requested for user ${user.email}`);
 
 		// If the user is already active, send a normal password reset email
 		if (user.status === "active") {
-			console.log("User is active, sending password reset email");
-			log("User is active, sending password reset email", `${process.env.LOGS_PATH}/${logDate()}`);
+			logger("User is active, sending password reset email");
 			// Create a unique random password reset token with default validity
 			const token = await generatePassChangeToken(user);
 			// Send the user an email with a link to reset their password
@@ -57,8 +54,7 @@ export default async function passResetToken(prevState: any, formData: FormData)
 
 			return { queued: emailStatus.queued, emailId: emailStatus.id };
 		} else if (user.status === "unverified") {
-			console.log("User is inactive, sending welcome email with a password set link");
-			log("User is inactive, sending welcome email with a password set link", `${process.env.LOGS_PATH}/${logDate()}`);
+			logger("User is inactive, sending welcome email with a password set link");
 			// Create a unique random password reset token with 48 hours validity
 			const token = await generatePassChangeToken(user, 2880);
 			// Send the user a welcome email with a link to set their password
@@ -83,14 +79,9 @@ export default async function passResetToken(prevState: any, formData: FormData)
 		// return { dialogOpen: false };
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
 	// refresh the page
 	revalidatePath(`/users/${formData.get("id")}`);

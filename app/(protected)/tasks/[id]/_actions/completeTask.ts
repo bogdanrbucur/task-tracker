@@ -3,9 +3,8 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logDate } from "@/lib/utilityFunctions";
+import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
-import { log } from "console";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import updateUserStats from "../../_actions/updateUserStats";
@@ -79,17 +78,10 @@ export default async function completeTask(prevState: any, formData: FormData) {
 			});
 
 			// If email wasn't sent
-			if (!emailStatus) {
-				console.log("Task completed, but user not assigned, no email sent");
-				log(`Task completed, but user not assigned, no email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
-			}
-			// If the email sent failed
-			else if (emailStatus.queued === false) {
-				console.log("Task completed, email error");
-				log(`Task completed, email error`, `${process.env.LOGS_PATH}/${logDate()}`);
-			} else {
-				console.log("Task completed, email sent");
-				log(`Task completed, email sent`, `${process.env.LOGS_PATH}/${logDate()}`);
+			if (!emailStatus || emailStatus.queued === false) logger("Task completed, email error");
+			else {
+				logger("Task completed, email sent");
+
 				const completedTask = await prisma.task.update({
 					where: { id: Number(data.taskId) },
 					data: {
@@ -100,16 +92,10 @@ export default async function completeTask(prevState: any, formData: FormData) {
 		}
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
-		if (error instanceof z.ZodError) {
-			for (const subError of error.errors) {
-				return { message: subError.message };
-			}
-		} else {
-			// Handle other errors
-			return { message: (error as any).message };
-		}
+		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };
+		// Handle other errors
+		else return { message: (error as any).message };
 	}
-	console.log(emailStatus);
 	redirect(
 		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastManager=fail" : emailStatus?.queued ? "?toastManager=success" : ""}${
 			emailStatus?.id ? `&emailId=${emailStatus.id}` : null

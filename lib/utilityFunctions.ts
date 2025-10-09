@@ -69,7 +69,7 @@ export async function checkIfTaskOverdue(taskId: number) {
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
 	if (task?.statusId === 1 && isPast(task.dueDate)) {
-		console.log(`Task ${taskId} is overdue!`);
+		logger(`Task ${taskId} is overdue!`);
 
 		// send email notification to assignee and their manager
 		await sendEmail({
@@ -84,7 +84,7 @@ export async function checkIfTaskOverdue(taskId: number) {
 			data: { statusId: 5 },
 		});
 	} else if (task?.statusId === 5 && !isPast(task.dueDate)) {
-		console.log(`Task ${taskId} is no longer overdue.`);
+		logger(`Task ${taskId} is no longer overdue.`);
 		await prisma.task.update({
 			where: { id: taskId },
 			data: { statusId: 1 },
@@ -132,15 +132,16 @@ export async function logVisitor(user: User | null, page: string, source: string
 	const sourceText = !source ? null : sourceTexts[source as keyof typeof sourceTexts];
 
 	if (!user) {
-		console.log(`A guest visitor accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
-		log(`A guest visitor accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`, `${process.env.LOGS_PATH}/${logDate()}`);
+		logger(`A guest visitor accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
 		return;
 	}
 
 	userDetails = await getUserDetails(user.id);
-	console.log(`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
-	log(
-		`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`,
-		`${process.env.LOGS_PATH}/${logDate()}`
-	);
+	logger(`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
+}
+
+// Simple logger function to log to console and file
+export function logger(message: string) {
+	logger(message);
+	log(message, `${process.env.LOGS_PATH}/${logDate()}`);
 }
