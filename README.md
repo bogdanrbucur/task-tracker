@@ -96,27 +96,30 @@ See all changes made to tasks, enforcing accountability.
 4. Create a `.env.local` file with the following content:
 
 ```env
-`RESEND_API_KEY="re_123"`
-`BASE_URL="https://example.com"`
-`EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"`
-`DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"`
-`MAX_FAILED_ATTEMPTS_EMAIL=10`
-`MAX_FAILED_ATTEMPTS_IP=50`
-`LOCKOUT_MINUTES=15`
-`DEPLOYMENT="blue"`
-`PORT=3001`
+RESEND_API_KEY="re_123"
+BASE_URL="https://example.com"
+EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"
+DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"
+MAX_FAILED_ATTEMPTS_EMAIL=10
+MAX_FAILED_ATTEMPTS_IP=50
+LOCKOUT_MINUTES=15
+DEPLOYMENT="blue"
+PORT=3001
 ```
+
+Example in `/config_examples`
 
 Enter your Resend API key and your base URL.
 Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tasks API so it cannot be executed remotely.
 
-5. Open `setup.sh` and change `APP_USER` to the Linux environment user
-6. Update `DATABASE_URL`, `FILES_PATH` and `LOGS_PATH` in `.env` as required
-7. If deployed on Linux, run `./setup.sh` to create the database and files folders and set their permissions. The folders in the paths defined in `.env` will be created. If not deploying on Linux, create the paths folders manually
-8. Run `npx prisma migrate deploy` to inialize the database
-9. `npm run dev` to run in dev mode
-10. `npm run build` to build the app and `npm start` to run in production mode
-11. `npx prisma studio` and manually add the statuses:
+5. Create a `.env` and a `.env.test` file. Examples in `/config_examples`
+6. Open `setup.sh` and change `APP_USER` to the Linux environment user
+7. Update `DATABASE_URL`, `FILES_PATH` and `LOGS_PATH` in `.env` as required
+8. If deployed on Linux, run `./setup.sh` to create the database and files folders and set their permissions. The folders in the paths defined in `.env` will be created. If not deploying on Linux, create the paths folders manually
+9. Run `npx prisma migrate deploy` to inialize the database
+10. `npm run dev` to run in dev mode
+11. `npm run build` to build the app and `npm start` to run in production mode
+12. `npx prisma studio` and manually add the statuses:
 
 | ID  | Name        | Display Name   | Color  |
 | --- | ----------- | -------------- | ------ |
