@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, Check } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import closeTask from "../_actions/closeTask";
 
 const initialState = {
@@ -22,7 +22,7 @@ const initialState = {
 };
 
 export function CloseTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
-	const [state, formAction] = useFormState(closeTask, initialState);
+	const [state, formAction] = useActionState(closeTask, initialState);
 
 	return (
 		<AlertDialog>

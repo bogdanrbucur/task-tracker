@@ -7,14 +7,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useActionState, useEffect } from "react";
 import forgotUserPassword from "../_actions/forgotPassword";
-import { useEffect } from "react";
+
 
 const initialState = { success: false, message: undefined };
 
 export default function ForgotPasswordForm() {
-	const [formState, formAction] = useFormState(forgotUserPassword, initialState);
+	const [formState, formAction] = useActionState(forgotUserPassword, initialState);
 
 	useEffect(() => {
 		if (formState?.success) window.location.href = "/";

@@ -33,7 +33,8 @@ function ClientToast({ status, message, emailId }: { status?: "success" | "fail"
 		return () => clearTimeout(timer);
 	}, [status, message]);
 
-	return <Toaster richColors />;
+	// Global Toaster is mounted at the app root via `GlobalToaster`.
+	return null;
 }
 
 export default ClientToast;

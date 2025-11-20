@@ -18,11 +18,14 @@ export default async function UsersPage({ searchParams }: Props) {
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
 
+	// Await the full searchParams object - Next.js 15+ change
+	const rawSearchParams = await searchParams;
+
 	// Only admins can see all users
 	if (!userPermissions?.isAdmin) return notFound();
 
 	// Status filtering - hide inactive users by default
-	let status = searchParams.status ? searchParams.status : ["active", "unverified"].join(",");
+	let status = rawSearchParams.status ? rawSearchParams.status : ["active", "unverified"].join(",");
 	let statuses: string[] | undefined | string = undefined;
 	// If there are statuses selected, remove any leading/trailing whitespace and split the terms into an array
 	if (status) {
@@ -31,10 +34,10 @@ export default async function UsersPage({ searchParams }: Props) {
 	}
 
 	// Sort order
-	const sortOrder = searchParams.sortOrder;
+	const sortOrder = rawSearchParams.sortOrder;
 
 	// Search terms
-	let searchTermsQuery = searchParams.search ? searchParams.search : undefined;
+	let searchTermsQuery = rawSearchParams.search ? rawSearchParams.search : undefined;
 	let searchTerms: string[] | undefined | string = undefined;
 	// If there are search terms, remove any leading/trailing whitespace and split the terms into an array
 	if (searchTermsQuery) {
@@ -61,11 +64,11 @@ export default async function UsersPage({ searchParams }: Props) {
 		};
 	}
 
-	let orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
+	let orderBy = rawSearchParams.orderBy && columnNames.map((column) => column).includes(rawSearchParams.orderBy) ? { [rawSearchParams.orderBy]: sortOrder } : undefined;
 
 	// if orderBy === "manager", order by manager's firstName prop
 	let newOrderBy: Prisma.UserOrderByWithRelationInput | undefined = undefined;
-	if (searchParams.orderBy === "manager") {
+	if (rawSearchParams.orderBy === "manager") {
 		newOrderBy = {
 			manager: {
 				firstName: sortOrder, // sortOrder is either 'asc' or 'desc'
@@ -74,7 +77,7 @@ export default async function UsersPage({ searchParams }: Props) {
 		orderBy = undefined;
 	}
 	// if orderBy === "assignedTasks", order by number of open tasks
-	if (searchParams.orderBy === "assignedTasks") {
+	if (rawSearchParams.orderBy === "assignedTasks") {
 		newOrderBy = {
 			assignedTasks: {
 				_count: sortOrder,
@@ -83,7 +86,7 @@ export default async function UsersPage({ searchParams }: Props) {
 		orderBy = undefined;
 	}
 	// if orderBy === "department", order by name of open department
-	if (searchParams.orderBy === "department") {
+	if (rawSearchParams.orderBy === "department") {
 		newOrderBy = {
 			department: {
 				name: sortOrder,
@@ -92,7 +95,7 @@ export default async function UsersPage({ searchParams }: Props) {
 		orderBy = undefined;
 	}
 
-	const page = searchParams.page ? parseInt(searchParams.page) : 1;
+	const page = rawSearchParams.page ? parseInt(rawSearchParams.page) : 1;
 	const pageSize = 12;
 	const users = await prisma.user.findMany({
 		where,
@@ -104,11 +107,19 @@ export default async function UsersPage({ searchParams }: Props) {
 
 	const userCount = await prisma.user.count({ where });
 
+	const plainSearchParams = {
+		status: rawSearchParams.status,
+		orderBy: rawSearchParams.orderBy,
+		sortOrder: rawSearchParams.sortOrder,
+		page: rawSearchParams.page,
+		search: rawSearchParams.search,
+	};
+
 	return (
 		<Card className="container mx-auto px-0">
 			<div className="fade-in container mx-auto p-2 md:px-7">
 				<UsersTopSection />
-				<UserTable searchParams={searchParams} users={users as UserExtended[]} />
+				<UserTable searchParams={plainSearchParams} users={users as UserExtended[]} />
 				<Pagination itemCount={userCount} pageSize={pageSize} currentPage={page} />
 			</div>
 		</Card>

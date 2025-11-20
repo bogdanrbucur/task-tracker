@@ -13,7 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, DoorOpen } from "lucide-react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import reopenTask from "../_actions/reopenTask";
 
 const initialState = {
@@ -21,7 +22,7 @@ const initialState = {
 };
 
 export function ReopenTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
-	const [state, formAction] = useFormState(reopenTask, initialState);
+	const [state, formAction] = useActionState(reopenTask, initialState);
 
 	return (
 		<AlertDialog>

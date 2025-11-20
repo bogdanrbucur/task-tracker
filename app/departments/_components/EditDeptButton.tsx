@@ -2,8 +2,8 @@
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Department } from "@prisma/client";
 import { AlertCircle, SquarePen } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -24,7 +24,7 @@ const initialState = {
 };
 
 export default function EditDeptButton({ dept }: { dept?: Department }) {
-	const [state, formAction] = useFormState(editDept, initialState);
+	const [state, formAction] = useActionState(editDept, initialState);
 	const isNewDept = !dept;
 
 	// Crappy state workaround to keep the dialog open

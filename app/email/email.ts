@@ -2,6 +2,7 @@ import { logger } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { render } from "@react-email/render";
+import React from "react";
 import CommentMentionEmail from "./templates/CommentMention";
 import NewTaskEmail from "./templates/NewTaskAssigned";
 import NewUserNotConfirmedEmail from "./templates/NewUserNotConfirmed";
@@ -62,23 +63,23 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 
 	logger(`Sending ${emailType} email to ${recipients}...`);
 
-	let emailTemplate;
+	let emailTemplate: any = null;
 	let subject = "";
 	switch (emailType) {
 		case "taskAssigned":
-			emailTemplate = NewTaskEmail({ baseUrl, task: task! });
+			emailTemplate = React.createElement(NewTaskEmail, { baseUrl, task: task! });
 			subject = `New task assigned - ${task?.title}`;
 			break;
 		case "taskDueSoon":
-			emailTemplate = TaskDueSoonEmail({ baseUrl, task: task! });
+			emailTemplate = React.createElement(TaskDueSoonEmail, { baseUrl, task: task! });
 			subject = `Task due soon - ${task?.title}`;
 			break;
 		case "taskOverdue":
-			emailTemplate = TaskOverdueEmail({ baseUrl, task: task! });
+			emailTemplate = React.createElement(TaskOverdueEmail, { baseUrl, task: task! });
 			subject = `Task overdue - ${task?.title}`;
 			break;
 		case "taskCompleted":
-			emailTemplate = TaskCompletedEmail({
+			emailTemplate = React.createElement(TaskCompletedEmail, {
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
 				comment: comment!,
@@ -88,7 +89,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			subject = `Task ready for review - ${task?.title}`;
 			break;
 		case "taskReopened":
-			emailTemplate = TaskReopenedEmail({
+			emailTemplate = React.createElement(TaskReopenedEmail, {
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
 				comment: comment!,
@@ -98,7 +99,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			subject = `Task reopened - ${task?.title}`;
 			break;
 		case "commentMention":
-			emailTemplate = CommentMentionEmail({
+			emailTemplate = React.createElement(CommentMentionEmail, {
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
 				comment: comment!,
@@ -109,7 +110,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			subject = `Comment mention in task - ${task?.title}`;
 			break;
 		case "taskCancelled":
-			emailTemplate = TaskCancelledEmail({
+			emailTemplate = React.createElement(TaskCancelledEmail, {
 				userFirstName: userFirstName!,
 				userLastName: userLastName!,
 				comment: comment!,
@@ -119,36 +120,44 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			subject = `Task cancelled - ${task?.title}`;
 			break;
 		case "passwordResetRequest":
-			emailTemplate = PasswordResetEmail({
-				baseUrl,
-				firstName: userFirstName!,
-				token: comment!,
-			});
+			emailTemplate = React.createElement(PasswordResetEmail, { baseUrl, firstName: userFirstName!, token: comment! });
 			subject = "Password reset request";
 			break;
 		case "newUserRegistration":
-			emailTemplate = NewUserRegistered({
-				baseUrl,
-				firstName: userFirstName!,
-				token: comment!,
-			});
+			emailTemplate = React.createElement(NewUserRegistered, { baseUrl, firstName: userFirstName!, token: comment! });
 			subject = "New account created";
 			break;
 		case "newUserNotConfirmed":
-			emailTemplate = NewUserNotConfirmedEmail({
-				baseUrl,
-				firstName: userFirstName!,
-				lastName: userLastName!,
-				userId: comment!,
-			});
+			emailTemplate = React.createElement(NewUserNotConfirmedEmail, { baseUrl, firstName: userFirstName!, lastName: userLastName!, userId: comment! });
 			subject = `Newly registered user not confirmed - ${userFirstName} ${userLastName}`;
 			break;
 		default:
-			null;
+			emailTemplate = null;
 	}
 
 	// Convert HTML email to plaintext
-	const plainTextBody = await render(emailTemplate!, { plainText: true });
+	if (!emailTemplate) {
+		logger(`No email template found for type: ${emailType}`);
+		return { queued: false, id: null! };
+	}
+
+	let plainTextBody = await render(emailTemplate, { plainText: true });
+	// Debug: also render HTML and log both outputs to help diagnose blank emails
+	const htmlBody = await render(emailTemplate);
+	// If plain text rendering produced nothing, create a simple fallback by stripping tags from HTML
+	if (!plainTextBody || plainTextBody.trim().length === 0) {
+		try {
+			// naive tag stripper for fallback (keeps text content)
+			const stripped = htmlBody
+				.replace(/<style[\s\S]*?<\/style>/gi, "")
+				.replace(/<script[\s\S]*?<\/script>/gi, "")
+				.replace(/<[^>]+>/g, "");
+			plainTextBody = stripped.replace(/\s+/g, " ").trim().slice(0, 2000);
+			if (!plainTextBody) plainTextBody = `Open the app to view this email: ${baseUrl}`;
+		} catch (e) {
+			plainTextBody = `Open the app to view this email: ${baseUrl}`;
+		}
+	}
 
 	let email;
 	const idempotencyKey = createEmailIdempotencyKey(emailType, subject, recipients, plainTextBody);
@@ -161,7 +170,7 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 					recipient: Array.isArray(recipients) ? recipients.join(", ") : recipients,
 					cc: cc ? (Array.isArray(cc) ? cc.join(", ") : cc) : null,
 					subject,
-					bodyHtml: render(emailTemplate!),
+					bodyHtml: htmlBody,
 					bodyPlain: plainTextBody,
 					idempotencyKey,
 				},

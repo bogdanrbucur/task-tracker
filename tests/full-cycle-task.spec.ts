@@ -136,7 +136,7 @@ test.describe("Task creation and closing", () => {
 
 		await test.step("Select due date", async () => {
 			await page.click('button:has-text("Pick a date")');
-			while (!(await page.locator('text="December 2026"').isVisible())) await page.click('[aria-label="Go to next month"]');
+			while (!(await page.locator('text="December 2026"').isVisible())) await page.click('[aria-label="Go to the Next Month"]');
 			const ss = await page.screenshot({ path: "./tests/7-task-creation.png" });
 			test.info().attach("task-creation", { body: ss, contentType: "image/png" });
 			await page.click('button:has-text("31")');
@@ -322,10 +322,10 @@ test.describe("Task creation and closing", () => {
 		});
 
 		await test.step("Completion attachment is visible", async () => await expect(page.getByTestId("completion-attachment")).toContainText(testAttachmentDescription));
-		await test.step("Task history is updated with completion", async () =>
-			await expect(page.locator('div[class="rounded-lg border bg-card text-card-foreground shadow-sm"]')).toContainText(
-				`Task completed by ${user2firstName} ${user2lastName}: ${taskCompletionComment}`
-			));
+		await test.step("Task history is updated with completion", async () => {
+			const expectedCompletion = `Task completed by ${user2firstName} ${user2lastName}: ${taskCompletionComment}`;
+			await expect(page.locator('[data-testid="change-text"]').filter({ hasText: expectedCompletion })).toHaveCount(1);
+		});
 		await test.step("Task status updated to Pending Review", async () => await expect(page.locator('[data-testid="status-badge"]')).toContainText("Pending Review"));
 
 		await context.close();

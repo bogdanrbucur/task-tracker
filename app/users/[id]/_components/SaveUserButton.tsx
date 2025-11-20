@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, DoorOpen } from "lucide-react";
-import { useFormState } from "react-dom";
+import { AlertCircle } from "lucide-react";
+import { useActionState } from "react";
 import reopenTask from "../../../(protected)/tasks/[id]/_actions/reopenTask";
 
 const initialState = {
@@ -21,7 +21,7 @@ const initialState = {
 };
 
 export function SaveUserButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
-	const [state, formAction] = useFormState(reopenTask, initialState);
+	const [state, formAction] = useActionState(reopenTask, initialState);
 
 	return (
 		<AlertDialog>

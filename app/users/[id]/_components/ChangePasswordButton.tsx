@@ -1,8 +1,7 @@
 "use client";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, KeySquare } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -23,7 +22,7 @@ const initialState = {
 };
 
 export default function ChangePasswordButton({ userId }: { userId: string }) {
-	const [state, formAction] = useFormState(changeUserPassword, initialState);
+	const [state, formAction] = useActionState(changeUserPassword, initialState);
 
 	// Crappy state workaround to keep the dialog open
 	const [dialogOpen, setDialogOpen] = useState(false);

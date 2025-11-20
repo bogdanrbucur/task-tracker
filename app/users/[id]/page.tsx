@@ -24,8 +24,9 @@ import UserStats from "./_components/UserStats/UserStats";
 export const revalidate = 2;
 
 export default async function UserPage({ params }: { params: { id: string } }) {
-	// error handling if id is not a number
-	if (!params.id) return notFound();
+	// Destrucutre and await the id param
+	const { id } = await params;
+	if (!id) return notFound();
 
 	// Check user permissions
 	const { user } = await getAuth();
@@ -34,7 +35,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	const userPermissions = await getPermissions(user?.id);
 
 	// Get the user details
-	const userDetails = await getUserDetails(params.id);
+	const userDetails = await getUserDetails(id);
 	if (!userDetails) return notFound();
 
 	// Get the user with the hashed password to determine if the user was ever active

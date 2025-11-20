@@ -11,9 +11,8 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AlertCircle, UserRoundX } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
-import { toast, Toaster } from "sonner";
+import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "../../../../components/ui/button";
 import deleteUser from "../_actions/deleteUser";
 
@@ -24,7 +23,7 @@ const initialState = {
 };
 
 export default function DeleteUserButton({ userId }: { userId: string }) {
-	const [formState, formAction] = useFormState(deleteUser, initialState);
+	const [formState, formAction] = useActionState(deleteUser, initialState);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
 	// Watch for the success state to show a toast notification
@@ -69,7 +68,6 @@ export default function DeleteUserButton({ userId }: { userId: string }) {
 					</form>
 				</AlertDialogContent>
 			</AlertDialog>
-			<Toaster richColors />
 		</>
 	);
 }

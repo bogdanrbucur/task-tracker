@@ -6,7 +6,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
-import { UserExtended, prismaExtendedUserSelection } from "@/app/users/_actions/getUserById";
+import { prismaExtendedUserSelection, UserExtended } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameNormal } from "@/components/AvatarAndName";
 import ClientToast from "@/components/ClientToast";
 import StatusBadge from "@/components/StatusBadge";
@@ -37,16 +37,20 @@ interface Props {
 }
 
 export default async function TaskDetailsPage({ params, searchParams }: Props) {
-	// error handling if id is not a number
-	if (!Number(params.id)) return notFound();
+	// Destructure and await the id param
+	const { id } = await params;
+	if (!Number(id)) return notFound();
+
+	// Await the full searchParams object - Next.js 15+ change
+	const rawSearchParams = await searchParams;
 
 	// Check user permissions
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
-	await logVisitor(user, `task ${params.id}`, searchParams.from);
+	await logVisitor(user, `task ${id}`, rawSearchParams.from);
 	// Get the task details, along with the assigned user details
 	const task = await prisma.task.findUnique({
-		where: { id: Number(params.id) },
+		where: { id: Number(id) },
 		include: {
 			assignedToUser: {
 				select: prismaExtendedUserSelection,
@@ -206,22 +210,22 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 				</div>
 			</div>
 			<ClientToast
-				status={searchParams.toastUser}
+				status={rawSearchParams.toastUser}
 				message={
-					searchParams.toastUser === "success"
+					rawSearchParams.toastUser === "success"
 						? "Sending email to assigned user..."
-						: searchParams.toastUser === "fail"
+						: rawSearchParams.toastUser === "fail"
 						? "Failed to send email to assigned user."
 						: undefined
 				}
-				emailId={searchParams.emailId}
+				emailId={rawSearchParams.emailId}
 			/>
 			<ClientToast
-				status={searchParams.toastManager}
+				status={rawSearchParams.toastManager}
 				message={
-					searchParams.toastManager === "success" ? "Emailing the manager..." : searchParams.toastManager === "fail" ? "Failed to send email to the manager." : undefined
+					rawSearchParams.toastManager === "success" ? "Emailing the manager..." : rawSearchParams.toastManager === "fail" ? "Failed to send email to the manager." : undefined
 				}
-				emailId={searchParams.emailId}
+				emailId={rawSearchParams.emailId}
 			/>
 		</Card>
 	);

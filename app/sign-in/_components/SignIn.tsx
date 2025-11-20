@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
+
 import signIn from "../_actions/sign-in";
 
 const initialState = {
@@ -16,7 +17,7 @@ const initialState = {
 };
 
 export default function SignInForm() {
-	const [state, formAction] = useFormState(signIn, initialState);
+	const [state, formAction] = useActionState(signIn, initialState);
 
 	return (
 		<div className="fade-in flex flex-col items-center justify-center h-screen -mt-36">

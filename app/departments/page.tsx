@@ -18,12 +18,15 @@ export default async function DepartmentsPage({ searchParams }: Props) {
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
 
+	// Await the full searchParams object - Next.js 15+ change
+	const rawSearchParams = await searchParams;
+
 	// Only admins can see all users
 	if (!userPermissions?.isAdmin) return notFound();
 
-	const sortOrder = searchParams.sortOrder;
-	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
-	const page = searchParams.page ? parseInt(searchParams.page) : 1;
+	const sortOrder = rawSearchParams.sortOrder;
+	const orderBy = rawSearchParams.orderBy && columnNames.map((column) => column).includes(rawSearchParams.orderBy) ? { [rawSearchParams.orderBy]: sortOrder } : undefined;
+	const page = rawSearchParams.page ? parseInt(rawSearchParams.page) : 1;
 	const pageSize = 12;
 	const departments = (await prisma.department.findMany({
 		orderBy,
@@ -37,7 +40,7 @@ export default async function DepartmentsPage({ searchParams }: Props) {
 		<Card className="container mx-auto px-0 md:px-0 max-w-2xl">
 			<div className="fade-in container mx-auto p-2 md:px-7">
 				<DepartmentsTopSection />
-				<DepartmentsTable searchParams={searchParams} departments={departments} />
+				<DepartmentsTable searchParams={rawSearchParams} departments={departments} />
 			</div>
 		</Card>
 	);

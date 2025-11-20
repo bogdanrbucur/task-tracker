@@ -1,14 +1,14 @@
-import { sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
+import crypto from "crypto";
 import { differenceInCalendarDays, format, isPast, isSameDay, isToday } from "date-fns";
+import fs from "fs-extra";
 import log from "log-to-file";
 import { User } from "lucia";
 import { isIPv4, isIPv6 } from "net";
 import { headers } from "next/headers";
 import sharp from "sharp";
-import crypto from "crypto";
 
 export function formatDate(date: Date) {
 	const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -72,6 +72,9 @@ export async function checkIfTaskOverdue(taskId: number) {
 	if (task?.statusId === 1 && isPast(task.dueDate)) {
 		logger(`Task ${taskId} is overdue!`);
 
+		// Dynamically import sendEmail to avoid circular dependency with app/email/email
+		const { sendEmail } = await import("@/app/email/email");
+
 		// send email notification to assignee and their manager
 		await sendEmail({
 			recipients: task.assignedToUser ? task.assignedToUser.email : "",
@@ -116,8 +119,8 @@ export function normalizeIP(ip: string): string {
 export type NavigationSourceTypes = "emailNewTask" | "emailTaskDueSoon" | "emailTaskOverdue" | "emailTaskReadyForReview" | null;
 
 export async function logVisitor(user: User | null, page: string, source: string | null) {
-	// Get client IP address
-	const headersList = headers();
+	// Get client IP address (await headers() per Next.js sync-dynamic-apis)
+	const headersList = await headers();
 	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
 	const ip = normalizeIP(rawIP);
 
@@ -144,6 +147,8 @@ export async function logVisitor(user: User | null, page: string, source: string
 // Simple logger function to log to console and file
 export function logger(message: string) {
 	console.log(message);
+	// Create the logs directory if it doesn't exist
+	fs.ensureDirSync(process.env.LOGS_PATH || "./logs");
 	log(message, `${process.env.LOGS_PATH}/${logDate()}`);
 }
 

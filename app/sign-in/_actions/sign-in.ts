@@ -16,7 +16,7 @@ export default async function signIn(prevState: any, formData: FormData) {
 	const lockoutMinutes = process.env.LOCKOUT_MINUTES || 5;
 
 	// Get client IP address
-	const headersList = headers();
+	const headersList = await headers();
 	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
 	const ip = normalizeIP(rawIP);
 
@@ -108,7 +108,8 @@ export default async function signIn(prevState: any, formData: FormData) {
 
 		// Create a session cookie and set it in the response headers
 		const sessionCookie = lucia.createSessionCookie(session.id);
-		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+		const cookieStore = await cookies();
+		cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 		logger(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`);
 
 		redirect("/");

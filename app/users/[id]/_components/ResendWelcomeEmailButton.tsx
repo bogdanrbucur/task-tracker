@@ -1,8 +1,7 @@
 "use client";
 import { Gift } from "lucide-react";
-import { useEffect } from "react";
-import { useFormState } from "react-dom";
-import { toast, Toaster } from "sonner";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "../../../../components/ui/button";
 import passResetToken from "../_actions/passResetToken";
 
@@ -13,7 +12,7 @@ const initialState = {
 };
 
 export default function ResendWelcomeEmailButton({ userId }: { userId: string }) {
-	const [formState, formAction] = useFormState(passResetToken, initialState);
+	const [formState, formAction] = useActionState(passResetToken, initialState);
 
 	// Watch if the email was queued and show a toast
 	useEffect(() => {
@@ -26,7 +25,6 @@ export default function ResendWelcomeEmailButton({ userId }: { userId: string })
 
 	return (
 		<form action={formAction}>
-			<Toaster richColors />
 			<Button type="submit" size="sm" className="gap-1">
 				Resend welcome email
 				<Gift size="18" />

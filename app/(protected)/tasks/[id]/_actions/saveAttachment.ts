@@ -18,11 +18,11 @@ export default async function saveAttachment(attachment: File, task: Task, attac
 			if (oldattachment) await fs.remove(`${attachmentsFolderPath}/${oldattachment}`);
 		}
 
-		// If the task doesn't have an attachment folder, create one
-		else await fs.mkdir(attachmentsFolderPath);
+		// Ensure the attachment folder exists (recursive to create parent FILES_PATH if missing)
+		await fs.ensureDir(attachmentsFolderPath);
 
-		// Save the attachment locally
-		fs.writeFile(`${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`, new Uint8Array(attachmentBuffer));
+		// Save the attachment locally (await the write)
+		await fs.writeFile(`${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`, new Uint8Array(attachmentBuffer));
 
 		logger(`Attachment saved to ${process.env.FILES_PATH}/attachments/${task.id}/${type}_${attachment.name}`);
 

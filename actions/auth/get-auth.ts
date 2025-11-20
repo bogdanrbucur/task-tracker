@@ -6,7 +6,8 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 
 export const getAuth = cache(async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
-	const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+	const cookiesStore = await cookies();
+	const sessionId = cookiesStore.get(lucia.sessionCookieName)?.value ?? null;
 	if (!sessionId) {
 		return {
 			user: null,
@@ -19,11 +20,11 @@ export const getAuth = cache(async (): Promise<{ user: User; session: Session } 
 	try {
 		if (result.session && result.session.fresh) {
 			const sessionCookie = lucia.createSessionCookie(result.session.id);
-			cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+			cookiesStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 		}
 		if (!result.session) {
 			const sessionCookie = lucia.createBlankSessionCookie();
-			cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+			cookiesStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 		}
 	} catch {}
 	return result;

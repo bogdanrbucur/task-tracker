@@ -11,10 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Department } from "@prisma/client";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
 import { UserExtended } from "../../_actions/getUserById";
 import submitUser from "../../new/submitUser";
+
 
 interface Props {
 	editor: string;
@@ -28,7 +28,7 @@ const initialState = {
 };
 
 export default function UserForm({ editor, user, users, departments }: Props) {
-	const [formState, formAction] = useFormState(submitUser, initialState);
+	const [formState, formAction] = useActionState(submitUser, initialState);
 	const [managerId, setManagerId] = useState<string | null>(null);
 	const [departmentId, setDepartmentId] = useState<number | null>(null);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
