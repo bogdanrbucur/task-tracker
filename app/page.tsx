@@ -27,7 +27,11 @@ export default async function Home({
 }) {
 	// Check user permissions
 	const { user } = await getAuth();
-	await logVisitor(user, "the home page", searchParams.from);
+
+// Await the full searchParams object - Next.js 15+ change
+	const rawSearchParams = await searchParams;
+
+	await logVisitor(user, "the home page", rawSearchParams.from);
 
 	let userDetails;
 	let hasSubordinates = false;

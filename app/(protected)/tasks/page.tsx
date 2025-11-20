@@ -33,6 +33,9 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 	const { user } = await getAuth();
 	if (!user) return notFound();
 
+	// Await the full searchParams object - Next.js 15+ change
+	const rawSearchParams = await searchParams;
+
 	// Get the users this user can view
 	const userDetails = await getUserDetails(user.id);
 	let viewableUsers: string[] = [];
@@ -46,11 +49,11 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 	}
 
 	// Split the status string into an array of numbers, as multiple statuses can be selected
-	const statuses = searchParams.status ? searchParams.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
-	const taskUser = searchParams.user ? searchParams.user : undefined;
-	const department = searchParams.dept ? searchParams.dept : undefined;
-	const sortOrder = searchParams.sortOrder;
-	let searchTermsQuery = searchParams.search ? searchParams.search : undefined;
+	const statuses = rawSearchParams.status ? rawSearchParams.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
+	const taskUser = rawSearchParams.user ? rawSearchParams.user : undefined;
+	const department = rawSearchParams.dept ? rawSearchParams.dept : undefined;
+	const sortOrder = rawSearchParams.sortOrder;
+	let searchTermsQuery = rawSearchParams.search ? rawSearchParams.search : undefined;
 	let searchTerms: string[] | undefined | string = undefined;
 	// If there are search terms, remove any leading/trailing whitespace and split the terms into an array
 	if (searchTermsQuery) {
@@ -106,8 +109,8 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
 	}
-	const orderBy = searchParams.orderBy && columnNames.map((column) => column).includes(searchParams.orderBy) ? { [searchParams.orderBy]: sortOrder } : undefined;
-	const page = searchParams.page ? parseInt(searchParams.page) : 1;
+	const orderBy = rawSearchParams.orderBy && columnNames.map((column) => column).includes(rawSearchParams.orderBy) ? { [rawSearchParams.orderBy]: sortOrder } : undefined;
+	const page = rawSearchParams.page ? parseInt(rawSearchParams.page) : 1;
 	const pageSize = 10;
 
 	let tasks = await prisma.task.findMany({
@@ -131,11 +134,21 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 
 	console.timeEnd(`Tasks search: ${searchTermsQuery ? searchTermsQuery : "no search terms"}`);
 
+	const query: TasksQuery = {
+		status: rawSearchParams.status,
+		orderBy: rawSearchParams.orderBy,
+		sortOrder: rawSearchParams.sortOrder,
+		page: rawSearchParams.page,
+		user: rawSearchParams.user,
+		search: rawSearchParams.search,
+		dept: rawSearchParams.dept,
+	};
+
 	return (
 		<Card className="container mx-auto px-0 md:px-0">
 			<div className="fade-in container p-2 md:px-7">
 				<TaskTopSection />
-				<TaskTable tasks={tasks as TaskExtended[]} searchParams={searchParams} viewableUsers={viewableUsers} />
+				<TaskTable tasks={tasks as TaskExtended[]} searchParams={query} viewableUsers={viewableUsers} />
 				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
 			</div>
 		</Card>

@@ -18,9 +18,9 @@ const Navbar = async () => {
 	const userPermissions = await getPermissions(user?.id);
 
 	// Get the user details for the welcome message
-	let userProps;
+	let userDetails;
 	if (user) {
-		userProps = await getUserDetails(user.id);
+		userDetails = await getUserDetails(user.id);
 	}
 
 	return (
@@ -37,9 +37,9 @@ const Navbar = async () => {
 				{userPermissions?.isAdmin && <AdminMenu />}
 			</section>
 			<div className="flex items-center space-x-1 md:space-x-3">
-				{user && (
+				{user && userDetails && (
 					<span className="hidden md:block">
-						<NavBarWelcome userProps={userProps!} />
+						<NavBarWelcome user={{ id: userDetails.id, firstName: userDetails.firstName }} />
 					</span>
 				)}
 				{user && (

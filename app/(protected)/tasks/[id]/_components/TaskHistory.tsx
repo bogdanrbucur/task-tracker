@@ -11,7 +11,7 @@ const TaskHistory = ({ changes }: { changes: Change[] }) => {
 						<ClockIcon />
 						<div className="text-xs text-gray-500 dark:text-gray-400">{formatDateWithTime(change.time)}</div>
 					</div>
-					<div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{change.changes}</div>
+					<div className="text-xs md:text-sm text-gray-500 dark:text-gray-400" data-testid="change-text">{change.changes}</div>
 				</div>
 			))}
 		</CardContent>

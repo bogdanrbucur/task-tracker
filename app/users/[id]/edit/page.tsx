@@ -11,8 +11,11 @@ const EditUserPage = async ({ params }: { params: { id: string } }) => {
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
 
+	// Await the id param
+	const rawParams = await params;
+
 	// Fetch the task with the given ID
-	const selectedUser = await getUserDetails(params.id);
+	const selectedUser = await getUserDetails(rawParams.id);
 
 	// If the user is not found, return a 404 page, included in Next.js
 	if (!selectedUser) return notFound();

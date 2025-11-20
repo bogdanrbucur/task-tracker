@@ -9,9 +9,9 @@ import useMentionsListPosition from "@/hooks/useMentionsListPosition";
 import { Avatar } from "@prisma/client";
 import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useFormState } from "react-dom";
-import { Toaster, toast } from "sonner";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+
 import addComment from "../_actions/addComment";
 import CommentSkeleton from "./CommentSkeleton";
 import PostCommentButton from "./PostCommentButton";
@@ -38,12 +38,12 @@ type CommentDetails = {
 };
 
 const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string; taskId: number; comments: CommentDetails[]; users: UserExtended[] }) => {
-	const [formState, formAction] = useFormState(addComment, initialState);
+	const [formState, formAction] = useActionState(addComment, initialState);
 
 	// Form reference to reset the form after submission
-	const formRef = useRef<HTMLFormElement>(null);
-	const textInputRef = useRef<HTMLTextAreaElement>(null);
-	const mentionsListRef = useRef(null); // Mentions list ref
+	const formRef = useRef<HTMLFormElement>(null!);
+	const textInputRef = useRef<HTMLTextAreaElement>(null!);
+	const mentionsListRef = useRef<HTMLUListElement>(null!); // Mentions list ref
 
 	// For @ mentions
 	const [inputValue, setInputValue] = useState("");
@@ -190,7 +190,6 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 					</div>
 				)}
 			</form>
-			<Toaster richColors />
 		</div>
 	);
 };

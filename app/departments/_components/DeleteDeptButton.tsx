@@ -2,8 +2,8 @@
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Department } from "@prisma/client";
 import { AlertCircle, CircleX } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -23,7 +23,7 @@ const initialState = {
 };
 
 export default function DeleteDeptButton({ dept }: { dept: Department }) {
-	const [state, formAction] = useFormState(deleteDept, initialState);
+	const [state, formAction] = useActionState(deleteDept, initialState);
 
 	// Crappy state workaround to keep the dialog open
 	const [dialogOpen, setDialogOpen] = useState(false);

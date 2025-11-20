@@ -14,8 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import completeTask from "../_actions/completeTask";
+
 import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
 
 const initialState = {
@@ -23,7 +25,7 @@ const initialState = {
 };
 
 export function CompleteTaskButton({ userId, taskId, taskAttachments }: { userId: string | undefined; taskId: number; taskAttachments: TaskAttachments[] }) {
-	const [state, formAction] = useFormState(completeTask, initialState);
+	const [state, formAction] = useActionState(completeTask, initialState);
 	const router = useRouter(); // Initialize useRouter
 
 	// Refresh the page to refresh the attachments list when closing the dialog box

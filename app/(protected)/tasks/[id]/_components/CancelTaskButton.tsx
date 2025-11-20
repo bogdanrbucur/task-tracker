@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, CircleX } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useActionState }  from "react";
 import cancelTask from "../_actions/cancelTask";
 
 const initialState = {
@@ -21,7 +21,7 @@ const initialState = {
 };
 
 export function CancelTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
-	const [state, formAction] = useFormState(cancelTask, initialState);
+	const [state, formAction] = useActionState(cancelTask, initialState);
 
 	return (
 		<AlertDialog>

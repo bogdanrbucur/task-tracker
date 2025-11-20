@@ -1,17 +1,16 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRef } from "react";
-import { useFormState } from "react-dom";
-import submitUser from "../../new/submitUser";
+import { useActionState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import submitUser from "../../new/submitUser";
 
 const initialState = {
 	message: null,
 };
 
 export default function ImagePicker() {
-	const [formState, formAction] = useFormState(submitUser, initialState);
+	const [formState, formAction] = useActionState(submitUser, initialState);
 	const fileInput = useRef<HTMLInputElement>(null);
 
 	const handleFileChange = async (event: { preventDefault: () => void }) => {

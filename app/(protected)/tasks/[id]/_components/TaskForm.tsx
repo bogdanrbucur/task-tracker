@@ -11,10 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 import submitTask from "../../new/_actions/submitTask";
 import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
+
 
 const initialState = {
 	message: null,
@@ -23,7 +24,7 @@ const initialState = {
 const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; task?: any }) => {
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-	const [formState, formAction] = useFormState(submitTask, initialState);
+	const [formState, formAction] = useActionState(submitTask, initialState);
 
 	return (
 		<Card className="container mx-auto max-w-4xl px-3 py-3 md:px-8 md:py-6">

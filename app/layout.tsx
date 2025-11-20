@@ -6,6 +6,7 @@ import Footer from "./_components/Footer";
 import Navbar from "./_components/Navbar";
 import "./globals.css";
 import EmailChecker from "@/components/EmailChecker";
+import GlobalToaster from "@/components/GlobalToaster";
 
 const fontSans = FontSans({
 	subsets: ["latin"],
@@ -27,12 +28,14 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange enableColorScheme={false}>
 					<div className="flex flex-col" style={{ minHeight: "calc(100vh - 0px)" }}>
 						<Navbar />
 						<EmailChecker />
+						{/* Global toaster mounted once for the whole app */}
+						<GlobalToaster />
 						<main className="p-3 flex-1">{children}</main>
 						<Footer />
 					</div>

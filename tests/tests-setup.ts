@@ -82,11 +82,13 @@ export async function deleteTestDb() {
 	// Remove the database file
 	if (DATABASE_URL) {
 		const dbPath = DATABASE_URL.replace("file:", "");
-		if (fs.existsSync(dbPath)) {
-			fs.unlinkSync(dbPath);
-			console.log(`Database file ${dbPath} removed.`);
+		// If the path starts with ../, resolve it relative to the current directory
+		const resolvedDbPath = dbPath.startsWith("../") ? path.resolve(__dirname, dbPath) : dbPath;
+		if (fs.existsSync(resolvedDbPath)) {
+			fs.unlinkSync(resolvedDbPath);
+			console.log(`Database file ${resolvedDbPath} removed.`);
 		} else {
-			console.log(`Database file ${dbPath} does not exist.`);
+			console.log(`Database file ${resolvedDbPath} does not exist.`);
 		}
 	}
 }

@@ -18,7 +18,8 @@ export const signOut = async (_formData: FormData) => {
 
 	const sessionCookie = lucia.createBlankSessionCookie();
 
-	cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+	const cookieStore = await cookies();
+	cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
 	redirect("/sign-in");
 };

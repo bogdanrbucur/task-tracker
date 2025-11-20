@@ -3,14 +3,16 @@ import ResetPassword from "./_components/ResetPassword";
 import { notFound } from "next/navigation";
 
 export default async function PasswordResetPage({ searchParams }: { searchParams: { token: string } }) {
-	console.log("Password reset token: ", searchParams.token);
+	// Destructure the token from search params
+	const { token } = await searchParams;
+	console.log("Password reset token: ", token);
 
 	// No token, no page
-	if (!searchParams.token) return notFound();
+	if (!token) return notFound();
 
 	// Get the token from the database
 	const dbToken = await prisma.passwordResetToken.findUnique({
-		where: { token: searchParams.token },
+		where: { token: token },
 	});
 
 	// No token, no page

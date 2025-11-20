@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
+
 
 const initialState = {
 	success: false,
@@ -16,7 +17,7 @@ const initialState = {
 };
 
 export default function ResetPassword({ userId, firstName }: { userId: string; firstName: string }) {
-	const [state, formAction] = useFormState(resetUserPassword, initialState);
+	const [state, formAction] = useActionState(resetUserPassword, initialState);
 
 	return (
 		<div className="fade-in flex flex-col items-center justify-center h-screen -mt-36">

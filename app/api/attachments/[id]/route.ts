@@ -6,15 +6,21 @@ import fs from "fs-extra";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: any) {
+// Support both typed and promise-style params (some Next.js types use Promise<{...}>)
+	const resolvedParams = (await context.params) || context.params;
+	const params = resolvedParams as { id: string };
+
 	// Check user permissions
 	const { user } = await getAuth();
 	if (!user) return notFound();
 
+	const {id} = await params;
+
 	// search for the attachment in the database by its id
 	const attachment = await prisma.attachment.findFirst({
 		where: {
-			id: params.id,
+			id: id,
 		},
 	});
 

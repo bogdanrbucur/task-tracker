@@ -7,7 +7,11 @@ import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 // Endpoint to delete an attachment
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, context: any) {
+	// Support both typed and promise-style params (some Next.js types use Promise<{...}>)
+	const resolvedParams = (await context.params) || context.params;
+	const params = resolvedParams as { id: string };
+
 	// Check user permissions
 	const { user } = await getAuth();
 	if (!user) return NextResponse.json({ message: "Permission denied." });

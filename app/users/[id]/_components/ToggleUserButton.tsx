@@ -9,8 +9,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { UserRoundCheck, UserRoundX } from "lucide-react";
-import { useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useState, startTransition } from "react";
 import { Button } from "../../../../components/ui/button";
 import toggleUser from "../_actions/toggleUser";
 
@@ -30,7 +29,7 @@ export default function ToggleUserButton({
 	tasksNumber: number;
 	subordinatesNumber: number;
 }) {
-	const [state, formAction] = useFormState(toggleUser, initialState);
+	const [state, formAction] = useActionState(toggleUser, initialState);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
 	function handleSubmit(e: { preventDefault: () => void }) {
@@ -42,7 +41,9 @@ export default function ToggleUserButton({
 
 		const formData = new FormData();
 		formData.append("id", userId);
-		formAction(formData);
+		startTransition(() => {
+			formAction(formData);
+		});
 	}
 
 	return (
@@ -65,7 +66,7 @@ export default function ToggleUserButton({
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel onSubmit={(state) => setDialogOpen(!state)}>Cancel</AlertDialogCancel>
+							<AlertDialogCancel onClick={() => setDialogOpen(false)}>Cancel</AlertDialogCancel>
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>
