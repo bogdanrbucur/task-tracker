@@ -100,11 +100,17 @@ RESEND_API_KEY="re_123"
 BASE_URL="https://example.com"
 EMAILS_FROM="Task Tracker <tasks@tasks.example.com>"
 DAILY_TASKS_TOKEN="f7238d8c2b7da7a72f93de486dtc707f09a184b0f70"
+DATABASE_URL="file:../db/database.db" # Change to file:/var/task-tracker/db/database.db in production
+FILES_PATH="./files" # Change to /var/task-tracker/files in production
+LOGS_PATH="./logs" # Change to /var/logs/task-tracker in production
 MAX_FAILED_ATTEMPTS_EMAIL=10
 MAX_FAILED_ATTEMPTS_IP=50
 LOCKOUT_MINUTES=15
 DEPLOYMENT="blue"
 PORT=3001
+DUE_SOON_DAYS="10"
+OVERDUE_FOR_MORE_THAN_DAYS="5"
+OVERDUE_REMINDER_EVERY_DAYS="7"
 ```
 
 Example in `/config_examples`
@@ -112,9 +118,9 @@ Example in `/config_examples`
 Enter your Resend API key and your base URL.
 Use any `DAILY_TASKS_TOKEN` you want. This is a secret key to call the daily tasks API so it cannot be executed remotely.
 
-5. Create a `.env` and a `.env.test` file. Examples in `/config_examples`
+5. Create a `.env.test` file. Examples in `/config_examples`
 6. Open `setup.sh` and change `APP_USER` to the Linux environment user
-7. Update `DATABASE_URL`, `FILES_PATH` and `LOGS_PATH` in `.env` as required
+7. Update `DATABASE_URL`, `FILES_PATH` and `LOGS_PATH` in `.env.local` and `.env.test` as required
 8. If deployed on Linux, run `./setup.sh` to create the database and files folders and set their permissions. The folders in the paths defined in `.env` will be created. If not deploying on Linux, create the paths folders manually
 9. Run `npx prisma migrate deploy` to inialize the database
 10. `npm run dev` to run in dev mode
@@ -300,3 +306,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.6.1 - Fixed reading localStorage outside useEffect
 - 1.6.2 - Fixed `email-worker.ts` dependencies so it can run standalone
 - 1.7.0 - Updated to Next.js 16 and fixed issues arising from the update
+- 1.7.1 - Modified environment variables loading
