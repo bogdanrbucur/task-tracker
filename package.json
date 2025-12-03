@@ -6,7 +6,7 @@
     "dev": "next dev",
     "dev-test": "dotenv -e .env.test -e .env.local -- sh -c 'npx prisma migrate deploy && next dev -p 3535'",
     "build": "next build",
-    "email-worker": "dotenv -e .env.local -- tsx ./lib/email-worker.ts",
+    "email-worker": "dotenv -e .env -- tsx ./lib/email-worker.ts",
     "start": "dotenv -e .env.local -- sh -c 'next start -p $PORT'",
     "lint": "next lint",
     "daily": "node ./lib/dailyTasks.js",
