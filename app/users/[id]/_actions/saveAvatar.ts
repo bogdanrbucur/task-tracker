@@ -21,12 +21,14 @@ export default async function saveAvatar(avatar: File, newUser: User) {
 		logger(`Avatar saved to ${process.env.FILES_PATH}/avatars/${fileName}`);
 
 		// Update the user with the new avatar path
-		const newAvatar = await prisma.avatar.create({
-			data: {
-				userId: newUser.id,
-				path: fileName,
-			},
-		});
+		if (!oldAvatar) {
+			const newAvatar = await prisma.avatar.create({
+				data: {
+					userId: newUser.id,
+					path: fileName,
+				},
+			});
+		}
 	} catch (error: any) {
 		logger(error?.message ? error.message : "Error saving avatar");
 	}

@@ -307,3 +307,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.6.2 - Fixed `email-worker.ts` dependencies so it can run standalone
 - 1.7.0 - Updated to Next.js 16 and fixed issues arising from the update
 - 1.7.1 - Modified environment variables loading
+- 1.7.2 - Fix avatar update db write conflict
