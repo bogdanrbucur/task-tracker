@@ -2,5 +2,5 @@
 Description=Email worker
 
 [Service]
-WorkingDirectory=/path/to/app/task-tracker
+WorkingDirectory=/home/ubuntu/_projects/task-tracker-blue
 ExecStart=/usr/bin/npm run email-worker
