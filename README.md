@@ -308,3 +308,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.7.0 - Updated to Next.js 16 and fixed issues arising from the update
 - 1.7.1 - Modified environment variables loading
 - 1.7.2 - Fix avatar update db write conflict
+- 1.7.3 - Update to NextJS 16.0.7 to mitigate CVE-2025-55182
