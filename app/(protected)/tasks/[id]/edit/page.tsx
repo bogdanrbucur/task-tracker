@@ -11,9 +11,13 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	const { user } = await getAuth();
 	const userPermissions = await getPermissions(user?.id);
 
+	// Await the id param
+	const rawParams = await params;
+	const taskId = Number(rawParams.id);
+
 	// Fetch the task with the given ID
 	const task = await prisma.task.findUnique({
-		where: { id: Number(params.id) },
+		where: { id: taskId },
 		include: { assignedToUser: true, attachments: true },
 	});
 
