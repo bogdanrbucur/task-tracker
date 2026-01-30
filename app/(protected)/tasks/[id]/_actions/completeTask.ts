@@ -98,7 +98,7 @@ export default async function completeTask(prevState: any, formData: FormData) {
 	}
 	redirect(
 		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastManager=fail" : emailStatus?.queued ? "?toastManager=success" : ""}${
-			emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+			emailStatus?.id ? `&emailId=${emailStatus.id}` : ""
 		}`
 	);
 }

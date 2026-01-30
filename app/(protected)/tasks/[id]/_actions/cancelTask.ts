@@ -85,7 +85,7 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 	}
 	redirect(
 		`/tasks/${formData.get("taskId")}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${
-			emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+			emailStatus?.id ? `&emailId=${emailStatus.id}` : ""
 		}`
 	);
 }

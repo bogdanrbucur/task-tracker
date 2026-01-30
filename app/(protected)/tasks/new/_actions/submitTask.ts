@@ -120,7 +120,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 	redirect(
 		newTask
 			? `/tasks/${String(newTask.id)}${emailStatus?.queued === false ? "?toastUser=fail" : emailStatus?.queued ? "?toastUser=success" : ""}${
-					emailStatus?.id ? `&emailId=${emailStatus.id}` : null
+					emailStatus?.id ? `&emailId=${emailStatus.id}` : ""
 			  }`
 			: ""
 	);
