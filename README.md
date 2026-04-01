@@ -312,3 +312,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.7.4 - Fixed task edit page not loading due to incorrect param handling
 - 1.7.5 - Update to NextJS 16.0.10 to mitigate CVE-2025-55184 and CVE-2025-55183
 - 1.7.6 - Fixed wrong redirect URL after task actions and updated dependencies
+- 1.7.7 - Locked Axios version to 1.14.0 and 0.30.3 to avoid the vulnerabilities in 1.14.1 and 0.30.4
