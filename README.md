@@ -313,3 +313,5 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.7.5 - Update to NextJS 16.0.10 to mitigate CVE-2025-55184 and CVE-2025-55183
 - 1.7.6 - Fixed wrong redirect URL after task actions and updated dependencies
 - 1.7.7 - Locked Axios version to 1.14.0 and 0.30.3 to avoid the vulnerabilities in 1.14.1 and 0.30.4
+- 1.7.8 - Update NextJS to 16.2.4 and other dependencies, and include the dash as an accepted special character for passwords
+- 1.8.0 - Added a note in the comments section about using the @ symbol to mention users

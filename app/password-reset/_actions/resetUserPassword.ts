@@ -13,7 +13,7 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 		.string()
 		.min(8, { message: "Password must be at least 8 characters long." })
 		.regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
-		.regex(/[!@#$%^&*(),.?":{}|<>]/, { message: "Password must contain at least one special character." })
+		.regex(/[!@#$%^&*(),.?":{}|<>-]/, { message: "Password must contain at least one special character." })
 		.regex(/\d/, { message: "Password must contain at least one number." });
 
 	// Define the Zod schema for the form data

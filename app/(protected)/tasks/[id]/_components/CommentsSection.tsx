@@ -176,7 +176,10 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 							</ul>
 						)}
 						<div className="flex gap-3">
+						<div className="flex flex-col gap-2">
+							<p className="text-xs text-gray-500 dark:text-gray-400">Use the @ symbol to mention a user and email the comment to them.</p>
 							<PostCommentButton />
+						</div>
 							{mentionedUserNames.length > 0 ? (
 								<p className="text-xs text-foreground">{mentionedUserNames.join(", ").replace(/,([^,]*)$/, " and$1")} will be notified of this comment.</p>
 							) : (
