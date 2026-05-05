@@ -146,9 +146,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
-Group=root
-Restart=always
+User=appuser
+Group=appuser
 Restart=on-failure
 RestartSec=10
 WorkingDirectory=/path/to/app/task-tracker/
@@ -179,6 +178,8 @@ An email worker is required to send emails in the background. Schedule this work
 Description=Email worker
 
 [Service]
+User=appuser
+Group=appuser
 WorkingDirectory=/path/to/app/task-tracker
 ExecStart=/usr/bin/npm run email-worker
 ```
