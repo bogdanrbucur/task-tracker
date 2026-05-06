@@ -169,37 +169,50 @@ WantedBy=multi-user.target
 
 ### Email worker
 
-An email worker is required to send emails in the background. Schedule this worker with systemd.
+An email worker runs continuously in the background to send emails.
 
-1. Create a service file `/etc/systemd/system/email-worker.service` with the following content:
+1. Create a service file `/etc/systemd/system/email-worker.service`:
 
 ```ini
 [Unit]
 Description=Email worker
+After=network.target
 
 [Service]
 User=appuser
 Group=appuser
+Restart=on-failure
+RestartSec=10
 WorkingDirectory=/path/to/app/task-tracker
 ExecStart=/usr/bin/npm run email-worker
-```
 
-2. Create a timer file `/etc/systemd/system/email-worker.timer` with the following content:
-
-```ini
-[Unit]
-Description=Run email worker every 5 seconds
-[Timer]
-OnBootSec=5seconds
-OnUnitActiveSec=5seconds
-Unit=email-worker.service
 [Install]
-WantedBy=timers.target
+WantedBy=multi-user.target
 ```
 
-3. Start the timer with `sudo systemctl start email-worker.timer`
-4. Enable the timer to start at boot with `sudo systemctl enable email-worker.timer`
-5. Check the status with `sudo systemctl status email-worker.timer`
+2. Reload systemd to pick up the new file:
+
+```bash
+sudo systemctl daemon-reload
+```
+
+3. Enable the service to start at boot:
+
+```bash
+sudo systemctl enable email-worker.service
+```
+
+4. Start the service:
+
+```bash
+sudo systemctl start email-worker.service
+```
+
+5. Verify it's running:
+
+```bash
+sudo systemctl status email-worker.service
+```
 
 ### Scheduled daily tasks
 
