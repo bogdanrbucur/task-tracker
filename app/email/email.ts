@@ -160,7 +160,8 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 	}
 
 	let email;
-	const idempotencyKey = createEmailIdempotencyKey(emailType, subject, recipients, plainTextBody);
+	const today = new Date().toISOString().slice(0, 10); // e.g. "2026-05-06"
+	const idempotencyKey = createEmailIdempotencyKey(emailType, subject, recipients, plainTextBody, today);
 	try {
 		const existing = await prisma.emailOutbox.findUnique({ where: { idempotencyKey } });
 

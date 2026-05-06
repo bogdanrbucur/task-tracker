@@ -153,7 +153,7 @@ export function logger(message: string) {
 }
 
 // Function to create idempotency key for emails
-export function createEmailIdempotencyKey(emailType: string, subject: string, recipients: string | string[], bodyHtml: string) {
+export function createEmailIdempotencyKey(emailType: string, subject: string, recipients: string | string[], body: string, date: string) {
 	const recipientsAsString = Array.isArray(recipients) ? recipients.join(", ") : recipients;
-	return crypto.createHash("sha256").update([emailType, subject, recipientsAsString, bodyHtml].join("|")).digest("hex");
+	return crypto.createHash("sha256").update([emailType, subject, recipientsAsString, body, date].join("|")).digest("hex");
 }
