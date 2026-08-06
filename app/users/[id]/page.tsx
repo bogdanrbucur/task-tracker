@@ -84,7 +84,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 							{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
 						</div>
 						<div className="flex gap-2 justify-start">
-							{user?.id === userDetails.id && <ChangePasswordButton userId={user.id} />}
+							{user?.id === userDetails.id && <ChangePasswordButton />}
 							{userPermissions?.isAdmin && user.id !== userDetails.id && userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
 							{/* Only admins can deactivate users but cannot deactivate themselves */}
 							{userPermissions.isAdmin && user.id !== userDetails.id && (

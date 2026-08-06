@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuth } from "@/actions/auth/get-auth";
+import { PERMISSION_DENIED, canManageTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
@@ -13,14 +13,15 @@ export default async function closeTask(prevState: any, formData: FormData) {
 	// logger(rawData);
 
 	// Check user permissions
-	const { user: agent } = await getAuth();
-	if (!agent) return { message: "You do not have permission to perform this action." };
+	const actor = await getActor();
+	if (!actor) return { message: PERMISSION_DENIED };
 
-	// Define the Zod schema for the form data
+	// Define the Zod schema for the form data.
+	// The actor is the session user - a "userId" field here was authorising whoever the client
+	// claimed to be, so anyone could close any task by posting a manager's or admin's id.
 	const schema = z.object({
 		taskId: z.string(),
 		closeComment: z.string().max(200, { message: "Comment must be at most 200 characters." }),
-		userId: z.string().length(25, { message: "User is required." }),
 	});
 
 	try {
@@ -29,18 +30,15 @@ export default async function closeTask(prevState: any, formData: FormData) {
 		const data = schema.parse({
 			taskId: formData.get("taskId") as string,
 			closeComment: formData.get("closeComment") as string,
-			userId: formData.get("userId") as string,
 		});
 
-		// Get the user the task is assigned to and check that the userId is the manager of the user the task is assigned to
-		const task = await prisma.task.findUnique({
-			where: { id: Number(data.taskId) },
-			include: { assignedToUser: { select: { managerId: true, manager: { select: { firstName: true, lastName: true, id: true } } } } },
-		});
+		// Only an admin or the assignee's manager may close a task
+		const taskForAuth = await getTaskForAuth(Number(data.taskId));
+		if (!taskForAuth) return { message: "Task not found." };
+		if (!canManageTask(taskForAuth, actor)) return { message: "You are not authorized to close this task." };
 
-		// Get the details of the user who is reopening the task
-		const editor = await getUserDetails(data.userId);
-		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) return { message: "You are not authorized to reopen this task." };
+		// The editor is always the signed-in user
+		const editor = await getUserDetails(actor.user.id);
 
 		// Close the task
 		const closedTask = await prisma.task.update({
@@ -57,7 +55,7 @@ export default async function closeTask(prevState: any, formData: FormData) {
 		const newChange = await recordTaskHistory(closedTask, editor, [closingComment]);
 
 		// Update the user stats for closing the task
-		await updateUserStats(data.userId, "close", closedTask);
+		await updateUserStats(actor.user.id, "close", closedTask);
 	} catch (error) {
 		// Handle Zod validation errors - return the message attribute back to the client
 		if (error instanceof z.ZodError) for (const subError of error.errors) return { message: subError.message };

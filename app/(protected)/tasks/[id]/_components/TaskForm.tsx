@@ -9,7 +9,6 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MAX_DESCRIPTION_LENGTH } from "@/lib/richText";
-import { User } from "lucia";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
@@ -22,7 +21,7 @@ const initialState = {
 	message: null,
 };
 
-const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; task?: any }) => {
+const TaskForm = ({ users, task }: { users: UserExtended[]; task?: any }) => {
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [formState, formAction] = useActionState(submitTask, initialState);
@@ -112,7 +111,6 @@ const TaskForm = ({ users, user, task }: { users: UserExtended[]; user: User; ta
 						</div>
 					</div>
 					{task && <input type="hidden" name="taskId" value={task.id} />}
-					<input type="hidden" name="editingUser" value={user.id} />
 				</form>
 			</div>
 		</Card>

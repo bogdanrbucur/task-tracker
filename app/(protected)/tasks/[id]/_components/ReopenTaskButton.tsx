@@ -21,7 +21,7 @@ const initialState = {
 	message: null,
 };
 
-export function ReopenTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+export function ReopenTaskButton({ taskId }: { taskId: number }) {
 	const [state, formAction] = useActionState(reopenTask, initialState);
 
 	return (
@@ -49,7 +49,6 @@ export function ReopenTaskButton({ userId, taskId }: { userId: string | undefine
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<ConfirmTaskReopenButton />
 					</AlertDialogFooter>
-					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />
 				</form>
 			</AlertDialogContent>

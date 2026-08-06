@@ -1,8 +1,7 @@
 // server function to register new user
 "use server";
 
-import { getAuth } from "@/actions/auth/get-auth";
-import { getPermissions } from "@/actions/auth/get-permissions";
+import { PERMISSION_DENIED, getAdminActor } from "@/actions/auth/require-auth";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { NewUser } from "@/app/users/new/submitUser";
 import logger from "@/lib/logging";
@@ -12,9 +11,8 @@ import generatePassChangeToken from "../../password-reset/_actions/generatePassC
 
 export default async function createUser(data: NewUser, editingUser: UserExtended) {
 	// Check user permissions
-	const { user: agent } = await getAuth();
-	const userPermissions = await getPermissions(agent?.id);
-	if (!userPermissions.isAdmin) return { message: "You do not have permission to perform this action." };
+	const actor = await getAdminActor();
+	if (!actor) return { message: PERMISSION_DENIED };
 
 	try {
 		const newUser = await prisma.user.create({
@@ -26,7 +24,8 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 				departmentId: data.departmentId ? Number(data.departmentId) : null,
 				managerId: data.managerId ? data.managerId : null,
 				isAdmin: data.isAdmin ? true : false,
-				createdByUserId: editingUser.id,
+				// Attribution comes from the session, not from the caller's argument
+				createdByUserId: actor.user.id,
 			},
 		});
 

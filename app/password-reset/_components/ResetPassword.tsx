@@ -16,7 +16,7 @@ const initialState = {
 	message: null,
 };
 
-export default function ResetPassword({ userId, firstName }: { userId: string; firstName: string }) {
+export default function ResetPassword({ token, firstName }: { token: string; firstName: string }) {
 	const [state, formAction] = useActionState(resetUserPassword, initialState);
 
 	return (
@@ -52,7 +52,7 @@ export default function ResetPassword({ userId, firstName }: { userId: string; f
 										</Button>
 									</div>
 								</div>
-								<input type="hidden" name="id" value={userId} />
+								<input type="hidden" name="token" value={token} />
 							</form>
 						</CardContent>
 						<CardFooter className="flex justify-between"></CardFooter>

@@ -8,6 +8,9 @@ import { z } from "zod";
 import { sendEmail } from "../../email/email";
 import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
 
+// Tokens live 15 minutes, so this caps how many reset emails one address can be sent per window
+const MAX_LIVE_RESET_TOKENS = 3;
+
 export default async function forgotUserPassword(prevState: any, formData: FormData) {
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// logger(rawFormData);
@@ -38,6 +41,20 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 
 		if (!user) {
 			logger(`No active user found with email address ${data.email}`);
+			return { success: true };
+		}
+
+		// Throttle per account, so this route cannot be used to mail-bomb someone.
+		//
+		// Deliberately NOT recorded in FailedLoginAttempt: sign-in counts that table by IP alone, so
+		// writing reset requests into it would let anyone lock a whole office behind one NAT address
+		// out of signing in just by submitting this form repeatedly.
+		const liveTokens = await prisma.passwordResetToken.count({
+			where: { userId: user.id, expiresAt: { gt: new Date() } },
+		});
+		if (liveTokens >= MAX_LIVE_RESET_TOKENS) {
+			logger(`Password reset for ${data.email} throttled - ${liveTokens} unexpired tokens already issued.`);
+			// Same response as the success path - never reveal whether the address exists
 			return { success: true };
 		}
 

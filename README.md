@@ -333,3 +333,13 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.8.2 - Updated to NextJS 16.3.0 and other dependencies
 - 1.8.3 - Remove `log-to-file` dependency and use a custom logger instead
 - 1.9.0 - Added Markdown support for task descriptions, with a help popover for Markdown syntax
+- 1.10.0 - Improve security stance by fixing multiple vulnerabilities:
+  - Server actions take the acting user from the session, not from form fields like `userId` or `editor`
+  - Password reset verifies the token itself instead of a user ID sent with the form, and tokens are single use
+  - Only admins can grant admin rights, and non-admins can only edit their own account
+  - Attachment filenames are sanitised and confined to the task's own folder, with a size limit
+  - Task and attachment actions check the caller may act on that specific task; department actions require admin
+  - Changing or resetting a password, and deactivating a user, end that user's other sessions
+  - Excel export is no longer shared between users, and escapes text so it cannot run as a formula
+  - Added security headers, stopped logging session tokens, and fixed a spoofable rate limiting IP
+  - Added end-to-end tests for all of the above and for previously untested flows

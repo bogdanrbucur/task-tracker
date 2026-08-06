@@ -187,7 +187,6 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 							)}
 						</div>
 						{/* Hidden input fields ensures formData is submitted */}
-						<input type="hidden" name="userId" value={userId} />
 						<input type="hidden" name="taskId" value={taskId} />
 						<input type="hidden" name="mentionedUsers" value={mentionedUsersIds} />
 					</div>

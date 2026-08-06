@@ -21,7 +21,7 @@ const initialState = {
 	dialogOpen: undefined,
 };
 
-export default function ChangePasswordButton({ userId }: { userId: string }) {
+export default function ChangePasswordButton() {
 	const [state, formAction] = useActionState(changeUserPassword, initialState);
 
 	// Crappy state workaround to keep the dialog open
@@ -59,7 +59,6 @@ export default function ChangePasswordButton({ userId }: { userId: string }) {
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<Button type="submit">Confirm</Button>
 					</AlertDialogFooter>
-					<input type="hidden" name="id" value={userId} />
 				</form>
 			</AlertDialogContent>
 		</AlertDialog>

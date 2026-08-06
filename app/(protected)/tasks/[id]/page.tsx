@@ -114,12 +114,12 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 										</Link>
 									</Button>
 								)}
-								{canReopenTask && (task.statusId === 2 || task.statusId === 3 || task.statusId === 4) && <ReopenTaskButton userId={user?.id} taskId={task.id} />}
+								{canReopenTask && (task.statusId === 2 || task.statusId === 3 || task.statusId === 4) && <ReopenTaskButton taskId={task.id} />}
 								{canCompleteTask && (task.statusId === 1 || task.statusId === 5) && (
-									<CompleteTaskButton userId={user?.id} taskId={task.id} taskAttachments={task.attachments.filter((t) => t.type === "completion")} />
+									<CompleteTaskButton taskId={task.id} taskAttachments={task.attachments.filter((t) => t.type === "completion")} />
 								)}
-								{canCloseTask && task.statusId === 2 && <CloseTaskButton userId={user?.id} taskId={task.id} />}
-								{canCancelTask && task.statusId !== 4 && task.statusId !== 3 && <CancelTaskButton userId={user?.id} taskId={task.id} />}
+								{canCloseTask && task.statusId === 2 && <CloseTaskButton taskId={task.id} />}
+								{canCancelTask && task.statusId !== 4 && task.statusId !== 3 && <CancelTaskButton taskId={task.id} />}
 							</div>
 						</div>
 						<div className="grid grid-cols-2 lg:grid-cols-4 text-sm lg:text-base">

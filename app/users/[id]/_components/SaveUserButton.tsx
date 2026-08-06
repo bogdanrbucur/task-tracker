@@ -47,7 +47,6 @@ export function SaveUserButton({ userId, taskId }: { userId: string | undefined;
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<Button type="submit">Confirm</Button>
 					</AlertDialogFooter>
-					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />
 				</form>
 			</AlertDialogContent>

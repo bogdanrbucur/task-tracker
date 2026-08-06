@@ -1,14 +1,17 @@
 // server function to add new task
 "use server";
 
+import { PERMISSION_DENIED, getAdminActor } from "@/actions/auth/require-auth";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export default async function deleteDept(prevState: any, formData: FormData) {
-	// const rawFormData = Object.fromEntries(formData.entries());
-	// logger(rawFormData);
+	// The departments page is admin-only, but this action is reachable on its own and used to have
+	// no session check at all
+	const actor = await getAdminActor();
+	if (!actor) return { message: PERMISSION_DENIED };
 
 	// Define the Zod schema for the form data
 	const schema = z.object({

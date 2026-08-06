@@ -1,7 +1,7 @@
 // server function to add new task
 "use server";
 
-import { getAuth } from "@/actions/auth/get-auth";
+import { PERMISSION_DENIED, getActor } from "@/actions/auth/require-auth";
 import createUser from "@/app/users/_actions/createUser";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import logger from "@/lib/logging";
@@ -41,10 +41,14 @@ export default async function submitUser(prevState: any, formData: FormData) {
 	// logger(rawFormData);
 
 	// Check user permissions
-	const { user: agent } = await getAuth();
-	if (!agent) return { message: "You do not have permission to perform this action." };
+	const actor = await getActor();
+	if (!actor) return { message: PERMISSION_DENIED };
+	const { user: agent, permissions } = actor;
 
-	// Define the Zod schema for the form data
+	// Define the Zod schema for the form data.
+	// Note there is no "editor" field: the editor is always the session user. Taking it from the
+	// form let a caller skip the self-edit clamp below by sending editor !== id, and so grant
+	// themselves isAdmin.
 	const schema = z.object({
 		id: z.string().nullable(),
 		firstName: z.string().min(2, { message: "First name must be at least 2 characters long." }).max(30, { message: "First name must be at most 30 characters long." }),
@@ -53,7 +57,6 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		position: z.string().min(3, { message: "Position must be at least 2 characters long." }).nullable(),
 		departmentId: z.string({ message: "Invalid department." }).max(3, { message: "Invalid department." }).min(1, { message: "Invalid department." }),
 		managerId: z.string().nullable(),
-		editor: z.string().length(25, { message: "Invalid editor." }),
 		isAdmin: z.string().nullable(),
 		avatar: Avatar.nullable(),
 		avatarPath: z.string().optional(),
@@ -71,21 +74,20 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			position: formData.get("position") as string,
 			departmentId: formData.get("departmentId") as string,
 			managerId: formData.get("managerId") as string,
-			editor: formData.get("editor") as string,
 			isAdmin: formData.get("isAdmin"),
 			avatar: formData.get("avatar") as File | null,
 		});
 
-		// If no user ID is provided, means a new user is being created
-		// Check if the editor is admin in this case
+		// Creating a new user is admin-only; editing is admin-only unless you are editing yourself
 		if (!data.id) {
-			const editor = await getUserDetails(agent.id);
-			if (!editor.isAdmin) return { message: "You do not have permission to perform this action." };
+			if (!permissions.isAdmin) return { message: PERMISSION_DENIED };
+		} else if (!permissions.isAdmin && data.id !== agent.id) {
+			return { message: PERMISSION_DENIED };
 		}
 
-		// If the user edited themselves, they cannot change their email or position
-		// The client will not send them to the server, so need to fill them in here
-		if (data.id === data.editor) {
+		// If the user edited themselves, they cannot change their email, position or admin flag.
+		// The client will not send them to the server, so need to fill them in here.
+		if (data.id === agent.id) {
 			// Fetch the user details
 			const user = await getUserDetails(data.id);
 			data.email = user.email;
@@ -96,8 +98,8 @@ export default async function submitUser(prevState: any, formData: FormData) {
 		// Check the size of the avatar and reject if it's too large
 		if (data.avatar && data.avatar.size > 5242880) return { message: "Avatar file is too large. Maximum size is 5 MB." };
 
-		// Get the created by user object by the ID
-		const editingUser = await getUserDetails(data.editor);
+		// The editor is the session user - never a form field
+		const editingUser = await getUserDetails(agent.id);
 
 		// If a user ID is provided, update the existing user
 		if (data.id) {

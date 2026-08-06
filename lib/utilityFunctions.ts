@@ -43,7 +43,8 @@ export function completedColor(task: Task) {
 }
 
 export async function resizeAndSaveImage(avatarBuffer: Buffer, filePath: string) {
-	sharp(avatarBuffer).resize(256, 256).withMetadata().toFile(filePath);
+	// Must be awaited - callers rely on the file existing once this resolves
+	await sharp(avatarBuffer).resize(256, 256).withMetadata().toFile(filePath);
 }
 
 // Check all In progress tasks for overdue status and change to Overdue if past due
@@ -120,7 +121,10 @@ export type NavigationSourceTypes = "emailNewTask" | "emailTaskDueSoon" | "email
 export async function logVisitor(user: User | null, page: string, source: string | null) {
 	// Get client IP address (await headers() per Next.js sync-dynamic-apis)
 	const headersList = await headers();
-	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
+	// X-Real-IP is set by our own nginx from $remote_addr. X-Forwarded-For is client-supplied and
+	// nginx appends to it rather than replacing it, so its first entry is attacker-controlled - which
+	// would let anyone pick their own apparent IP and walk straight past the per-IP login lockout.
+	const rawIP = headersList.get("x-real-ip") || headersList.get("x-forwarded-for")?.split(",")[0].trim() || "";
 	const ip = normalizeIP(rawIP);
 
 	const sourceTexts = {

@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 export default async function PasswordResetPage({ searchParams }: { searchParams: { token: string } }) {
 	// Destructure the token from search params
 	const { token } = await searchParams;
-	console.log("Password reset token: ", token);
 
 	// No token, no page
 	if (!token) return notFound();
@@ -31,5 +30,6 @@ export default async function PasswordResetPage({ searchParams }: { searchParams
 		return notFound();
 	}
 
-	return <ResetPassword userId={user!.id} firstName={user!.firstName} />;
+	// The token, not the user id, is what the action authenticates against
+	return <ResetPassword token={token} firstName={user!.firstName} />;
 }

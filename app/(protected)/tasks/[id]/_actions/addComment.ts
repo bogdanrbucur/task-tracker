@@ -1,6 +1,7 @@
 // server function to add new comment
 "use server";
 import { getAuth } from "@/actions/auth/get-auth";
+import { PERMISSION_DENIED } from "@/actions/auth/require-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
@@ -10,12 +11,13 @@ import { z } from "zod";
 export default async function addComment(prevState: any, formData: FormData) {
 	// Check user permissions
 	const { user: agent } = await getAuth();
-	if (!agent) return { message: "You do not have permission to perform this action." };
+	if (!agent) return { message: PERMISSION_DENIED };
 
-	// Define the Zod schema for the form data
+	// Define the Zod schema for the form data.
+	// No "userId" field: the comment author is the session user. Taking it from the form allowed
+	// comments to be posted in anyone's name.
 	const schema = z.object({
 		taskId: z.string(),
-		userId: z.string().length(25, { message: "User not provided." }),
 		comment: z.string().min(2, { message: "Comment must be at least 2 characters." }),
 		mentionedUsers: z.array(z.string()).optional(),
 	});
@@ -26,10 +28,12 @@ export default async function addComment(prevState: any, formData: FormData) {
 		// If validation fails, an error will be thrown and caught in the catch block
 		const data = schema.parse({
 			taskId: formData.get("taskId") as string,
-			userId: formData.get("userId") as string,
 			comment: formData.get("comment") as string,
 			mentionedUsers: formData.getAll("mentionedUsers").filter((e) => e !== "") as string[],
 		});
+
+		// The author is always the signed-in user
+		const authorId = agent.id;
 
 		// Rebuild the array of mentioned user IDs
 		const mentionedUsersArray = data.mentionedUsers?.flatMap((e) => e.split(","));
@@ -37,7 +41,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 		const newComment = await prisma.comment.create({
 			data: {
 				taskId: Number(data.taskId),
-				userId: data.userId,
+				userId: authorId,
 				time: new Date(),
 				comment: data.comment,
 			},
@@ -47,7 +51,7 @@ export default async function addComment(prevState: any, formData: FormData) {
 
 		// Get the user who commented
 		const user = await prisma.user.findUnique({
-			where: { id: data.userId },
+			where: { id: authorId },
 		});
 
 		logger(`New comment on task ${newComment.taskId} by ${user?.email}: ${newComment.comment}`);

@@ -21,7 +21,7 @@ const initialState = {
 	message: null,
 };
 
-export function CloseTaskButton({ userId, taskId }: { userId: string | undefined; taskId: number }) {
+export function CloseTaskButton({ taskId }: { taskId: number }) {
 	const [state, formAction] = useActionState(closeTask, initialState);
 
 	return (
@@ -49,7 +49,6 @@ export function CloseTaskButton({ userId, taskId }: { userId: string | undefined
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction type="submit">Confirm</AlertDialogAction>
 					</AlertDialogFooter>
-					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />
 				</form>
 			</AlertDialogContent>

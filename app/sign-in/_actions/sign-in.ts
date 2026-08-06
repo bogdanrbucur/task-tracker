@@ -18,7 +18,10 @@ export default async function signIn(prevState: any, formData: FormData) {
 
 	// Get client IP address
 	const headersList = await headers();
-	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
+	// X-Real-IP is set by our own nginx from $remote_addr. X-Forwarded-For is client-supplied and
+	// nginx appends to it rather than replacing it, so its first entry is attacker-controlled - which
+	// would let anyone pick their own apparent IP and walk straight past the per-IP login lockout.
+	const rawIP = headersList.get("x-real-ip") || headersList.get("x-forwarded-for")?.split(",")[0].trim() || "";
 	const ip = normalizeIP(rawIP);
 
 	// Define the Zod schema for the form data
@@ -111,7 +114,9 @@ export default async function signIn(prevState: any, formData: FormData) {
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		const cookieStore = await cookies();
 		cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-		logger(`User ${data.email} succesfully logged in from ${ip} and issued session ${sessionCookie.value}.`);
+		// Never log sessionCookie.value - it is the session token itself, and anyone with read
+		// access to the log files could replay it to hijack the session
+		logger(`User ${data.email} succesfully logged in from ${ip}.`);
 
 		redirect("/");
 	} catch (error) {

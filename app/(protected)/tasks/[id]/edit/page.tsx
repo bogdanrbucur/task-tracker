@@ -38,7 +38,7 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Filter out inactive users
 	filteredUsers = filteredUsers.filter((u) => u.status === "active");
 
-	return <TaskForm user={user!} users={filteredUsers} task={task} />;
+	return <TaskForm users={filteredUsers} task={task} />;
 };
 
 export default EditTaskpage;

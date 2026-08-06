@@ -19,8 +19,9 @@ export const getPermissions = cache(async (userId: string | undefined): Promise<
 		return { isAdmin: false, isManager: false };
 	}
 
-	let subordinates = user?.subordinates;
-	subordinates = subordinates.filter((s) => s.status === "active");
+	// Only active subordinates confer manager rights - an inactive report should not keep
+	// someone in the manager role
+	const subordinates = user.subordinates.filter((s) => s.status === "active");
 
-	return { isAdmin: user?.isAdmin ? user?.isAdmin : false, isManager: user?.subordinates.length > 0 ? true : false };
+	return { isAdmin: user.isAdmin ?? false, isManager: subordinates.length > 0 };
 });

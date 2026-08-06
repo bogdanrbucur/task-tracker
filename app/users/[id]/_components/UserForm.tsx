@@ -134,7 +134,7 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 								<Link href={`/users/${user?.id ? user.id : ""}`}>Cancel</Link>
 							</Button>
 						</div>
-						<input type="hidden" name="editor" value={editor} />
+						{/* No "editor" field - the server takes the editor from the session, not the form */}
 						<input type="hidden" name="id" value={user ? user.id : undefined} />
 						<div className="flex justify-center md:justify-end">
 							<Button className="gap-1" type="submit">

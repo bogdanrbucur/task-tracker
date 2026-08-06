@@ -4,6 +4,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import logger from "@/lib/logging";
+import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
 import fs from "fs-extra";
 import { revalidatePath } from "next/cache";
@@ -50,6 +51,10 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		});
 		if (updatedUser.status === "active") logger(`User ${updatedUser.email} activated.`);
 		else {
+			// Nothing re-checks `active` once a session exists, so without this a deactivated user
+			// keeps full access until their session happens to expire
+			await lucia.invalidateUserSessions(updatedUser.id);
+
 			// Delete the user's avatar
 			await prisma.avatar.deleteMany({ where: { userId: data.id } });
 

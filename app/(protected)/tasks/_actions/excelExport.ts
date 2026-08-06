@@ -2,6 +2,19 @@ import { markdownToPlainText } from "@/lib/richText";
 import XLSX from "xlsx-js-style";
 import { TaskExtended } from "../page";
 
+/**
+ * Defuse spreadsheet formula injection.
+ *
+ * Task titles, descriptions and sources are free text written by any user. A value starting with
+ * =, +, -, @ or a control prefix is evaluated as a formula when the export is opened, which is a
+ * live code-execution vector (=HYPERLINK, =cmd|...) aimed at whoever opens the file. Prefixing with
+ * an apostrophe makes the cell literal text; Excel does not display the apostrophe.
+ */
+function neutraliseFormula(value: string | null | undefined) {
+	if (typeof value !== "string" || value === "") return value;
+	return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+}
+
 export async function generateExcelExport(tasks: TaskExtended[]) {
 	const dataArray = [];
 	const headers = [
@@ -26,12 +39,12 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 	tasks.forEach((task) => {
 		const data = [
 			task.id,
-			task.title,
+			neutraliseFormula(task.title),
 			// Descriptions are markdown - flatten them so the cell is readable
-			markdownToPlainText(task.description),
+			neutraliseFormula(markdownToPlainText(task.description)),
 			task.createdAt,
-			task.source,
-			task.sourceLink,
+			neutraliseFormula(task.source),
+			neutraliseFormula(task.sourceLink),
 			task.createdByUser ? task.createdByUser.firstName + " " + task.createdByUser.lastName : "",
 			`${task.assignedToUser?.firstName} ${task.assignedToUser?.lastName}`,
 			task.department?.name,

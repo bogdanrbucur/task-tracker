@@ -24,7 +24,7 @@ const initialState = {
 	message: null,
 };
 
-export function CompleteTaskButton({ userId, taskId, taskAttachments }: { userId: string | undefined; taskId: number; taskAttachments: TaskAttachments[] }) {
+export function CompleteTaskButton({ taskId, taskAttachments }: { taskId: number; taskAttachments: TaskAttachments[] }) {
 	const [state, formAction] = useActionState(completeTask, initialState);
 	const router = useRouter(); // Initialize useRouter
 
@@ -63,7 +63,6 @@ export function CompleteTaskButton({ userId, taskId, taskAttachments }: { userId
 						<AlertDialogCancel onClick={handleRevalidate}>Close</AlertDialogCancel>
 						<ConfirmTaskCompleteButton handleRevalidate={handleRevalidate} />
 					</AlertDialogFooter>
-					<input type="hidden" name="userId" value={userId} />
 					<input type="hidden" name="taskId" value={taskId} />
 				</form>
 			</AlertDialogContent>

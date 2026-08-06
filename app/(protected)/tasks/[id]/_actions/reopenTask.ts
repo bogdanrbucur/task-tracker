@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuth } from "@/actions/auth/get-auth";
+import { PERMISSION_DENIED, canManageTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import logger from "@/lib/logging";
@@ -16,14 +16,14 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 	// logger(rawData);
 
 	// Check user permissions
-	const { user: agent } = await getAuth();
-	if (!agent) return { message: "You do not have permission to perform this action." };
+	const actor = await getActor();
+	if (!actor) return { message: PERMISSION_DENIED };
 
-	// Define the Zod schema for the form data
+	// Define the Zod schema for the form data.
+	// No "userId" field: the actor comes from the session, never from the client.
 	const schema = z.object({
 		taskId: z.string(),
 		reopenComment: z.string().min(10, { message: "Comment must be at least 10 characters." }).max(200, { message: "Comment must be at most 200 characters." }),
-		userId: z.string().length(25, { message: "User is required." }),
 	});
 
 	let emailStatus: EmailResponse | undefined;
@@ -33,7 +33,6 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		const data = schema.parse({
 			taskId: formData.get("taskId") as string,
 			reopenComment: formData.get("reopenComment") as string,
-			userId: formData.get("userId") as string,
 		});
 
 		// Get the user the task is assigned to and check that the userId is the manager of the user the task is assigned to
@@ -45,9 +44,13 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		// Temporary store the task completion date to compute user stats
 		const taskCompletionDate = task?.completedOn;
 
+		// Only an admin or the assignee's manager may reopen a task
+		const taskForAuth = await getTaskForAuth(Number(data.taskId));
+		if (!taskForAuth) return { message: "Task not found." };
+		if (!canManageTask(taskForAuth, actor)) return { message: "You are not authorized to reopen this task." };
+
 		// Get the details of the user who is reopening the task
-		const editor = await getUserDetails(data.userId);
-		if (task?.assignedToUser?.managerId !== editor.id && !editor.isAdmin) return { message: "You are not authorized to reopen this task." };
+		const editor = await getUserDetails(actor.user.id);
 
 		// Reopen the task
 		const reopenedTask = await prisma.task.update({
@@ -70,7 +73,7 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		reopenedTask.completedOn = taskCompletionDate!;
 
 		// Update the user stats if reopening a completed task
-		if (task?.statusId === 2) await updateUserStats(data.userId, "reopen", reopenedTask);
+		if (task?.statusId === 2) await updateUserStats(actor.user.id, "reopen", reopenedTask);
 
 		// Email the user the task is assigned to
 		emailStatus = await sendEmail({

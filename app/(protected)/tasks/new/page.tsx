@@ -22,7 +22,7 @@ const NewTaskPage = async () => {
 	// But keep only active users
 	filteredUsers = filteredUsers.filter((u) => u.status === "active");
 
-	return <TaskForm users={filteredUsers} user={user!} />;
+	return <TaskForm users={filteredUsers} />;
 };
 
 export default NewTaskPage;

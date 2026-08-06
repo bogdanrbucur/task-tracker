@@ -6,7 +6,20 @@ import nextTypescript from "eslint-config-next/typescript";
 
 export default [
 	{
-		ignores: [".next/**", "out/**", "build/**", "node_modules/**", "next-env.d.ts", "prisma/migrations/**", "playwright-report/**", "test-results/**", "test/**"],
+		ignores: [
+			".next/**",
+			// The Playwright suite builds into its own dist dir (NEXT_DIST_DIR in package.json), so
+			// without this `npm run lint` reports thousands of errors from build output after `npm test`
+			".next-test/**",
+			"out/**",
+			"build/**",
+			"node_modules/**",
+			"next-env.d.ts",
+			"prisma/migrations/**",
+			"playwright-report/**",
+			"test-results/**",
+			"test/**",
+		],
 	},
 	...nextCoreWebVitals,
 	...nextTypescript,

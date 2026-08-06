@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
-import { TaskExtended, TasksQuery } from "../page";
+import type { TaskExtended, TasksQuery } from "../_actions/buildTaskQuery";
 import MobileTaskTabelCell from "./MobileTaskTabelCell";
 
 interface Props {

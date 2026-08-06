@@ -1,7 +1,7 @@
 // server function to add new task
 "use server";
 
-import { getAuth } from "@/actions/auth/get-auth";
+import { PERMISSION_DENIED, canEditTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
 import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "@/lib/richText";
@@ -38,8 +38,9 @@ export default async function submitTask(prevState: any, formData: FormData) {
 	// logger("raw data", rawFormData);
 
 	// Check user permissions
-	const { user: agent } = await getAuth();
-	if (!agent) return { message: "You do not have permission to perform this action." };
+	const actor = await getActor();
+	if (!actor) return { message: PERMISSION_DENIED };
+	const { user: agent } = actor;
 
 	const isValidURL = (url: string): boolean => {
 		try {
@@ -60,7 +61,6 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			.max(MAX_DESCRIPTION_LENGTH, { message: `Description must be at most ${MAX_DESCRIPTION_LENGTH} characters.` }),
 		dueDate: z.string().datetime({ message: "Due date is required." }),
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
-		createdByUserId: z.string().length(25),
 		source: z.string().max(100, { message: "Source must be at most 100 characters." }).optional(),
 		sourceLink: z
 			.string()
@@ -83,26 +83,33 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			description: formData.get("description") as string,
 			dueDate: formData.get("dueDate") as string,
 			assignedToUserId: formData.get("assignedToUserId") as string,
-			createdByUserId: formData.get("editingUser") as string,
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
 			sourceAttachmentsDescriptions: formData.getAll("sourceAttachmentsDescriptions") as string[],
 		});
 
-		// Get the created by user object by the ID
-		const editingUser = await getUserDetails(data.createdByUserId);
+		// The editor is the session user, never a form field. createdByUserId used to come from the
+		// form ("editingUser"), which let the creator of a task be attributed to anyone.
+		const editingUser = await getUserDetails(agent.id);
+		const taskData = { ...data, createdByUserId: agent.id };
 
 		// If a task ID is provided, update the existing task
-		if (data.id) {
+		if (taskData.id) {
+			// Editing an existing task is not something every signed-in user may do. The edit page
+			// already gates this; the action has to enforce the same rule independently.
+			const taskForAuth = await getTaskForAuth(Number(taskData.id));
+			if (!taskForAuth) return { message: "Task not found." };
+			if (!canEditTask(taskForAuth, actor)) return { message: PERMISSION_DENIED };
+
 			// For some retarded reason, the descriptions are return as an array of the same string, so we split the first one
-			const attachmentsDescriptions = data.sourceAttachmentsDescriptions![0] ? data.sourceAttachmentsDescriptions![0].split(",") : [];
+			const attachmentsDescriptions = taskData.sourceAttachmentsDescriptions![0] ? taskData.sourceAttachmentsDescriptions![0].split(",") : [];
 			logger(`attDescriptions: ${attachmentsDescriptions}`);
-			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(data as UpdateTask, editingUser!, attachmentsDescriptions);
+			const { updatedTask: updatedTask, emailStatus: statusTempVar } = await updateTask(taskData as UpdateTask, editingUser!, attachmentsDescriptions);
 			newTask = updatedTask;
 			emailStatus = statusTempVar;
 		} else {
 			// If no task ID is provided, create a new task
-			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(data as NewTask, editingUser!);
+			const { newTask: createdTask, emailStatus: statusTempVar } = await createTask(taskData as NewTask, editingUser!);
 			newTask = createdTask;
 			emailStatus = statusTempVar;
 		}

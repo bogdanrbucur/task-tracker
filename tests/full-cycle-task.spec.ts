@@ -4,13 +4,6 @@ import path from "path";
 import {
 	attachmentFilename,
 	countDescriptionImageFiles,
-	createTaskStatuses,
-	createTestDepartment,
-	createTestImage,
-	createTestUser,
-	deleteExistingScreenshots,
-	deleteTestDb,
-	deleteTestImage,
 	departmentName,
 	getDescriptionImages,
 	testImagePath,
@@ -34,23 +27,9 @@ import {
 // Configure the describe block to isolate hooks
 test.describe.configure({ mode: "serial" });
 
+// Seeding and teardown live in tests/global-setup.ts and tests/global-teardown.ts, so that this
+// file no longer owns the database that other spec files also use.
 test.describe("Task creation and closing", () => {
-	test.beforeAll(async () => {
-		await deleteExistingScreenshots();
-		// After deleteExistingScreenshots, which clears every .png in ./tests
-		await createTestImage();
-		await createTestUser();
-		await createTaskStatuses();
-		await createTestDepartment();
-	});
-
-	// Clean up the database after all tests
-	test.afterAll(async ({ browser }) => {
-		await deleteTestImage();
-		await deleteTestDb();
-		await browser.close();
-	});
-
 	test("Admin user sign-in", async ({ page }) => {
 		await page.goto("/sign-in");
 		await page.fill('input[name="email"]', user1email);
