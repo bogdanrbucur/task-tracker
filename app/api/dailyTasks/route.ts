@@ -1,7 +1,10 @@
+/* eslint-disable prefer-const -- the query results below are reassigned by the commented-out DEBUG filters */
 import { sendEmail } from "@/app/email/email";
+import { descriptionImagesDir } from "@/lib/richText.server";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { addDays, subDays, subHours } from "date-fns";
+import fs from "fs-extra";
 import { NextRequest, NextResponse } from "next/server";
 
 const dueSoonDays = process.env.DUE_SOON_DAYS ? parseInt(process.env.DUE_SOON_DAYS) : 10;
@@ -241,6 +244,26 @@ export async function POST(req: NextRequest) {
 		},
 	});
 	logger("Cleared failed login attempts older than 1 hour");
+
+	//
+	// Sweep abandoned description image drafts - uploaded into a task form that was never submitted
+	//
+	try {
+		const abandonedImages = await prisma.descriptionImage.findMany({
+			where: { taskId: null, createdAt: { lte: subHours(new Date(), 24) } },
+		});
+
+		for (const image of abandonedImages) {
+			await fs.remove(`${descriptionImagesDir()}/${image.path}`).catch((err: any) => logger(`Could not delete description image file ${image.path}: ${err?.message ?? err}`));
+		}
+
+		if (abandonedImages.length > 0) {
+			await prisma.descriptionImage.deleteMany({ where: { id: { in: abandonedImages.map((image) => image.id) } } });
+		}
+		logger(`Cleared ${abandonedImages.length} abandoned description image draft(s)`);
+	} catch (err: any) {
+		logger(err?.message ? err.message : "Error sweeping abandoned description images");
+	}
 
 	return NextResponse.json({ ok: true });
 }

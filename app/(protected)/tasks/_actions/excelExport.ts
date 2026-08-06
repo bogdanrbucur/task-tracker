@@ -1,8 +1,9 @@
+import { markdownToPlainText } from "@/lib/richText";
 import XLSX from "xlsx-js-style";
 import { TaskExtended } from "../page";
 
 export async function generateExcelExport(tasks: TaskExtended[]) {
-	let dataArray = [];
+	const dataArray = [];
 	const headers = [
 		"ID",
 		"Title",
@@ -26,7 +27,8 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 		const data = [
 			task.id,
 			task.title,
-			task.description,
+			// Descriptions are markdown - flatten them so the cell is readable
+			markdownToPlainText(task.description),
 			task.createdAt,
 			task.source,
 			task.sourceLink,
@@ -66,7 +68,7 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 	// Styling...
 	// Center and bold range A1:N1
 	for (let col = 0; col <= 13; col++) {
-		let row = 0;
+		const row = 0;
 		const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
 		// if the cell exists (has data)
 		if (ws[cellAddress]) {

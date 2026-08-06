@@ -113,7 +113,7 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 	const page = rawSearchParams.page ? parseInt(rawSearchParams.page) : 1;
 	const pageSize = 10;
 
-	let tasks = await prisma.task.findMany({
+	const tasks = await prisma.task.findMany({
 		where,
 		orderBy,
 		skip: (page - 1) * pageSize,

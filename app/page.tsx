@@ -33,7 +33,6 @@ export default async function Home({
 
 	await logVisitor(user, "the home page", rawSearchParams.from);
 
-	let userDetails;
 	let hasSubordinates = false;
 
 	const allTasks = (await prisma.task.findMany({
@@ -51,7 +50,7 @@ export default async function Home({
 	const statusTasksChartData = statusTasks(activeTasks);
 
 	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
-	userDetails = await getUserDetails(user.id);
+	const userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);
 
 	const activeSubordinates = userDetails.subordinates.filter((subordinate) => subordinate.status === "active");

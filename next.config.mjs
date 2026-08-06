@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	// Next 16 allows only one dev server per dist dir, so the Playwright suite uses its own
+	// (.next-test). Without this, `npm test` fails whenever a normal `npm run dev` is running.
+	distDir: process.env.NEXT_DIST_DIR || ".next",
 	// webpack: (config) => {
 	// 	config.externals.push("@node-rs/argon2", "@node-rs/bcrypt");
 	// 	return config;

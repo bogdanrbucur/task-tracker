@@ -2,6 +2,7 @@ import { sendEmail } from "@/app/email/email";
 import logger from "@/lib/logging";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import reconcileDescriptionImages from "../../_actions/reconcileDescriptionImages";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
 import { recordTaskHistory } from "./recordTaskHistory";
@@ -27,6 +28,9 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 	});
 
 	if (!updatedTask) throw new Error("Task update failed");
+
+	// Claim newly embedded images and drop any the description no longer references
+	await reconcileDescriptionImages(updatedTask.id, updatedTask.description);
 
 	// Determine if the user was changed and if so, send an email to the new user
 	const oldUserId = oldTask?.assignedToUserId;

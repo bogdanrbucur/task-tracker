@@ -27,6 +27,7 @@ model Task {
   lastOverdueReminderSentOn DateTime?
   lastReadyForReviewSentOn  DateTime?
   attachments               Attachment[]
+  descriptionImages         DescriptionImage[]
   changes                   Change[]     @relation("Changes")
   comments                  Comment[]    @relation("Comments")
   status                    Status       @relation(fields: [statusId], references: [id])
@@ -35,7 +36,6 @@ model Task {
 
   @@index([assignedToUserId])
   @@index([title])
-  @@index([description])
   @@index([statusId])
   @@index([dueDate])
   @@index([createdAt])
@@ -139,6 +139,23 @@ model Attachment {
   type        String
   description String?
   task        Task     @relation(fields: [taskId], references: [id])
+}
+
+// Images embedded inline in a task description via markdown.
+// taskId is null while the image belongs to an unsaved draft; it is claimed
+// when the task is created/updated. Unclaimed drafts are swept daily.
+model DescriptionImage {
+  id        String   @id
+  taskId    Int?
+  path      String
+  width     Int
+  height    Int
+  createdAt DateTime @default(now())
+  createdBy String
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([createdAt])
 }
 
 model Session {

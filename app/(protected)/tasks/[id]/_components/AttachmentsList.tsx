@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ImageLightboxOverlay } from "@/components/ImageLightbox";
+import { useState } from "react";
 
 const isPhoto = (fileName: string) => {
 	const photoExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
@@ -27,21 +28,6 @@ export default function AttachmentList({ attachments }: { attachments: Attachmen
 		setSelectedPhoto(null);
 	};
 
-	// Close the popup when the user presses the Escape key
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				handleClosePopup();
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-
-		return () => {
-			window.removeEventListener("keydown", handleKeyDown);
-		};
-	}, [handleClosePopup]);
-
 	return (
 		<div>
 			{attachments.map((att) => (
@@ -58,16 +44,7 @@ export default function AttachmentList({ attachments }: { attachments: Attachmen
 				</div>
 			))}
 
-			{selectedPhoto && (
-				<div className="z-10 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClosePopup}>
-					<div className="relative" onClick={(e) => e.stopPropagation()}>
-						<img src={selectedPhoto} alt="Source attachment" className="max-w-[85vw] max-h-[85vh] rounded-xl fade-in" />
-						<button onClick={handleClosePopup} className="absolute top-0 right-0 m-2 text-white bg-black bg-opacity-80 rounded-full py-1 px-2">
-							Close
-						</button>
-					</div>
-				</div>
-			)}
+			{selectedPhoto && <ImageLightboxOverlay src={selectedPhoto} alt="Source attachment" onClose={handleClosePopup} />}
 		</div>
 	);
 }

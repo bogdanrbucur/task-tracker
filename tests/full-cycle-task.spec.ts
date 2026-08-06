@@ -3,16 +3,22 @@ import fs from "fs";
 import path from "path";
 import {
 	attachmentFilename,
+	countDescriptionImageFiles,
 	createTaskStatuses,
 	createTestDepartment,
+	createTestImage,
 	createTestUser,
 	deleteExistingScreenshots,
 	deleteTestDb,
+	deleteTestImage,
 	departmentName,
+	getDescriptionImages,
+	testImagePath,
 	storageStatePath,
 	taskClosingComment,
 	taskCompletionComment,
 	taskDescription,
+	taskDescriptionLinkUrl,
 	taskTitle,
 	testAttachmentDescription,
 	testAttachmentPath,
@@ -31,6 +37,8 @@ test.describe.configure({ mode: "serial" });
 test.describe("Task creation and closing", () => {
 	test.beforeAll(async () => {
 		await deleteExistingScreenshots();
+		// After deleteExistingScreenshots, which clears every .png in ./tests
+		await createTestImage();
 		await createTestUser();
 		await createTaskStatuses();
 		await createTestDepartment();
@@ -38,6 +46,7 @@ test.describe("Task creation and closing", () => {
 
 	// Clean up the database after all tests
 	test.afterAll(async ({ browser }) => {
+		await deleteTestImage();
 		await deleteTestDb();
 		await browser.close();
 	});
@@ -163,6 +172,181 @@ test.describe("Task creation and closing", () => {
 			await expect(page).toHaveURL("/tasks");
 			await expect(page.getByText(taskTitle)).toContainText(taskTitle);
 		});
+		await context.close();
+	});
+
+	test("Task description renders as rich text", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		await test.step("Navigate to task", async () => {
+			await page.goto("/tasks");
+			await page.locator(`text=${taskTitle}`).click();
+			await page.waitForURL(/\/tasks\/\d+/);
+			await page.waitForLoadState("networkidle");
+		});
+
+		const description = page.getByTestId("task-description");
+
+		await test.step("Markdown is rendered rather than shown as raw syntax", async () => {
+			await expect(description.locator("strong")).toHaveText("test task");
+			await expect(description.locator("ul li")).toHaveCount(2);
+			await expect(description).not.toContainText("**test task**");
+		});
+
+		await test.step("Links open safely in a new tab", async () => {
+			const link = description.locator(`a[href="${taskDescriptionLinkUrl}"]`);
+			await expect(link).toHaveText("the docs");
+			await expect(link).toHaveAttribute("target", "_blank");
+			await expect(link).toHaveAttribute("rel", /noopener/);
+		});
+
+		await test.step("Raw HTML and javascript: URLs stay inert", async () => {
+			await expect(description.locator("script")).toHaveCount(0);
+			// The script tag must survive as visible text, not as markup
+			await expect(description).toContainText("<script>alert('xss')</script>");
+			await expect(description.locator('a[href^="javascript:"]')).toHaveCount(0);
+		});
+
+		await context.close();
+	});
+
+	test("Search finds text inside markdown formatting", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		// "checklist" only appears in the description, inside a markdown list item - so a hit
+		// proves the search still reaches description text now that it is stored as markdown
+		await page.goto("/tasks?search=checklist");
+		await page.waitForLoadState("networkidle");
+		await expect(page.getByText(taskTitle)).toContainText(taskTitle);
+
+		await test.step("A term that appears nowhere returns no match", async () => {
+			await page.goto("/tasks?search=zzzznotpresent");
+			await page.waitForLoadState("networkidle");
+			await expect(page.getByText(taskTitle)).toHaveCount(0);
+		});
+
+		await context.close();
+	});
+
+	test("Markdown toolbar formats the description", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		await page.goto("/tasks");
+		await page.locator(`text=${taskTitle}`).click();
+		await page.waitForURL(/\/tasks\/\d+/);
+		await page.click('a:has-text("Edit")');
+		await page.waitForURL(/\/tasks\/\d+\/edit/);
+
+		const textarea = page.locator('textarea[name="description"]');
+		await textarea.fill("Check the main valve before starting the work.");
+
+		await test.step("Bold wraps the selected text", async () => {
+			// Select the words "main valve"
+			await textarea.evaluate((el: HTMLTextAreaElement) => {
+				const start = el.value.indexOf("main valve");
+				el.focus();
+				el.setSelectionRange(start, start + "main valve".length);
+			});
+			await page.click('button[aria-label="Bold (Ctrl/⌘ B)"]');
+			await expect(textarea).toHaveValue(/Check the \*\*main valve\*\* before/);
+		});
+
+		await test.step("Bulleted list prefixes the line", async () => {
+			await page.click('button[aria-label="Bulleted list"]');
+			await expect(textarea).toHaveValue(/^- /);
+		});
+
+		await test.step("Preview renders the markdown", async () => {
+			await page.click('button[aria-label="Preview description"]');
+			const preview = page.locator(".prose");
+			await expect(preview.locator("strong")).toHaveText("main valve");
+			await expect(preview.locator("ul li")).toHaveCount(1);
+		});
+
+		// Leave without saving so the description is unchanged for later tests
+		await page.click('a:has-text("Cancel")');
+		await context.close();
+	});
+
+	test("Too short a description is rejected", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		await page.goto("/tasks");
+		await page.locator(`text=${taskTitle}`).click();
+		await page.waitForURL(/\/tasks\/\d+/);
+		await page.click('a:has-text("Edit")');
+		await page.waitForURL(/\/tasks\/\d+\/edit/);
+
+		await page.locator('textarea[name="description"]').fill("too short");
+		await page.click('button:has-text("Save Task")');
+
+		await expect(page.getByText("Description must be at least 20 characters.")).toBeVisible();
+		// Still on the edit page - nothing was saved
+		await expect(page).toHaveURL(/\/tasks\/\d+\/edit/);
+
+		await context.close();
+	});
+
+	test("Inline description image uploads, persists and is cleaned up", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		await page.goto("/tasks");
+		await page.locator(`text=${taskTitle}`).click();
+		await page.waitForURL(/\/tasks\/\d+/);
+		const taskUrl = page.url();
+		await page.click('a:has-text("Edit")');
+		await page.waitForURL(/\/tasks\/\d+\/edit/);
+
+		const textarea = page.locator('textarea[name="description"]');
+		await textarea.fill("Inspect the equipment shown in the photo below before starting.\n\n");
+
+		await test.step("Upload starts as an unattached draft", async () => {
+			// The editor's own picker, not the source-attachments one
+			await page.locator('input[type="file"][accept="image/*"]').setInputFiles(testImagePath);
+			await expect.poll(() => textarea.inputValue(), { timeout: 15000 }).toContain("/api/description-images/");
+
+			const images = await getDescriptionImages();
+			expect(images).toHaveLength(1);
+			// Not yet tied to the task - this is what lets images be added on the New Task page
+			expect(images[0].taskId).toBeNull();
+			// Downscaled from testImageWidth to the 1600px cap
+			expect(images[0].width).toBe(1600);
+		});
+
+		await test.step("Saving attaches the image to the task", async () => {
+			await page.click('button:has-text("Save Task")');
+			await page.waitForURL(/\/tasks\/\d+$/);
+
+			const images = await getDescriptionImages();
+			expect(images).toHaveLength(1);
+			expect(images[0].taskId).not.toBeNull();
+		});
+
+		await test.step("Image renders in the description", async () => {
+			const image = page.getByTestId("task-description").locator("img");
+			await expect(image).toHaveAttribute("src", /\/api\/description-images\//);
+			// The image is loading="lazy", so bring it into view and wait for the bytes to arrive.
+			// A non-zero naturalWidth proves the auth-gated route actually served the image.
+			await image.scrollIntoViewIfNeeded();
+			await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth), { timeout: 15000 }).toBe(1600);
+		});
+
+		await test.step("Removing it from the description deletes the row and the file", async () => {
+			await page.goto(`${taskUrl}/edit`);
+			await page.locator('textarea[name="description"]').fill("The photo is no longer needed for this task.");
+			await page.click('button:has-text("Save Task")');
+			await page.waitForURL(/\/tasks\/\d+$/);
+
+			expect(await getDescriptionImages()).toHaveLength(0);
+			expect(countDescriptionImageFiles()).toBe(0);
+			await expect(page.getByTestId("task-description").locator("img")).toHaveCount(0);
+		});
+
 		await context.close();
 	});
 

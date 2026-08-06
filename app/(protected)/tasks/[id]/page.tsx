@@ -9,6 +9,7 @@ import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
 import { prismaExtendedUserSelection, UserExtended } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameNormal } from "@/components/AvatarAndName";
 import ClientToast from "@/components/ClientToast";
+import RichText from "@/components/RichText";
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,12 +90,16 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 	return (
 		<Card className="container mx-auto px-4 py-4 md:px-6 md:py-10">
 			<div className="fade-in grid gap-6 md:grid-cols-[2fr_1fr]">
-				<div>
+				{/* min-w-0 keeps wide description content (tables, code) scrolling inside this column */}
+				<div className="min-w-0">
 					<div className="space-y-4">
 						<div>
 							<h3 className="text-gray-500 dark:text-gray-400 md:text-l font-bold">#{task.id}</h3>
 							<h1 className="text-xl md:text-2xl font-bold">{task.title}</h1>
-							<p className="text-gray-500 dark:text-gray-400 whitespace-pre-wrap text-sm md:text-base">{task.description}</p>
+							{/* Must be a div, not a p - the rendered markdown contains block-level elements */}
+							<div className="mt-1" data-testid="task-description">
+								<RichText source={task.description} />
+							</div>
 						</div>
 						<div className="grid grid-cols-1 md:flex items-center gap-4 justify-between">
 							<div>

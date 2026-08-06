@@ -97,7 +97,7 @@ export async function checkIfTaskOverdue(taskId: number) {
 
 // Get today in YYYY.MM.DD.log
 export function logDate() {
-	let logDate: any = new Date();
+	const logDate: any = new Date();
 	return `${logDate.getFullYear()}.${String(logDate.getMonth() + 1).padStart(2, "0")}.${String(logDate.getDate()).padStart(2, "0")}.log`;
 }
 
@@ -123,7 +123,6 @@ export async function logVisitor(user: User | null, page: string, source: string
 	const rawIP = headersList.get("x-forwarded-for")?.split(",")[0].trim() || headersList.get("x-real-ip") || "";
 	const ip = normalizeIP(rawIP);
 
-	let userDetails;
 	const sourceTexts = {
 		emailNewTask: " from New Task email",
 		emailTaskDueSoon: " from Task Due Soon email",
@@ -139,7 +138,7 @@ export async function logVisitor(user: User | null, page: string, source: string
 		return;
 	}
 
-	userDetails = await getUserDetails(user.id);
+	const userDetails = await getUserDetails(user.id);
 	logger(`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
 }
 

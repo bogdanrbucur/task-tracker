@@ -1,14 +1,14 @@
 {
 	"name": "task-tracker",
-	"version": "1.8.3",
+	"version": "1.9.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"dev-test": "dotenv -e .env.test -e .env.local -- sh -c 'npx prisma migrate deploy && next dev -p 3535'",
+		"dev-test": "dotenv -e .env.test -e .env.local -- sh -c 'npx prisma migrate deploy && NEXT_DIST_DIR=.next-test next dev -p 3535'",
 		"build": "next build",
 		"email-worker": "dotenv -e .env -- tsx ./lib/email-worker.ts",
 		"start": "dotenv -e .env.local -- sh -c 'next start -p $PORT'",
-		"lint": "next lint",
+		"lint": "eslint .",
 		"daily": "node ./lib/dailyTasks.js",
 		"test": "start-server-and-test dev-test http://localhost:3535 playwright:test",
 		"playwright:test": "playwright test"
@@ -52,7 +52,10 @@
 		"react-email": "^6.9.1",
 		"react-hook-form": "^7.51.4",
 		"react-icons": "^5.2.0",
+		"react-markdown": "^10.1.0",
 		"recharts": "^2.12.7",
+		"remark-breaks": "^4.0.0",
+		"remark-gfm": "^4.0.1",
 		"resend": "^3.2.0",
 		"sharp": "^0.35.3",
 		"sonner": "^1.5.0",
@@ -63,6 +66,7 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.50.1",
+		"@tailwindcss/typography": "^0.5.20",
 		"@types/node": "^20",
 		"@types/react": "19.2.6",
 		"@types/react-dom": "19.2.3",

@@ -3,6 +3,7 @@ import logger from "@/lib/logging";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { recordTaskHistory } from "../../[id]/_actions/recordTaskHistory";
+import reconcileDescriptionImages from "../../_actions/reconcileDescriptionImages";
 import updateUserStats from "../../_actions/updateUserStats";
 import { Editor, NewTask } from "./submitTask";
 
@@ -23,6 +24,9 @@ export async function createTask(task: NewTask, editingUser: Editor) {
 	});
 
 	if (!newTask) throw new Error("Task creation failed");
+
+	// Attach any images embedded in the description, uploaded before the task existed
+	await reconcileDescriptionImages(newTask.id, newTask.description);
 
 	// Check if the task is overdue
 	await checkIfTaskOverdue(newTask.id);

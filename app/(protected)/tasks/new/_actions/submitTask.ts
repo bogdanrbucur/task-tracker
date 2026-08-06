@@ -4,6 +4,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
+import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "@/lib/richText";
 import logger from "@/lib/logging";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
@@ -53,7 +54,10 @@ export default async function submitTask(prevState: any, formData: FormData) {
 	const schema = z.object({
 		id: z.string().nullable(),
 		title: z.string().min(10, { message: "Title must be at least 10 characters." }).max(100, { message: "Title must be at most 100 characters." }),
-		description: z.string().min(20, { message: "Description must be at least 20 characters." }).max(4096, { message: "Description must be at most 4096 characters." }),
+		description: z
+			.string()
+			.min(MIN_DESCRIPTION_LENGTH, { message: `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters.` })
+			.max(MAX_DESCRIPTION_LENGTH, { message: `Description must be at most ${MAX_DESCRIPTION_LENGTH} characters.` }),
 		dueDate: z.string().datetime({ message: "Due date is required." }),
 		assignedToUserId: z.string().length(25, { message: "Assigned user is required." }),
 		createdByUserId: z.string().length(25),

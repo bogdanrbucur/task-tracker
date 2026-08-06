@@ -73,7 +73,7 @@ const config = {
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 	safelist: [
 		"w-24",
 		"bg-blue-100",

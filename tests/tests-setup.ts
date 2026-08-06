@@ -15,11 +15,25 @@ export const user2lastName = "User";
 export const user1position = "test_user_admin";
 export const user2position = "Testing User Non-Admin";
 export const taskTitle = "***E2E Automated Test Task***";
-export const taskDescription = "This is a test task created during automated testing workflows.";
+// Markdown, to exercise the rich-text description pipeline. The trailing raw HTML and
+// javascript: link must render as inert text - see "Task description renders as rich text".
+export const taskDescriptionLinkUrl = "https://example.com/docs";
+export const taskDescription = `This is a **test task** created during automated testing workflows.
+
+- first checklist item
+- second checklist item
+
+See [the docs](${taskDescriptionLinkUrl}) for details.
+
+Inert checks: <script>alert('xss')</script> and [click](javascript:alert('xss'))`;
 export const taskComment = `This is a test comment added during automated testing workflows @${user2firstName}`;
 export const taskCompletionComment = `This is a test completion comment added during automated testing workflows`;
 export const attachmentFilename = "test-att.txt";
 export const testAttachmentPath = `./tests/${attachmentFilename}`;
+// Generated in beforeAll rather than committed, so there is no binary fixture in the repo.
+// Deliberately larger than DESCRIPTION_IMAGE_MAX_DIMENSION (1600) so the resize can be asserted.
+export const testImageWidth = 2000;
+export const testImagePath = "./tests/test-inline-image.png";
 export const testAttachmentDescription = "Test text attachment";
 export const taskClosingComment = `This is a test closing comment added during automated testing workflows`;
 export const departmentName = "Test Department";
@@ -102,6 +116,28 @@ export async function deleteExistingScreenshots() {
 			fs.unlinkSync(path.join(screenshotsPath, file));
 		}
 	}
+}
+
+export async function createTestImage() {
+	const sharp = (await import("sharp")).default;
+	await sharp({ create: { width: testImageWidth, height: testImageWidth / 2, channels: 3, background: { r: 30, g: 90, b: 180 } } })
+		.png()
+		.toFile(testImagePath);
+}
+
+export async function deleteTestImage() {
+	await fs.remove(testImagePath);
+}
+
+/** Rows in the DescriptionImage table - used to assert draft claiming and cleanup. */
+export async function getDescriptionImages() {
+	return prisma.descriptionImage.findMany();
+}
+
+/** Inline description image files actually on disk under FILES_PATH. */
+export function countDescriptionImageFiles() {
+	const dir = `${FILES_PATH}/descriptions`;
+	return fs.existsSync(dir) ? fs.readdirSync(dir).length : 0;
 }
 
 export async function createTestDepartment() {
