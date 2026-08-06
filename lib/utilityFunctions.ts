@@ -3,12 +3,11 @@ import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import crypto from "crypto";
 import { differenceInCalendarDays, format, isPast, isSameDay, isToday } from "date-fns";
-import fs from "fs-extra";
-import log from "log-to-file";
 import { User } from "lucia";
 import { isIPv4, isIPv6 } from "net";
 import { headers } from "next/headers";
 import sharp from "sharp";
+import logger from "./logging";
 
 export function formatDate(date: Date) {
 	const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -142,14 +141,6 @@ export async function logVisitor(user: User | null, page: string, source: string
 
 	userDetails = await getUserDetails(user.id);
 	logger(`${userDetails.firstName} ${userDetails.lastName} accessed ${page} from ${ip} in ${process.env.DEPLOYMENT} deployment${sourceText ? sourceText : ""}.`);
-}
-
-// Simple logger function to log to console and file
-export function logger(message: string) {
-	console.log(message);
-	// Create the logs directory if it doesn't exist
-	fs.ensureDirSync(process.env.LOGS_PATH || "./logs");
-	log(message, `${process.env.LOGS_PATH}/${logDate()}`);
 }
 
 // Function to create idempotency key for emails

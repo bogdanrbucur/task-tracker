@@ -4,7 +4,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { UpdateUser } from "@/app/users/new/submitUser";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { notFound, redirect } from "next/navigation";
 

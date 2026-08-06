@@ -1,7 +1,7 @@
 // server function to add new task
 "use server";
 
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";

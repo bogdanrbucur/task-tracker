@@ -3,7 +3,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";

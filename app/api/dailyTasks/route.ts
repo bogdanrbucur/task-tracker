@@ -1,5 +1,5 @@
 import { sendEmail } from "@/app/email/email";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { addDays, subDays, subHours } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";

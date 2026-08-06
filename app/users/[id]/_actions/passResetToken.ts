@@ -5,7 +5,7 @@ import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import { sendEmail } from "@/app/email/email";
 import generatePassChangeToken from "@/app/password-reset/_actions/generatePassChangeToken";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";

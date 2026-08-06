@@ -1,4 +1,5 @@
-import { logger, resizeAndSaveImage } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
+import { resizeAndSaveImage } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { User } from "@prisma/client";
 import fs from "fs-extra";

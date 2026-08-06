@@ -1,4 +1,5 @@
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
+import { createEmailIdempotencyKey } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { render } from "@react-email/render";
@@ -13,7 +14,6 @@ import TaskCompletedEmail from "./templates/TaskCompleted";
 import TaskDueSoonEmail from "./templates/TaskDueSoon";
 import TaskOverdueEmail from "./templates/TaskOverdue";
 import TaskReopenedEmail from "./templates/TaskReopened";
-import { createEmailIdempotencyKey } from "@/lib/utilityFunctions";
 
 type Props = {
 	userFirstName?: string;

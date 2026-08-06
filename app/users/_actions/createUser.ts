@@ -5,7 +5,7 @@ import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { NewUser } from "@/app/users/new/submitUser";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { sendEmail } from "../../email/email";
 import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";

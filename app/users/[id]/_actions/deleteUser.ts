@@ -3,7 +3,7 @@
 
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import fs from "fs-extra";
 import { redirect } from "next/navigation";

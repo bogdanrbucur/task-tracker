@@ -1,5 +1,6 @@
 import { sendEmail } from "@/app/email/email";
-import { checkIfTaskOverdue, logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
+import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";

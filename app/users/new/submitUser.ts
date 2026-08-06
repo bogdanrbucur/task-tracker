@@ -4,7 +4,7 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import createUser from "@/app/users/_actions/createUser";
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import { User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

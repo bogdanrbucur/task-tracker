@@ -4,12 +4,12 @@
 import { getAuth } from "@/actions/auth/get-auth";
 import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
+import logger from "@/lib/logging";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { updateTask } from "../../[id]/_actions/updateTask";
 import { createTask } from "./createTask";
-import { logger } from "@/lib/utilityFunctions";
 
 export type NewTask = {
 	title: string;

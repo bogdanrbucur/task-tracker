@@ -1,8 +1,9 @@
 // Server action to sign in a user
 "use server";
 
+import logger from "@/lib/logging";
 import { lucia } from "@/lib/lucia";
-import { logger, normalizeIP } from "@/lib/utilityFunctions";
+import { normalizeIP } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";

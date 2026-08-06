@@ -2,7 +2,7 @@
 "use server";
 
 import { getAuth } from "@/actions/auth/get-auth";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { Argon2id } from "oslo/password";

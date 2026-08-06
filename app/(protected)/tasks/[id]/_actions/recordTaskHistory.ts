@@ -1,5 +1,5 @@
 import getUserDetails from "@/app/users/_actions/getUserById";
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { Editor } from "../../new/_actions/submitTask";

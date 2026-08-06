@@ -1,24 +1,11 @@
 import * as dotenv from "dotenv";
-import log from "log-to-file";
 import { Resend } from "resend";
 import prisma from "../prisma/client";
-
+import logger from "./logging.js";
 // Load environment variables from .env.local
 dotenv.config({ path: ".env.local" });
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
-
-// Get today in YYYY.MM.DD.log
-export function logDate() {
-	let logDate: any = new Date();
-	return `${logDate.getFullYear()}.${String(logDate.getMonth() + 1).padStart(2, "0")}.${String(logDate.getDate()).padStart(2, "0")}.log`;
-}
-
-// Simple logger function to log to console and file
-export function logger(message: string) {
-	console.log(message);
-	log(message, `${process.env.LOGS_PATH}/${logDate()}`);
-}
 
 async function sendEmail(limit = 10) {
 	const emails = await prisma.emailOutbox.findMany({

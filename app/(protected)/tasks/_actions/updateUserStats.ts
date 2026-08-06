@@ -1,4 +1,4 @@
-import { logger } from "@/lib/utilityFunctions";
+import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { differenceInCalendarDays, differenceInMinutes } from "date-fns";
