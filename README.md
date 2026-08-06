@@ -330,3 +330,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.7.8 - Update NextJS to 16.2.4 and other dependencies, and include the dash as an accepted special character for passwords
 - 1.8.0 - Added a note in the comments section about using the @ symbol to mention users
 - 1.8.1 - Included date in emails idempotency key to allow sending the same email on different days, for example, daily reminders
+- 1.8.2 - Updated to NextJS 16.3.0 and other dependencies
