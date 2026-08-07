@@ -317,7 +317,12 @@ test.describe("Task creation and closing", () => {
 
 		await test.step("Removing it from the description deletes the row and the file", async () => {
 			await page.goto(`${taskUrl}/edit`);
-			await page.locator('textarea[name="description"]').fill("The photo is no longer needed for this task.");
+			const editTextarea = page.locator('textarea[name="description"]');
+			// Wait for the controlled MarkdownEditor to hydrate and take over the SSR'd value before
+			// mutating it - fill() only waits for the element to be visible/enabled, not interactive,
+			// so filling too early can land before React's onChange sync is attached.
+			await expect(editTextarea).toHaveValue(/Inspect the equipment/);
+			await editTextarea.fill("The photo is no longer needed for this task.");
 			await page.click('button:has-text("Save Task")');
 			await page.waitForURL(/\/tasks\/\d+$/);
 
