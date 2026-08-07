@@ -343,3 +343,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
   - Excel export is no longer shared between users, and escapes text so it cannot run as a formula
   - Added security headers, stopped logging session tokens, and fixed a spoofable rate limiting IP
   - Added end-to-end tests for all of the above and for previously untested flows
+- 1.11.0 - Converted `dailyTasks` to TS

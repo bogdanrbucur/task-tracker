@@ -1,6 +1,6 @@
 {
 	"name": "task-tracker",
-	"version": "1.10.0",
+	"version": "1.11.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
@@ -9,7 +9,8 @@
 		"email-worker": "dotenv -e .env -- tsx ./lib/email-worker.ts",
 		"start": "dotenv -e .env.local -- sh -c 'next start -p $PORT'",
 		"lint": "eslint .",
-		"daily": "node ./lib/dailyTasks.js",
+		"daily": "tsx ./lib/dailyTasks.ts",
+		"hashpass": "tsx ./lib/hashpass.ts",
 		"check": "tsc --noEmit",
 		"test": "start-server-and-test dev-test http://localhost:3535 playwright:test",
 		"playwright:test": "playwright test"

@@ -3,7 +3,7 @@
 
 	const pass = "P@sw0rd123";
 
-	async function hash(pass) {
+	async function hash(pass: string) {
 		const hashed = await new Argon2id().hash(pass);
 		return hashed;
 	}
