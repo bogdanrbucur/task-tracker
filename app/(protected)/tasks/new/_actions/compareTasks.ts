@@ -1,4 +1,5 @@
 import getUserDetails from "@/app/users/_actions/getUserById";
+import { formatDescriptionChange } from "@/lib/descriptionDiff";
 import { formatDate } from "@/lib/utilityFunctions";
 import { Task } from "@prisma/client";
 import { Editor } from "./submitTask";
@@ -17,10 +18,7 @@ export default async function compareTasks(oldTask: Task, newTask: Task, editing
 
 	if (oldTask.title !== newTask.title) changes.push(`Title changed from "${oldTask.title}" to "${newTask.title}" by ${editingUserFullName}`);
 
-	// Only record that the description changed, not both bodies. Descriptions are markdown and can
-	// run to 16k characters, so embedding them here would store ~32k of markup per edit in a field
-	// TaskHistory renders as a single flat line.
-	if (oldTask.description !== newTask.description) changes.push(`Description changed by ${editingUserFullName}`);
+	if (oldTask.description !== newTask.description) changes.push(formatDescriptionChange(oldTask.description, newTask.description, editingUserFullName));
 
 	if (String(oldTask.dueDate) !== String(newTask.dueDate))
 		changes.push(`Due date changed from ${formatDate(new Date(oldTask.dueDate))} to ${formatDate(new Date(newTask.dueDate))} by ${editingUserFullName}`);

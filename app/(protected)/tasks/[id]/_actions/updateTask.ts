@@ -29,6 +29,13 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 
 	if (!updatedTask) throw new Error("Task update failed");
 
+	// Record history right after the task write succeeds, before the best-effort side effects
+	// below (image reconciliation, emails, overdue check, attachment renames) - a failure in any
+	// of those would otherwise abort the request and silently drop the history entry even though
+	// the task itself was already saved.
+	const changes = await compareTasks(oldTask!, updatedTask, editingUser);
+	await recordTaskHistory(updatedTask, editingUser, changes);
+
 	// Claim newly embedded images and drop any the description no longer references
 	await reconcileDescriptionImages(updatedTask.id, updatedTask.description);
 
@@ -70,10 +77,5 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 
 	logger(`Task ${task.id} updated successfully`);
 
-	// Determine what was changed
-	const changes = await compareTasks(oldTask!, updatedTask, editingUser);
-
-	// Add the changes to the task history
-	const newChange = await recordTaskHistory(updatedTask, editingUser, changes);
 	return { updatedTask, emailStatus };
 }

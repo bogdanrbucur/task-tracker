@@ -345,3 +345,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
   - Added end-to-end tests for all of the above and for previously untested flows
 - 1.11.0 - Converted `dailyTasks` to TS
 - 1.11.1 - Fixed 2 automated tests failing
+- 1.12.0 - Task description diff view

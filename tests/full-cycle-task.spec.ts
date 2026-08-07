@@ -334,6 +334,40 @@ test.describe("Task creation and closing", () => {
 		await context.close();
 	});
 
+	test("Task history shows a diff for description changes", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: storageStatePath });
+		const page = await context.newPage();
+
+		await page.goto("/tasks");
+		await page.locator(`text=${taskTitle}`).click();
+		await page.waitForURL(/\/tasks\/\d+/);
+		await page.click('a:has-text("Edit")');
+		await page.waitForURL(/\/tasks\/\d+\/edit/);
+
+		const textarea = page.locator('textarea[name="description"]');
+		// Wait for the controlled MarkdownEditor to hydrate and take over the SSR'd value before
+		// mutating it - fill() only waits for the element to be visible/enabled, not interactive.
+		await expect(textarea).toHaveValue(/The photo is no longer needed/);
+		const oldDescription = await textarea.inputValue();
+		const addedText = "Please verify calibration too.";
+		await textarea.fill(`${oldDescription} ${addedText}`);
+		await page.click('button:has-text("Save Task")');
+		await page.waitForURL(/\/tasks\/\d+$/);
+
+		await test.step("History records a diff, not the full body twice", async () => {
+			// The task's description was already edited by earlier tests, so there may be several
+			// "Description changed" entries - only the most recent one covers this edit.
+			const summary = page.locator('[data-testid="change-text"]').filter({ hasText: `Description changed by ${user1firstName} ${user1lastName}` });
+			await expect(summary.last()).toBeVisible();
+
+			const diff = page.locator('[data-testid="description-diff"]').last();
+			await expect(diff.locator("ins")).toHaveText(new RegExp(addedText));
+			await expect(diff.locator("del")).toHaveCount(0);
+		});
+
+		await context.close();
+	});
+
 	test("Add task comment", async ({ browser }) => {
 		const context = await browser.newContext({ storageState: storageStatePath });
 		const page = await context.newPage();
