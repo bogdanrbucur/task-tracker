@@ -322,7 +322,14 @@ test.describe("Task creation and closing", () => {
 			// mutating it - fill() only waits for the element to be visible/enabled, not interactive,
 			// so filling too early can land before React's onChange sync is attached.
 			await expect(editTextarea).toHaveValue(/Inspect the equipment/);
+			// Clear explicitly before filling - fill() on this controlled textarea can otherwise land
+			// as an insert-at-caret rather than a full replace if a re-render races the selection,
+			// leaving the old text (and the image markdown) in place.
+			await editTextarea.click();
+			await editTextarea.press("ControlOrMeta+A");
+			await editTextarea.press("Backspace");
 			await editTextarea.fill("The photo is no longer needed for this task.");
+			await expect(editTextarea).toHaveValue("The photo is no longer needed for this task.");
 			await page.click('button:has-text("Save Task")');
 			await page.waitForURL(/\/tasks\/\d+$/);
 
