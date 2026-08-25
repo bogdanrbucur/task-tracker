@@ -205,7 +205,8 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 					<Separator className="my-3 md:my-6" />
 					<CommentsSection userId={user?.id} taskId={task.id} comments={comments} users={users as UserExtended[]} />
 				</div>
-				<div className="space-y-6">
+				{/* min-w-0 stops long unbreakable strings (e.g. URLs) in the history from widening the grid column */}
+				<div className="space-y-6 min-w-0">
 					<Card>
 						<CardHeader className="px-3 md:px-6 py-3 md:py-6">
 							<CardTitle>Task History</CardTitle>

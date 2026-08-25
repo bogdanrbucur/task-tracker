@@ -347,3 +347,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.11.1 - Fixed 2 automated tests failing
 - 1.12.0 - Task description diff view
 - 1.12.1 - Fixed a test
+- 1.12.2 - Fixed a bug that allowed the task history window to horizontally grow without limit
