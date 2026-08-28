@@ -1,8 +1,13 @@
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import prisma from "@/prisma/client";
 import ResetPassword from "./_components/ResetPassword";
 import { notFound } from "next/navigation";
 
 export default async function PasswordResetPage({ searchParams }: { searchParams: { token: string } }) {
+	// Password sign-in itself is off - a link from before it was turned off (or from an admin's
+	// resend) must not still work.
+	if (!isPasswordAuthEnabled()) return notFound();
+
 	// Destructure the token from search params
 	const { token } = await searchParams;
 
@@ -22,8 +27,10 @@ export default async function PasswordResetPage({ searchParams }: { searchParams
 		where: { id: dbToken.userId, status: { in: ["active", "unverified"] } },
 	});
 
-	// If the token is expired, delete it and return a 404
-	if (dbToken.expiresAt < new Date() || !user) {
+	// If the token is expired, or the account is now linked to Microsoft 365, delete it and 404 -
+	// same outcome as an expired token, so this page can't be used to discover which accounts are
+	// linked.
+	if (dbToken.expiresAt < new Date() || !user || user.entraOid) {
 		await prisma.passwordResetToken.delete({
 			where: { id: dbToken.id },
 		});

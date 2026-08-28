@@ -50,6 +50,12 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 		return { newUser, emailStatus };
 	} catch (error: any) {
 		logger(error?.message ? error.message : "Error creating user");
+		// Prisma unique constraint violation - surface a friendly message to the client
+		if (error?.code === "P2002") {
+			const target = error?.meta?.target;
+			const onEmail = Array.isArray(target) ? target.includes("email") : String(target ?? "").includes("email");
+			if (onEmail) return { error: new Error("A user with this email address already exists.") };
+		}
 		return { error };
 	}
 }

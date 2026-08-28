@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import getUserDetails from "../users/_actions/getUserById";
 import { AdminMenu } from "./AdminMenu";
+import SignInNavLink from "./SignInNavLink";
 
 export const dynamic = "force-dynamic";
 
@@ -49,11 +50,7 @@ const Navbar = async () => {
 						</Button>
 					</form>
 				)}
-				{!user && (
-					<Link href="/sign-in" className={buttonVariants({ variant: "outline", size: "sm" })}>
-						Sign In
-					</Link>
-				)}
+				{!user && <SignInNavLink />}
 				<ModeToggle />
 			</div>
 		</nav>

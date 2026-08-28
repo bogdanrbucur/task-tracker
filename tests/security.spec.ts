@@ -471,6 +471,33 @@ test.describe("Security regressions", () => {
 		await context.close();
 	});
 
+	// The M365 OAuth feature is off in .env.test (M365_AUTH_ENABLED is unset), which is the state
+	// every deployment starts in. These lock in that "off" really means absent, not merely hidden:
+	// a flag that only removes the button while leaving the endpoints live would be no flag at all.
+	test("With M365 sign-in disabled the OAuth routes do not exist", async ({ context }) => {
+		for (const route of ["/api/auth/m365/login", "/api/auth/m365/callback?code=x&state=y"]) {
+			const res = await context.request.get(route, { maxRedirects: 0 });
+			expect(res.status(), `${route} should not exist while the feature is off`).toBe(404);
+			// Nothing may hand out a session on the way to a 404
+			expect(res.headers()["set-cookie"] ?? "").not.toContain("auth_session=");
+		}
+	});
+
+	test("With M365 sign-in disabled the sign-in page offers no Microsoft button", async ({ page }) => {
+		await page.goto("/sign-in");
+		await expect(page.locator('[data-testid="m365-signin"]')).toHaveCount(0);
+		// The password form is still the way in
+		await expect(page.locator('input[name="password"]')).toBeVisible();
+	});
+
+	test("The sign-in page will not reflect an arbitrary error code back to the user", async ({ page }) => {
+		// The callback reports failures as a fixed set of codes that the page maps to messages.
+		// Anything else must be ignored rather than rendered.
+		await page.goto("/sign-in?error=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E");
+		await expect(page.locator("text=onerror")).toHaveCount(0);
+		await expect(page.locator('input[name="password"]')).toBeVisible();
+	});
+
 	// Last, because it kills the outsider session the earlier tests rely on
 	test("Deactivating a user immediately ends their session", async ({ browser }) => {
 		test.setTimeout(90000);

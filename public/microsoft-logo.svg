@@ -1,0 +1,10 @@
+<!-- Microsoft logo, official colors (Wikimedia Commons "Microsoft logo.svg").
+     21-unit box, no outer margin, integer square edges. shape-rendering="crispEdges"
+     keeps the 1px gutters snapped to the device grid even when the <img> lands on a
+     fractional CSS pixel (flex centering), so both gutters stay equal and sharp. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" shape-rendering="crispEdges">
+	<rect x="0" y="0" width="10" height="10" fill="#f35325" />
+	<rect x="11" y="0" width="10" height="10" fill="#81bc06" />
+	<rect x="0" y="11" width="10" height="10" fill="#05a6f0" />
+	<rect x="11" y="11" width="10" height="10" fill="#ffba08" />
+</svg>

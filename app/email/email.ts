@@ -1,4 +1,6 @@
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import logger from "@/lib/logging";
+import { isM365Enabled } from "@/lib/m365";
 import { createEmailIdempotencyKey } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
@@ -124,7 +126,16 @@ export async function sendEmail({ userFirstName, userLastName, recipients, cc, e
 			subject = "Password reset request";
 			break;
 		case "newUserRegistration":
-			emailTemplate = React.createElement(NewUserRegistered, { baseUrl, firstName: userFirstName!, token: comment! });
+			// Read live, not passed in by the caller: the welcome link must reflect whichever sign-in
+			// methods are actually available at send time, since the flags can change after a user
+			// was created but before they open the email (or before an admin resends it).
+			emailTemplate = React.createElement(NewUserRegistered, {
+				baseUrl,
+				firstName: userFirstName!,
+				token: comment!,
+				m365Enabled: isM365Enabled(),
+				passwordAuthEnabled: isPasswordAuthEnabled(),
+			});
 			subject = "New account created";
 			break;
 		case "newUserNotConfirmed":

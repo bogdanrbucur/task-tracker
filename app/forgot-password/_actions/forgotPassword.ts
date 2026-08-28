@@ -1,6 +1,7 @@
 // server function to add new task
 "use server";
 
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
@@ -12,6 +13,11 @@ import generatePassChangeToken from "../../password-reset/_actions/generatePassC
 const MAX_LIVE_RESET_TOKENS = 3;
 
 export default async function forgotUserPassword(prevState: any, formData: FormData) {
+	// The FE only stops rendering the form; a direct POST here must be refused too, same reasoning
+	// as sign-in.ts - and there is no reason to hand out a reset link for a way of signing in that
+	// is turned off.
+	if (!isPasswordAuthEnabled()) return { success: false, message: "Password sign-in is not available." };
+
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// logger(rawFormData);
 
@@ -41,6 +47,13 @@ export default async function forgotUserPassword(prevState: any, formData: FormD
 
 		if (!user) {
 			logger(`No active user found with email address ${data.email}`);
+			return { success: true };
+		}
+
+		// This account signs in via M365 - same response as the success path, so this can't be used
+		// to discover which accounts are linked.
+		if (user.entraOid) {
+			logger(`Password reset requested for ${data.email}, but the account is linked to Microsoft 365.`);
 			return { success: true };
 		}
 

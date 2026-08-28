@@ -5,6 +5,7 @@ import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import { sendEmail } from "@/app/email/email";
 import generatePassChangeToken from "@/app/password-reset/_actions/generatePassChangeToken";
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
 import { revalidatePath } from "next/cache";
@@ -39,8 +40,16 @@ export default async function passResetToken(prevState: any, formData: FormData)
 
 		logger(`Password reset requested for user ${user.email}`);
 
-		// If the user is already active, send a normal password reset email
+		// If the user is already active, send a normal password reset email. This is the "reset your
+		// password" action, not account activation, so it makes no sense once password sign-in itself
+		// is off - unlike the unverified branch below, which stays available for M365 activation.
 		if (user.status === "active") {
+			if (!isPasswordAuthEnabled()) return { message: "Password sign-in is not available." };
+
+			// The user signs in via M365 - an admin has to unlink them first, otherwise this would
+			// hand out a password usable on the side even though the profile page hides the button.
+			if (user.entraOid) return { message: "This user is linked to Microsoft 365. Unlink them first to reset a password." };
+
 			logger("User is active, sending password reset email");
 			// Create a unique random password reset token with default validity
 			const token = await generatePassChangeToken(user);
