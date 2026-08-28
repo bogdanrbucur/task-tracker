@@ -55,13 +55,16 @@ export async function checkForOverdueTasks() {
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
-	// Change status to overdue (5) if task is past due
-	tasks.forEach(async (task) => {
+	// Change status to overdue (5) if task is past due.
+	// forEach does not await its callback, so the job used to be able to return before these writes
+	// (or a rejection from one of them) had actually landed - a for..of makes each update, and any
+	// error it throws, part of this function's own await chain.
+	for (const task of tasks) {
 		await prisma.task.update({
 			where: { id: task.id },
 			data: { statusId: 5 },
 		});
-	});
+	}
 }
 
 export async function checkIfTaskOverdue(taskId: number) {

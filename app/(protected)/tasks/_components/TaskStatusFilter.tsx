@@ -97,6 +97,7 @@ export default function TaskStatusFilter() {
 		if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
 		if (searchParams.get("user")) params.append("user", searchParams.get("user")!);
 		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
+		if (searchParams.get("hierarchy")) params.append("hierarchy", searchParams.get("hierarchy")!);
 
 		const query = selectedStatuses !== "" ? "?" + params.toString() : "";
 		router.push(`/tasks${query}`);

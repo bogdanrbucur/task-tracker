@@ -39,6 +39,11 @@ export default async function completeTask(prevState: any, formData: FormData) {
 		const taskForAuth = await getTaskForAuth(Number(data.taskId));
 		if (!taskForAuth) return { message: "Task not found." };
 		if (!canCompleteTask(taskForAuth, actor)) {
+			// _count.children only counts sub-tasks that are not yet Completed/Closed/Cancelled -
+			// see getTaskForAuth - so a non-zero count here means open sub-tasks are the reason.
+			if (taskForAuth._count.children > 0) {
+				return { message: `This task has ${taskForAuth._count.children} open sub-task${taskForAuth._count.children === 1 ? "" : "s"} and cannot be completed yet.` };
+			}
 			return { message: "You are not authorized to complete this task." };
 		}
 

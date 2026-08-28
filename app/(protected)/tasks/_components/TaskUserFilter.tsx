@@ -29,6 +29,7 @@ export function TaskUserFilter({ users }: { users: UserExtended[] }) {
 		if (userId !== "") params.append("user", userId);
 		if (userId === "") params.delete("user");
 		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
+		if (searchParams.get("hierarchy")) params.append("hierarchy", searchParams.get("hierarchy")!);
 
 		const query = params.toString() ? "?" + params.toString() : "";
 		router.push(`/tasks${query}`);

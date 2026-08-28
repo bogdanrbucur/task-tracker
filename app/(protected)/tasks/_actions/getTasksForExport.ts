@@ -3,6 +3,7 @@ import { getActor } from "@/actions/auth/require-auth";
 import { prismaRestrictedUserSelection } from "@/app/users/_actions/getUserById";
 import prisma from "@/prisma/client";
 import { buildTaskOrderBy, buildTaskWhere, type TaskExtended, type TasksQuery } from "./buildTaskQuery";
+import { getTaskProgress } from "./taskProgress";
 
 /**
  * Tasks matching the caller's current filters, for the Excel export.
@@ -25,8 +26,9 @@ export async function getTasksForExport(searchParams: TasksQuery) {
 			assignedToUser: {
 				select: prismaRestrictedUserSelection,
 			},
+			parent: { select: { id: true, title: true } },
 		},
-	})) as TaskExtended[];
+	})) as (TaskExtended & { parent?: { id: number; title: string } | null })[];
 
 	const departments = await prisma.department.findMany();
 	// Assign the department to the task, based on the assignedToUser's department
@@ -34,5 +36,10 @@ export async function getTasksForExport(searchParams: TasksQuery) {
 		if (task.assignedToUser) task.department = departments.find((dept) => dept.id === task.assignedToUser?.department?.id);
 	}
 
-	return tasks;
+	// Same shared helper the tasks list page uses, over the whole filtered result set at once -
+	// this is exactly the case the helper is built for: it can be far more than one page of 10.
+	const progressByTaskId = await getTaskProgress(tasks);
+	const tasksWithProgress = tasks.map((task) => ({ ...task, progress: progressByTaskId.get(task.id) ?? null }));
+
+	return tasksWithProgress;
 }

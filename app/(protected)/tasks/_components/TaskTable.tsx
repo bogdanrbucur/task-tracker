@@ -1,5 +1,6 @@
 import { UserExtended } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameSmall } from "@/components/AvatarAndName";
+import ProgressBar from "@/components/ProgressBar";
 import StatusBadge from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { completedColor, dueColor, formatDate } from "@/lib/utilityFunctions";
@@ -8,15 +9,17 @@ import { Task } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { default as Link, default as NextLink } from "next/link";
 import type { TaskExtended, TasksQuery } from "../_actions/buildTaskQuery";
+import type { TaskProgress } from "../_actions/taskProgress";
 import MobileTaskTabelCell from "./MobileTaskTabelCell";
 
 interface Props {
 	searchParams: TasksQuery;
 	tasks: TaskExtended[];
 	viewableUsers: string[];
+	progressByTaskId?: Map<number, TaskProgress | null>;
 }
 
-const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
+const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Props) => {
 	const sortOrder = searchParams.sortOrder;
 
 	return (
@@ -50,9 +53,15 @@ const TaskTable = ({ searchParams, tasks, viewableUsers }: Props) => {
 				{tasks.map((task) => (
 					<TableRow key={task.id}>
 						<TableCell className="hidden py-1 md:table-cell">{task.id}</TableCell>
-						<MobileTaskTabelCell task={task} viewableUsers={viewableUsers} />
+						<MobileTaskTabelCell task={task} viewableUsers={viewableUsers} progress={progressByTaskId?.get(task.id) ?? null} />
 						<TableCell className="hidden py-1 md:table-cell">
-							<StatusBadge statusObj={task.status} size="xs" />
+							{/* Stacked under the badge, not beside it - a bar reads left-to-right as magnitude,
+							    so it needs its own line rather than competing with the badge for width. Fits
+							    within the badge's own min-w-28, so this adds no new column width. */}
+							<div className="flex flex-col items-start gap-1">
+								<StatusBadge statusObj={task.status} size="xs" />
+								{progressByTaskId?.get(task.id) && <ProgressBar percent={progressByTaskId.get(task.id)!.percent} variant="compact" />}
+							</div>
 						</TableCell>
 						<TableCell className="hidden py-1 md:table-cell">{task.source}</TableCell>
 						<TableCell className="hidden py-1 md:table-cell w-min whitespace-nowrap">{formatDate(task.createdAt)}</TableCell>

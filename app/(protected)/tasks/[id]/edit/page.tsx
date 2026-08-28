@@ -4,6 +4,7 @@ import getUserDetails from "@/app/users/_actions/getUserById";
 import getUsers from "@/app/users/_actions/getUsers";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
+import { getEligibleParentTasks } from "../../_actions/getEligibleParentTasks";
 import TaskForm from "../_components/TaskForm";
 
 const EditTaskpage = async ({ params }: { params: { id: string } }) => {
@@ -18,7 +19,7 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Fetch the task with the given ID
 	const task = await prisma.task.findUnique({
 		where: { id: taskId },
-		include: { assignedToUser: true, attachments: true },
+		include: { assignedToUser: true, attachments: true, checklistItems: { orderBy: { position: "asc" } } },
 	});
 
 	// If the task is not found OR task is not In Progress or Overdue, return a 404 page, included in Next.js
@@ -38,7 +39,20 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// Filter out inactive users
 	filteredUsers = filteredUsers.filter((u) => u.status === "active");
 
-	return <TaskForm users={filteredUsers} task={task} />;
+	// A task with sub-tasks of its own may never be given a parent (one level deep only) - so it
+	// gets no eligible-parents list at all, and the picker never shows if it can't be used.
+	const childCount = await prisma.task.count({ where: { parentId: task.id } });
+	const eligibleParents = childCount > 0 ? [] : await getEligibleParentTasks(task.id);
+
+	return (
+		<TaskForm
+			users={filteredUsers}
+			task={task}
+			eligibleParents={eligibleParents}
+			defaultParentId={task.parentId}
+			defaultChecklistItems={task.checklistItems.map((i) => ({ id: i.id, text: i.text }))}
+		/>
+	);
 };
 
 export default EditTaskpage;

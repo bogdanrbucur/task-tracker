@@ -20,9 +20,14 @@ export interface TaskExtended extends Task {
 	createdByUser?: User;
 	status: Status;
 	department?: Department;
+	_count?: { children: number };
 }
 
 type StatusTypes = "1" | "2" | "3" | "4" | "5" | undefined;
+
+// All (default): no filter. hideSubtasks: only tasks with no parent - ordinary tasks and parents,
+// just not the sub-tasks under them.
+export type HierarchyFilter = "hideSubtasks" | undefined;
 
 export interface TasksQuery {
 	status: StatusTypes;
@@ -32,6 +37,12 @@ export interface TasksQuery {
 	user: string;
 	search: string;
 	dept: string;
+	hierarchy?: HierarchyFilter;
+}
+
+function hierarchyFilter(hierarchy: HierarchyFilter): Prisma.TaskWhereInput | undefined {
+	if (hierarchy === "hideSubtasks") return { parentId: null };
+	return undefined;
 }
 
 export function buildTaskWhere(params: TasksQuery): Prisma.TaskWhereInput | undefined {
@@ -39,6 +50,7 @@ export function buildTaskWhere(params: TasksQuery): Prisma.TaskWhereInput | unde
 	const statuses = params.status ? params.status.split(",").map((statusId) => parseInt(statusId)) : undefined;
 	const taskUser = params.user ? params.user : undefined;
 	const department = params.dept ? params.dept : undefined;
+	const hierarchy = hierarchyFilter(params.hierarchy);
 
 	let searchTermsQuery = params.search ? params.search : undefined;
 	let searchTerms: string[] | undefined = undefined;
@@ -48,13 +60,14 @@ export function buildTaskWhere(params: TasksQuery): Prisma.TaskWhereInput | unde
 		searchTerms = searchTermsQuery.split(" ");
 	}
 
-	// If there's no search terminology, just filter by status and user
-	if ((statuses || taskUser || department) && !searchTerms) {
+	// If there's no search terminology, just filter by status, user, department and hierarchy
+	if ((statuses || taskUser || department || hierarchy) && !searchTerms) {
 		return {
 			AND: [
 				statuses ? { statusId: { in: statuses } } : undefined,
 				taskUser ? { assignedToUserId: taskUser } : undefined,
 				department ? { assignedToUser: { department: { id: Number(department) } } } : undefined,
+				hierarchy,
 			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
 	}
@@ -92,8 +105,11 @@ export function buildTaskWhere(params: TasksQuery): Prisma.TaskWhereInput | unde
 						return { OR: orFilters };
 					}),
 				},
-				// Note: a search term deliberately supersedes the status/user/department filters,
-				// matching the behaviour this was extracted from
+				// A search term still combines with the hierarchy filter - unlike status/user/dept,
+				// which a search term deliberately supersedes (matching the behaviour this was
+				// extracted from). Hiding sub-tasks while searching is what someone toggling that
+				// filter expects to keep doing once they start typing.
+				hierarchy,
 			].filter(Boolean) as Prisma.TaskWhereInput[],
 		};
 	}

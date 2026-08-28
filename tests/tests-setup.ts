@@ -225,6 +225,20 @@ export async function createWorkflowUsers(departmentId: number | null) {
 	return { manager, employee };
 }
 
+// A second, dedicated manager/employee pair for subtasks.spec.ts - kept separate from
+// wfManager/wfEmployee above so its many fixture tasks (parents, sub-tasks, duplicates) cannot
+// push a specific task off page 1 of a pagination-sensitive assertion in workflows.spec.ts. Seeded
+// in globalSetup for the same reason those are: getUsers() caches its result for 5 minutes, so a
+// user created in a spec's own beforeAll would not yet appear in the assignee dropdown.
+export const stManagerEmail = "st-manager@resend.dev";
+export const stEmployeeEmail = "st-employee@resend.dev";
+
+export async function createSubtaskUsers() {
+	const manager = await createExtraUser(stManagerEmail, { firstName: "St", lastName: "Manager" });
+	const employee = await createExtraUser(stEmployeeEmail, { firstName: "St", lastName: "Employee", managerId: manager.id });
+	return { manager, employee };
+}
+
 /** Emails are only ever queued by the app; the worker that drains EmailOutbox is not run by `npm test`. */
 export async function getQueuedEmails() {
 	return prisma.emailOutbox.findMany({ orderBy: { createdAt: "asc" } });
@@ -249,6 +263,49 @@ export async function getTaskByTitle(title: string) {
 
 export async function getTaskById(id: number) {
 	return prisma.task.findUnique({ where: { id } });
+}
+
+/** A task in "In Progress" (statusId 1) with an explicit status/dueDate/parent, for sub-task fixtures. */
+export async function createTaskWith(opts: {
+	assignedToUserId: string;
+	createdByUserId: string;
+	title: string;
+	statusId?: number;
+	parentId?: number | null;
+	dueDate?: Date;
+	completedOn?: Date | null;
+	closedOn?: Date | null;
+}) {
+	const dueDate = opts.dueDate ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+	return prisma.task.create({
+		data: {
+			title: opts.title,
+			description: "Task created directly by the test suite as a fixture.",
+			assignedToUserId: opts.assignedToUserId,
+			createdByUserId: opts.createdByUserId,
+			statusId: opts.statusId ?? 1,
+			parentId: opts.parentId ?? null,
+			dueDate,
+			originalDueDate: dueDate,
+			completedOn: opts.completedOn ?? null,
+			closedOn: opts.closedOn ?? null,
+		},
+	});
+}
+
+export async function createChecklistItems(taskId: number, texts: string[]) {
+	await prisma.checklistItem.createMany({
+		data: texts.map((text, position) => ({ taskId, text, position })),
+	});
+	return prisma.checklistItem.findMany({ where: { taskId }, orderBy: { position: "asc" } });
+}
+
+export async function getChecklistItems(taskId: number) {
+	return prisma.checklistItem.findMany({ where: { taskId }, orderBy: { position: "asc" } });
+}
+
+export async function getChildren(parentId: number) {
+	return prisma.task.findMany({ where: { parentId }, orderBy: { id: "asc" } });
 }
 
 export async function getCommentsForTask(taskId: number) {
@@ -296,6 +353,7 @@ export async function resetTestDb() {
 	await prisma.comment.deleteMany();
 	await prisma.attachment.deleteMany();
 	await prisma.descriptionImage.deleteMany();
+	await prisma.checklistItem.deleteMany();
 	await prisma.task.deleteMany();
 	await prisma.passwordResetToken.deleteMany();
 	await prisma.session.deleteMany();

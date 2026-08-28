@@ -7,6 +7,41 @@ import fs from "fs-extra";
 
 export class AttachmentError extends Error {}
 
+/**
+ * Duplicate: copy a task's source attachments onto a newly created task - files on disk plus their
+ * Attachment rows (new ids, same filename and description). Only "source" attachments are copied,
+ * never "completion" ones - carrying proof-of-completion onto a task that hasn't been done yet
+ * would be actively misleading.
+ */
+export async function copySourceAttachments(sourceTaskId: number, newTaskId: number) {
+	const sourceAttachments = await prisma.attachment.findMany({ where: { taskId: sourceTaskId, type: "source" } });
+	if (sourceAttachments.length === 0) return;
+
+	const sourceDir = taskAttachmentsDir(sourceTaskId);
+	const destDir = taskAttachmentsDir(newTaskId);
+
+	for (const attachment of sourceAttachments) {
+		const sourcePath = `${sourceDir}/${attachment.path}`;
+		if (!(await fs.pathExists(sourcePath))) {
+			logger(`Skipped copying attachment ${attachment.path}: file missing on disk for task ${sourceTaskId}`);
+			continue;
+		}
+
+		await fs.ensureDir(destDir);
+		const destPath = `${destDir}/${attachment.path}`;
+		// Both paths are built from a filename already sanitised when it was first uploaded, but the
+		// containment check costs nothing and keeps the same guarantee saveAttachment relies on.
+		if (!isInsideDir(destDir, destPath)) continue;
+		await fs.copy(sourcePath, destPath);
+
+		await prisma.attachment.create({
+			data: { id: randomUUID(), taskId: newTaskId, type: "source", path: attachment.path, description: attachment.description },
+		});
+	}
+
+	logger(`Copied ${sourceAttachments.length} source attachment(s) from task ${sourceTaskId} to task ${newTaskId}`);
+}
+
 export default async function saveAttachment(attachment: File, task: Task, attachmentDescription: string, type: "source" | "completion") {
 	let response;
 	try {

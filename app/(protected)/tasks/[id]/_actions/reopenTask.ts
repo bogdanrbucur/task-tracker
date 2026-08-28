@@ -1,6 +1,6 @@
 "use server";
 
-import { PERMISSION_DENIED, canManageTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
+import { PERMISSION_DENIED, canManageTask, canReopenTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import logger from "@/lib/logging";
@@ -48,6 +48,9 @@ export default async function reopenTask(prevState: any, formData: FormData) {
 		const taskForAuth = await getTaskForAuth(Number(data.taskId));
 		if (!taskForAuth) return { message: "Task not found." };
 		if (!canManageTask(taskForAuth, actor)) return { message: "You are not authorized to reopen this task." };
+		// A sub-task cannot be reopened while its parent is Completed or Closed - the parent must
+		// be reopened first, otherwise its status would read finished while a child is open again.
+		if (!canReopenTask(taskForAuth)) return { message: "This task's parent is completed or closed and must be reopened first." };
 
 		// Get the details of the user who is reopening the task
 		const editor = await getUserDetails(actor.user.id);

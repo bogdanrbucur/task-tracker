@@ -3,6 +3,7 @@ import { getPermissions } from "@/actions/auth/get-permissions";
 import getUsers from "@/app/users/_actions/getUsers";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { TaskHierarchyFilter } from "./TaskHierarchyFilter";
 import { TaskSearchFilter } from "./TaskSearchFilter";
 import TaskStatusFilter from "./TaskStatusFilter";
 import { TaskUserFilter } from "./TaskUserFilter";
@@ -23,6 +24,7 @@ const TaskTopSection = async ({ searchParams }: { searchParams: TasksQuery }) =>
 			<div className="flex space-x-3 justify-between md:justify-start">
 				<TaskStatusFilter />
 				<TaskUserFilter users={allUsers} />
+				<TaskHierarchyFilter />
 			</div>
 			<div className="flex space-x-3 justify-between md:justify-end">
 				<TaskSearchFilter />

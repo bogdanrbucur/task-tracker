@@ -6,9 +6,11 @@ import { EmailResponse } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "@/lib/richText";
 import logger from "@/lib/logging";
+import prisma from "@/prisma/client";
 import { Task } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { ChecklistItemsInput, ChecklistItemInputType } from "../../_actions/checklistShared";
 import { updateTask } from "../../[id]/_actions/updateTask";
 import { createTask } from "./createTask";
 
@@ -20,6 +22,9 @@ export type NewTask = {
 	assignedToUserId: string;
 	source?: string;
 	sourceLink?: string;
+	parentId: number | null;
+	checklistItems: ChecklistItemInputType[];
+	copyFromTaskId?: number;
 };
 export type UpdateTask = NewTask & { id: string };
 export type Editor = { firstName: string; lastName: string; id: string };
@@ -70,6 +75,9 @@ export default async function submitTask(prevState: any, formData: FormData) {
 				message: "Invalid Source link URL",
 			}),
 		sourceAttachmentsDescriptions: z.array(z.string()).nullable(),
+		parentId: z.string().nullable(),
+		checklistItems: z.string().nullable(),
+		copyFromTaskId: z.string().nullable(),
 	});
 
 	let newTask: Task | null = null;
@@ -77,7 +85,7 @@ export default async function submitTask(prevState: any, formData: FormData) {
 	try {
 		// Parse the form data using the schema
 		// If validation fails, an error will be thrown and caught in the catch block
-		const data = schema.parse({
+		const rawData = schema.parse({
 			id: formData.get("taskId") as string,
 			title: formData.get("title") as string,
 			description: formData.get("description") as string,
@@ -86,7 +94,45 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			source: formData.get("source") as string,
 			sourceLink: formData.get("sourceLink") as string,
 			sourceAttachmentsDescriptions: formData.getAll("sourceAttachmentsDescriptions") as string[],
+			parentId: formData.get("parentId") as string | null,
+			checklistItems: formData.get("checklistItems") as string | null,
+			copyFromTaskId: formData.get("copyFromTaskId") as string | null,
 		});
+
+		// checklistItems arrives as a JSON string built client-side by ChecklistEditor
+		let checklistItems: ChecklistItemInputType[] = [];
+		if (rawData.checklistItems) {
+			let parsed: unknown;
+			try {
+				parsed = JSON.parse(rawData.checklistItems);
+			} catch {
+				return { message: "Invalid checklist data." };
+			}
+			checklistItems = ChecklistItemsInput.parse(parsed);
+		}
+
+		const parentIdRaw = rawData.parentId ? Number(rawData.parentId) : null;
+		const copyFromTaskId = rawData.copyFromTaskId ? Number(rawData.copyFromTaskId) : undefined;
+
+		const data = {
+			...rawData,
+			parentId: parentIdRaw,
+			checklistItems,
+			copyFromTaskId,
+		};
+
+		// A parent must: exist, have no parent of its own (one level deep), still be open, and be
+		// editable by this actor. Trusting a client-submitted parentId without re-checking all of
+		// this would let anyone nest tasks arbitrarily or attach to a finished/foreign task.
+		if (data.parentId !== null) {
+			const parentTask = await prisma.task.findUnique({
+				where: { id: data.parentId },
+				select: { id: true, statusId: true, parentId: true, assignedToUserId: true, assignedToUser: { select: { managerId: true } } },
+			});
+			const parentEligible =
+				!!parentTask && parentTask.parentId === null && (parentTask.statusId === 1 || parentTask.statusId === 5) && canEditTask({ ...parentTask, parent: null, _count: { children: 0 } }, actor);
+			if (!parentEligible) return { message: "The selected parent task is not available." };
+		}
 
 		// The editor is the session user, never a form field. createdByUserId used to come from the
 		// form ("editingUser"), which let the creator of a task be attributed to anyone.
@@ -100,6 +146,16 @@ export default async function submitTask(prevState: any, formData: FormData) {
 			const taskForAuth = await getTaskForAuth(Number(taskData.id));
 			if (!taskForAuth) return { message: "Task not found." };
 			if (!canEditTask(taskForAuth, actor)) return { message: PERMISSION_DENIED };
+
+			// A task that already has sub-tasks of its own may not also become someone else's child -
+			// the hierarchy is exactly one level deep. Checked against every child (not just open
+			// ones, unlike the _count on taskForAuth, which is scoped to the unrelated
+			// canCompleteTask gate), and separately from a task being its own parent.
+			if (data.parentId !== null) {
+				if (data.parentId === Number(taskData.id)) return { message: "A task cannot be its own parent." };
+				const childCount = await prisma.task.count({ where: { parentId: Number(taskData.id) } });
+				if (childCount > 0) return { message: "A task with sub-tasks cannot also be made a sub-task." };
+			}
 
 			// For some retarded reason, the descriptions are return as an array of the same string, so we split the first one
 			const attachmentsDescriptions = taskData.sourceAttachmentsDescriptions![0] ? taskData.sourceAttachmentsDescriptions![0].split(",") : [];

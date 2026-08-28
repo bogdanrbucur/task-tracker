@@ -165,7 +165,7 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 					onChange={(e) => setNewDescription(e.target.value)}
 				/>
 				<input type="hidden" name="sourceAttachmentsDescriptions" value={descriptions} />
-				<Button className="text-sm max-w-16" type="button" size="sm" onClick={handleAddAttachment}>
+				<Button className="text-sm max-w-16" type="button" size="sm" onClick={handleAddAttachment} data-testid="attachment-add-button">
 					Add
 				</Button>
 			</div>

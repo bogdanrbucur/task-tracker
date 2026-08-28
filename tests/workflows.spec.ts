@@ -160,7 +160,8 @@ test.describe("Workflow coverage", () => {
 
 		await page.locator('input[type="file"][accept="*"]').setInputFiles(testAttachmentPath);
 		await page.fill('input[name="newDescription"]', "Workflow source attachment");
-		await page.click('button:has-text("Add")');
+		// Disambiguated from the checklist editor's own "Add" button, now also on this page
+		await page.click('[data-testid="attachment-add-button"]');
 		await settle(page);
 
 		const attachments = await getAttachmentsForTask(reopenTaskId);

@@ -26,12 +26,13 @@ export async function recordTaskHistory(task: Task, editingUser: Editor, changes
 	}
 
 	// If there are no changes, the task is new. Record that
+	const parentNote = task.parentId ? ` as a sub-task of #${task.parentId}` : "";
 	const newChange = await prisma.change.create({
 		data: {
 			taskId: Number(task.id),
 			userId: editingUser.id,
 			time: new Date(),
-			changes: `Task created by ${editingUserFullName} and assigned to ${assignedToUser?.firstName} ${assignedToUser?.lastName}`,
+			changes: `Task created by ${editingUserFullName} and assigned to ${assignedToUser?.firstName} ${assignedToUser?.lastName}${parentNote}`,
 		},
 	});
 

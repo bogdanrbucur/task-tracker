@@ -2,6 +2,7 @@ import { sendEmail } from "@/app/email/email";
 import logger from "@/lib/logging";
 import { checkIfTaskOverdue } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import { syncChecklistItems } from "../../_actions/checklistShared";
 import reconcileDescriptionImages from "../../_actions/reconcileDescriptionImages";
 import compareTasks from "../../new/_actions/compareTasks";
 import { Editor, UpdateTask } from "../../new/_actions/submitTask";
@@ -23,17 +24,24 @@ export async function updateTask(task: UpdateTask, editingUser: Editor, attDescr
 			assignedToUserId: task.assignedToUserId,
 			source: task.source,
 			sourceLink: task.sourceLink,
+			parentId: task.parentId,
 		},
 		include: { assignedToUser: { select: { email: true, firstName: true, manager: { select: { email: true, firstName: true, lastName: true } } } } },
 	});
 
 	if (!updatedTask) throw new Error("Task update failed");
 
+	// Diffed by id, not replaced wholesale - an item's ticked state (who completed it, when) must
+	// survive an edit that only touches the title or due date. Returns one collapsed history line
+	// rather than one row per item.
+	const checklistChange = await syncChecklistItems(updatedTask.id, task.checklistItems);
+
 	// Record history right after the task write succeeds, before the best-effort side effects
 	// below (image reconciliation, emails, overdue check, attachment renames) - a failure in any
 	// of those would otherwise abort the request and silently drop the history entry even though
 	// the task itself was already saved.
 	const changes = await compareTasks(oldTask!, updatedTask, editingUser);
+	if (checklistChange) changes.push(checklistChange);
 	await recordTaskHistory(updatedTask, editingUser, changes);
 
 	// Claim newly embedded images and drop any the description no longer references
