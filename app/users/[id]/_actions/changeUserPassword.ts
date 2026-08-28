@@ -3,6 +3,7 @@
 
 import { getAuth } from "@/actions/auth/get-auth";
 import { PERMISSION_DENIED } from "@/actions/auth/require-auth";
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import logger from "@/lib/logging";
 import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
@@ -12,6 +13,9 @@ import { Argon2id } from "oslo/password";
 import { z } from "zod";
 
 export default async function changeUserPassword(prevState: any, formData: FormData) {
+	// There is no point letting anyone set a password that can never be used to sign in.
+	if (!isPasswordAuthEnabled()) return { message: "Password sign-in is not available." };
+
 	// const rawFormData = Object.fromEntries(formData.entries());
 	// logger(rawFormData);
 	// Check user permissions
@@ -49,6 +53,10 @@ export default async function changeUserPassword(prevState: any, formData: FormD
 			where: { id: agent.id },
 		});
 		if (!user) throw new Error("Incorrect email or password.");
+
+		// A Microsoft-linked account signs in via M365, not a password. An admin has to unlink it
+		// first - otherwise this would let someone quietly keep a password usable on the side.
+		if (user.entraOid) throw new Error("Your account is linked to Microsoft 365. Unlink it first to set a password.");
 
 		// Verify the password using Argon2id
 		const validPassword = await new Argon2id().verify(user.hashedPassword!, data.oldPassword);

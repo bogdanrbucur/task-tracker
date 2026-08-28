@@ -32,6 +32,8 @@ export type UserExtended = {
 	isAdmin: boolean;
 	avatar?: Avatar;
 	lastWelcomeEmailSent?: Date;
+	entraOid?: string | null;
+	entraUpn?: string | null;
 };
 
 export const prismaRestrictedUserSelection = {
@@ -59,6 +61,8 @@ export const prismaExtendedUserSelection = {
 	lastWelcomeEmailSent: true,
 	isAdmin: true,
 	avatar: true,
+	entraOid: true,
+	entraUpn: true,
 };
 
 // Cache the users for 10 minutes. Check every min to see if the cache is stale.

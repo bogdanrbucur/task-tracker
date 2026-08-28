@@ -1,6 +1,7 @@
 // Server action to sign in a user
 "use server";
 
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import logger from "@/lib/logging";
 import { lucia } from "@/lib/lucia";
 import { normalizeIP } from "@/lib/utilityFunctions";
@@ -11,6 +12,10 @@ import { Argon2id } from "oslo/password";
 import { z } from "zod";
 
 export default async function signIn(prevState: any, formData: FormData) {
+	// The FE only stops rendering the form; a direct POST here must be refused too, or the flag
+	// would be cosmetic once password auth is meant to be retired.
+	if (!isPasswordAuthEnabled()) return { message: "Password sign-in is not available. Please use Sign in with Microsoft." };
+
 	// Rate-limiting configuration
 	const maxFailedAttemptsEmail = process.env.MAX_FAILED_ATTEMPTS_EMAIL || 5;
 	const maxFailedAttemptsIP = process.env.MAX_FAILED_ATTEMPTS_IP || 20;

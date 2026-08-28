@@ -1,6 +1,7 @@
 // Server action to set a new password from a password reset link
 "use server";
 
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
 import logger from "@/lib/logging";
 import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
@@ -13,6 +14,10 @@ import { z } from "zod";
 const INVALID_TOKEN = "This password reset link is invalid or has expired. Please request a new one.";
 
 export default async function resetUserPassword(prevState: any, formData: FormData) {
+	// A stale link (e.g. from before password auth was turned off) must not still be able to set a
+	// usable password - the page itself 404s too, but this is the actual authorization boundary.
+	if (!isPasswordAuthEnabled()) return { success: false, message: "Password sign-in is not available." };
+
 	const passwordSchema = z
 		.string()
 		.min(8, { message: "Password must be at least 8 characters long." })
@@ -51,8 +56,11 @@ export default async function resetUserPassword(prevState: any, formData: FormDa
 		const user = await prisma.user.findUnique({
 			where: { id: dbToken.userId },
 		});
-		// Only accounts that are meant to be reachable by a reset link, matching the page's own check
-		if (!user || !["active", "unverified"].includes(user.status)) return { success: false, message: INVALID_TOKEN };
+		// Only accounts that are meant to be reachable by a reset link, matching the page's own check.
+		// A Microsoft-linked account is deliberately treated the same as an invalid token here, not a
+		// more specific message - this endpoint is reachable without a session, so it must not become
+		// a way to discover which accounts are linked.
+		if (!user || !["active", "unverified"].includes(user.status) || user.entraOid) return { success: false, message: INVALID_TOKEN };
 
 		if (data.newPassword !== data.confirmPassword) return { success: false, message: "Passwords do not match." };
 

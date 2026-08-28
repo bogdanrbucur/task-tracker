@@ -265,6 +265,54 @@ Run `sudo ./restore_backup.sh` to restore the database and files folders. This w
 
 Running `setup.sh` will create the test folders as well. To run the tests, use `npm test`. A testing database will be created and destroyed for each test run.
 
+### Microsoft 365 (Entra ID) sign-in
+
+Optional. When enabled, a "Sign in with Microsoft" button appears on the sign-in page, shown above
+the email/password form as the primary option. It never registers anyone: an admin still creates the
+user in the FE by email address, and the first Microsoft sign-in links that row to the tenant account.
+
+The email/password form itself is controlled separately by `PASSWORD_AUTH_ENABLED` (default on). Once
+M365 sign-in is rolled out to everyone, set it to `false` to retire password login: the form disappears
+from the page and the sign-in server action refuses direct submissions too, not just the UI.
+
+Because tenant usernames and mailbox addresses often differ (`bogdanb@example.com` vs
+`bogdanb-it@example.com`), linking matches the app's `email` against the token's `email` claim first
+and falls back to the username (`upn` / `preferred_username`). From then on the user is recognised by
+their Entra object id, which survives renames.
+
+A user who was created but never opened their welcome email is activated by their first successful
+Microsoft sign-in. A user an admin has deactivated is refused, and can never be revived this way.
+Password sign-in keeps working for everyone, linked or not, as long as `PASSWORD_AUTH_ENABLED` is on.
+
+#### App registration
+
+1. Entra admin center -> App registrations -> New registration.
+   - Supported account types: **Accounts in this organizational directory only (single tenant)**.
+   - Redirect URI: type **Web**, value `<BASE_URL>/api/auth/m365/callback`. Add a second one for
+     local development, e.g. `http://localhost:3000/api/auth/m365/callback`.
+2. Certificates & secrets -> New client secret -> copy the **Value** (not the Secret ID).
+3. Token configuration -> Add optional claim -> **ID** -> tick `email` and `upn`. Without the `email`
+   claim the app falls back to a Microsoft Graph lookup, which costs an extra request per sign-in.
+4. API permissions: `User.Read` (delegated) is the default and is enough. Grant admin consent so
+   nobody is prompted.
+5. Copy the **Directory (tenant) ID** and **Application (client) ID** from the Overview page.
+
+Then set in `.env.local`:
+
+```
+M365_AUTH_ENABLED=true
+M365_TENANT_ID="..."
+M365_CLIENT_ID="..."
+M365_CLIENT_SECRET="..."
+PASSWORD_AUTH_ENABLED=true
+```
+
+All four M365 vars must be present. If any is missing the feature stays off rather than failing at
+runtime. The redirect URI is built from `BASE_URL`, so that must match the app registration exactly.
+
+Admins can see whether a user is linked, and unlink them, on the user's page at `/users/<id>` - useful
+when someone's tenant account is recreated and gets a new object id.
+
 ### SFTP VS Code extension setup
 
 Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a new configuration file. Add the following content:
@@ -348,3 +396,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.12.0 - Task description diff view
 - 1.12.1 - Fixed a test
 - 1.12.2 - Fixed a bug that allowed the task history window to horizontally grow without limit
+- 1.13.0 - Microsoft 365 (Entra ID) sign-in, with optional password retirement and admin unlinking

@@ -1,6 +1,9 @@
 import { UserAvatarNameSmall } from "@/components/AvatarAndName";
+import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { isM365Enabled } from "@/lib/m365";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
+import { CircleCheck, CircleX } from "lucide-react";
 import { default as Link, default as NextLink } from "next/link";
 import { UserExtended } from "../_actions/getUserById";
 
@@ -19,6 +22,8 @@ interface Props {
 
 const UserTable = ({ searchParams, users }: Props) => {
 	const sortOrder = searchParams.sortOrder;
+	const m365Enabled = isM365Enabled();
+	const columns = m365Enabled ? [...baseColumns, m365Column] : baseColumns;
 
 	return (
 		<Table>
@@ -69,6 +74,21 @@ const UserTable = ({ searchParams, users }: Props) => {
 								{user.assignedTasks ? user.assignedTasks.filter((task) => task.statusId === 1 || task.statusId === 2 || task.statusId === 5).length : 0}
 							</Link>
 						</TableCell>
+						{m365Enabled && (
+							<TableCell className="hidden md:table-cell py-1.5">
+								{user.entraOid ? (
+									<Badge variant="secondary" className="gap-1.5 py-1 font-normal max-w-[200px]" title={user.entraUpn ?? undefined}>
+										<CircleCheck size={14} className="shrink-0 text-green-600 dark:text-green-400" />
+										<span className="truncate">{user.entraUpn ?? "Linked"}</span>
+									</Badge>
+								) : (
+									<Badge variant="outline" className="gap-1.5 py-1 font-normal text-muted-foreground">
+										<CircleX size={14} />
+										Not linked
+									</Badge>
+								)}
+							</TableCell>
+						)}
 					</TableRow>
 				))}
 			</TableBody>
@@ -78,11 +98,19 @@ const UserTable = ({ searchParams, users }: Props) => {
 
 export default UserTable;
 
-const columns: { label: string; value: keyof UserExtended; className?: string }[] = [
+const baseColumns: { label: string; value: keyof UserExtended; className?: string }[] = [
 	{ label: "Name", value: "firstName", className: "py-1.5" },
 	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5" },
 	{ label: "Manager", value: "manager", className: "md:table-cell py-1.5" },
 	{ label: "Open Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5" },
 ];
 
-export const columnNames = columns.map((column) => column.value);
+const m365Column: { label: string; value: keyof UserExtended; className?: string } = {
+	label: "Microsoft 365",
+	value: "entraOid",
+	className: "hidden md:table-cell py-1.5",
+};
+
+// isM365Enabled() is a runtime flag, so the sortable column set can't be a fixed module-level
+// constant - it has to match whatever UserTable actually renders for a given request.
+export const columnNames = (isM365Enabled() ? [...baseColumns, m365Column] : baseColumns).map((column) => column.value);

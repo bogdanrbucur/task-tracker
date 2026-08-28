@@ -88,6 +88,11 @@ model User {
   lastWelcomeEmailSent DateTime?
   active               Boolean     @default(false)
   createdByUserId      String?
+  // Entra (M365) link. entraOid is the tenant object id: stable across UPN and mailbox renames,
+  // so it is the key we sign in on once a user has linked. entraUpn is kept for display only.
+  entraOid             String?     @unique
+  entraUpn             String?
+  entraLinkedAt        DateTime?
   avatar               Avatar?
   changes              Change[]    @relation("ChangeUser")
   comments             Comment[]   @relation("UserComment")

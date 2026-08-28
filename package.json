@@ -1,6 +1,6 @@
 {
 	"name": "task-tracker",
-	"version": "1.12.2",
+	"version": "1.13.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
@@ -37,6 +37,7 @@
 		"@types/fs-extra": "^11.0.4",
 		"@types/react-mentions": "^4.1.13",
 		"@types/recharts": "^1.8.29",
+		"arctic": "^3.7.0",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.0.0",

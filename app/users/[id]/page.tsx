@@ -8,8 +8,10 @@ import SingleUserTasks from "@/components/SingleUserTasks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import prisma from "@/prisma/client";
+import { isPasswordAuthEnabled } from "@/lib/auth-flags";
+import { isM365Enabled } from "@/lib/m365";
 import { format } from "date-fns";
-import { SquarePen } from "lucide-react";
+import { CircleCheck, CircleX, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import getUserDetails from "../_actions/getUserById";
@@ -19,6 +21,8 @@ import DeleteUserButton from "./_components/DeleteUserButton";
 import ResendWelcomeEmailButton from "./_components/ResendWelcomeEmailButton";
 import ResetPasswordButton from "./_components/ResetPasswordButton";
 import ToggleUserButton from "./_components/ToggleUserButton";
+import { Badge } from "@/components/ui/badge";
+import UnlinkMicrosoftButton from "./_components/UnlinkMicrosoftButton";
 import UserStats from "./_components/UserStats/UserStats";
 
 export const revalidate = 2;
@@ -41,7 +45,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 	// Get the user with the hashed password to determine if the user was ever active
 	const userWithPassword = await prisma.user.findUnique({
 		where: { id: userDetails.id },
-		select: { hashedPassword: true, status: true },
+		select: { hashedPassword: true, status: true, entraOid: true, entraUpn: true },
 	});
 
 	// Get the status for each task
@@ -84,8 +88,12 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 							{userPermissions?.isAdmin && userDetails.status === "unverified" && <ResendWelcomeEmailButton userId={userDetails.id} />}
 						</div>
 						<div className="flex gap-2 justify-start">
-							{user?.id === userDetails.id && <ChangePasswordButton />}
-							{userPermissions?.isAdmin && user.id !== userDetails.id && userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
+							{isPasswordAuthEnabled() && !userWithPassword?.entraOid && user?.id === userDetails.id && <ChangePasswordButton />}
+							{isPasswordAuthEnabled() &&
+								!userWithPassword?.entraOid &&
+								userPermissions?.isAdmin &&
+								user.id !== userDetails.id &&
+								userDetails.status === "active" && <ResetPasswordButton userId={userDetails.id} />}
 							{/* Only admins can deactivate users but cannot deactivate themselves */}
 							{userPermissions.isAdmin && user.id !== userDetails.id && (
 								<ToggleUserButton userId={userDetails.id} status={userDetails.status} tasksNumber={tasksNumber} subordinatesNumber={subordinatedNumber} />
@@ -107,6 +115,27 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 					<div className="space-y-1">
 						<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department</h4> <p>{userDetails.department?.name}</p>
 					</div>
+					{canEdit && (isM365Enabled() || userWithPassword?.entraOid) && (
+						<div className="space-y-1">
+							<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Microsoft 365</h4>
+							<div className="flex flex-col items-start gap-2" id="m365Status">
+								{userWithPassword?.entraOid ? (
+									<Badge variant="secondary" className="gap-1.5 py-1 font-normal">
+										<CircleCheck size={14} className="text-green-600 dark:text-green-400" />
+										{userWithPassword.entraUpn ?? "Linked"}
+									</Badge>
+								) : (
+									<Badge variant="outline" className="gap-1.5 py-1 font-normal text-muted-foreground">
+										<CircleX size={14} />
+										Not linked
+									</Badge>
+								)}
+								{userPermissions.isAdmin && userWithPassword?.entraOid && (
+									<UnlinkMicrosoftButton userId={userDetails.id} entraUpn={userWithPassword.entraUpn} />
+								)}
+							</div>
+						</div>
+					)}
 					{userDetails.manager && (
 						<div className="space-y-1">
 							<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Manager</h4> <UserAvatarNameNormal user={userDetails.manager} />
