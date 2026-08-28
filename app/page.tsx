@@ -1,14 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { logVisitor, NavigationSourceTypes } from "@/lib/utilityFunctions";
 import prisma from "@/prisma/client";
+import { redirect } from "next/navigation";
 import { getAuth } from "../actions/auth/get-auth";
 import { TaskExtended } from "./(protected)/tasks/page";
 import DepartmentsChart from "./_components/DepartmentsChart";
 import MyTasks from "./_components/MyTasks";
 import StatusChart from "./_components/StatusChart";
 import TeamTasks from "./_components/TeamTasks";
-import departmentTasks, { DeptTaskChartData } from "./deptTasksChartData";
-import statusTasks, { StatusTasksChartData } from "./statusTasksChartData";
+import departmentTasks from "./deptTasksChartData";
+import statusTasks from "./statusTasksChartData";
 import getUserDetails, { prismaRestrictedUserSelection } from "./users/_actions/getUserById";
 import { getTeamTasks, userTasks } from "./users/_actions/userAndTeamTasks";
 
@@ -25,10 +26,11 @@ export default async function Home({
 		from: NavigationSourceTypes;
 	};
 }) {
-	// Check user permissions
+	// The dashboard is for signed-in users only - guests are sent to sign in
 	const { user } = await getAuth();
+	if (!user) redirect("/sign-in");
 
-// Await the full searchParams object - Next.js 15+ change
+	// Await the full searchParams object - Next.js 15+ change
 	const rawSearchParams = await searchParams;
 
 	await logVisitor(user, "the home page", rawSearchParams.from);
@@ -49,7 +51,6 @@ export default async function Home({
 	const deptTasksChartData = departmentTasks(activeTasks);
 	const statusTasksChartData = statusTasks(activeTasks);
 
-	if (!user) return <GuestView statusTasksChartData={statusTasksChartData} deptTasksChartData={deptTasksChartData} />;
 	const userDetails = await getUserDetails(user.id);
 	userDetails.assignedTasks = await userTasks(userDetails);
 
@@ -61,24 +62,12 @@ export default async function Home({
 	return (
 		<Card className="container mx-auto p-0">
 			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
-				{/* Guests see the charts in mobile view as well, so if user is logged in, isGuest=true */}
-				<StatusChart data={statusTasksChartData} isGuest={!user && true} />
+				<StatusChart data={statusTasksChartData} isGuest={false} />
 				<div className="fade-in row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>
-				<DepartmentsChart data={deptTasksChartData} isGuest={!user && true} />
-			</div>
-		</Card>
-	);
-}
-
-function GuestView({ statusTasksChartData, deptTasksChartData }: { statusTasksChartData: StatusTasksChartData[]; deptTasksChartData: DeptTaskChartData[] }) {
-	return (
-		<Card className="container mx-auto p-0">
-			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
-				<StatusChart data={statusTasksChartData} isGuest={true} />
-				<DepartmentsChart data={deptTasksChartData} isGuest={true} />
+				<DepartmentsChart data={deptTasksChartData} isGuest={false} />
 			</div>
 		</Card>
 	);

@@ -203,6 +203,17 @@ test.describe("Security regressions", () => {
 		await context.close();
 	});
 
+	test("The dashboard is closed to anonymous callers and redirects to sign-in", async ({ browser }) => {
+		const context = await browser.newContext();
+		const page = await context.newPage();
+
+		await page.goto("/");
+		await expect(page).toHaveURL(/\/sign-in/);
+		await shot(page, "0-dashboard-guest-redirect");
+
+		await context.close();
+	});
+
 	//
 	// User update: privilege escalation
 	//
@@ -375,7 +386,6 @@ test.describe("Security regressions", () => {
 			// compromised, an attacker's existing session must not survive it.
 			const stale = await browser.newContext({ storageState: preResetStatePath });
 			const stalePage = await stale.newPage();
-			// "/" renders a guest view rather than redirecting, so check a genuinely gated route
 			await stalePage.goto("/tasks");
 			await expect(stalePage).toHaveURL(/\/sign-in/);
 			await shot(stalePage, "29-session-killed-by-reset");
