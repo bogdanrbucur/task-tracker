@@ -11,11 +11,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { GripVertical, X } from "lucide-react";
 import { useState } from "react";
 
 export const MAX_CHECKLIST_ITEMS = 50;
-export const MAX_CHECKLIST_ITEM_LENGTH = 200;
+// Mirrors checklistShared.ts's MAX_CHECKLIST_ITEM_LENGTH - see the comment there for why it's short.
+// Can't import it directly: checklistShared.ts pulls in the Prisma client, which breaks this
+// client bundle.
+export const MAX_CHECKLIST_ITEM_LENGTH = 80;
 
 export interface ChecklistItemDraft {
 	id?: number;
@@ -25,6 +29,10 @@ export interface ChecklistItemDraft {
 export default function ChecklistEditor({ defaultItems }: { defaultItems?: ChecklistItemDraft[] }) {
 	const [items, setItems] = useState<ChecklistItemDraft[]>(defaultItems ?? []);
 	const [draft, setDraft] = useState("");
+	// Native HTML5 drag-and-drop, not a library: this is a single flat list with one drag handle per
+	// row, which the browser's own drag events cover without pulling in a dependency for it.
+	const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+	const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
 	function addItem() {
 		const text = draft.trim();
@@ -37,11 +45,11 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 		setItems(items.filter((_, i) => i !== index));
 	}
 
-	function move(index: number, direction: -1 | 1) {
-		const target = index + direction;
-		if (target < 0 || target >= items.length) return;
+	function reorder(targetIndex: number) {
+		if (draggedIndex === null || draggedIndex === targetIndex) return;
 		const next = [...items];
-		[next[index], next[target]] = [next[target], next[index]];
+		const [moved] = next.splice(draggedIndex, 1);
+		next.splice(targetIndex, 0, moved);
 		setItems(next);
 	}
 
@@ -50,8 +58,41 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 			<Label>Checklist {items.length > 0 && `(${items.length}/${MAX_CHECKLIST_ITEMS})`}</Label>
 			<div className="space-y-1" data-testid="checklist-editor-items">
 				{items.map((item, index) => (
-					<div key={item.id ?? `new-${index}`} className="flex items-center gap-2" data-testid="checklist-editor-item">
-						<GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
+					<div
+						key={item.id ?? `new-${index}`}
+						className={cn(
+							"flex items-center gap-2 rounded-md",
+							draggedIndex === index && "opacity-40",
+							dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && "bg-muted/50"
+						)}
+						data-testid="checklist-editor-item"
+						onDragOver={(e) => {
+							e.preventDefault();
+							if (draggedIndex !== null) setDragOverIndex(index);
+						}}
+						onDragLeave={() => setDragOverIndex((current) => (current === index ? null : current))}
+						onDrop={(e) => {
+							e.preventDefault();
+							reorder(index);
+							setDraggedIndex(null);
+							setDragOverIndex(null);
+						}}
+					>
+						<span
+							className="shrink-0 cursor-grab active:cursor-grabbing"
+							draggable
+							onDragStart={(e) => {
+								setDraggedIndex(index);
+								e.dataTransfer.effectAllowed = "move";
+							}}
+							onDragEnd={() => {
+								setDraggedIndex(null);
+								setDragOverIndex(null);
+							}}
+							aria-label="Drag to reorder"
+						>
+							<GripVertical className="h-4 w-4 text-muted-foreground" />
+						</span>
 						<Input
 							value={item.text}
 							maxLength={MAX_CHECKLIST_ITEM_LENGTH}
@@ -61,20 +102,17 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 								setItems(next);
 							}}
 						/>
-						<Button type="button" variant="ghost" size="sm" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Move up">
-							↑
-						</Button>
-						<Button type="button" variant="ghost" size="sm" onClick={() => move(index, 1)} disabled={index === items.length - 1} aria-label="Move down">
-							↓
-						</Button>
-						<Button type="button" variant="ghost" size="sm" onClick={() => removeItem(index)} aria-label="Remove item">
+						<Button type="button" variant="ghost" size="sm" className="w-16" onClick={() => removeItem(index)} aria-label="Remove item">
 							<X className="h-4 w-4" />
 						</Button>
 					</div>
 				))}
 			</div>
 			{items.length < MAX_CHECKLIST_ITEMS && (
-				<div className="flex gap-2">
+				<div className="flex items-center gap-2">
+					{/* Matches the drag handle's footprint above (h-4 w-4, same gap-2) so this input's left
+					    edge lines up with the existing items' inputs instead of starting further left. */}
+					<span className="h-4 w-4 shrink-0" aria-hidden="true" />
 					<Input
 						placeholder="Add a checklist item (e.g. a vessel name)"
 						value={draft}
@@ -87,7 +125,7 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 							}
 						}}
 					/>
-					<Button type="button" size="sm" onClick={addItem} disabled={!draft.trim()} data-testid="checklist-add-button">
+					<Button type="button" size="sm" className="w-16" onClick={addItem} disabled={!draft.trim()} data-testid="checklist-add-button">
 						Add
 					</Button>
 				</div>

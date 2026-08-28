@@ -298,9 +298,13 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 													<span className="truncate">{child.title}</span>
 												</div>
 												<div className="flex items-center gap-3 shrink-0">
-													{childProgress && <ProgressBar percent={childProgress.percent} variant="compact" />}
 													{child.assignedToUser && <UserAvatarNameSmall user={child.assignedToUser as UserExtended} />}
-													<StatusBadge statusObj={child.status} size="xs" />
+													{/* Stacked under the badge, not beside it - same pattern as the tasks table's Status
+													    column (see TaskTable.tsx) - and only rendered when progress is applicable. */}
+													<div className="flex flex-col items-start gap-1">
+														<StatusBadge statusObj={child.status} size="xs" />
+														{childProgress && <ProgressBar percent={childProgress.percent} variant="compact" />}
+													</div>
 												</div>
 											</Link>
 										);

@@ -12,7 +12,13 @@ import prisma from "@/prisma/client";
 import { z } from "zod";
 
 export const MAX_CHECKLIST_ITEMS = 50;
-export const MAX_CHECKLIST_ITEM_LENGTH = 200;
+// Kept short deliberately: the detail page shows the "X completed on <date>" attribution on the
+// same line as the item text (see ChecklistSection.tsx) rather than wrapping to a second line, so a
+// long item text and the attribution would otherwise fight for the same row. The text still
+// truncates with an ellipsis (full text on hover) if it doesn't fit at the viewer's width, but this
+// cap keeps that the exception rather than the rule. Mirrored in ChecklistEditor.tsx, which can't
+// import this module directly (it pulls in the Prisma client, which breaks the client bundle).
+export const MAX_CHECKLIST_ITEM_LENGTH = 80;
 
 export const ChecklistItemInput = z.object({
 	// Present for an existing item being kept/edited; absent for a newly added one.

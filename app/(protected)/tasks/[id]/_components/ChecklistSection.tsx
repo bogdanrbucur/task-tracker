@@ -5,6 +5,7 @@
 // history, while ticking is a much lighter, more frequent action.
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState, useTransition } from "react";
 import toggleChecklistItem from "../_actions/toggleChecklistItem";
@@ -45,19 +46,25 @@ export default function ChecklistSection({ items, canToggle }: { items: Checklis
 		<div className="space-y-2" data-testid="checklist-section">
 			{error && <p className="text-sm text-destructive">{error}</p>}
 			{items.map((item) => (
-				<div key={item.id} className="flex items-start gap-2" data-testid="checklist-item">
+				// Everything stays on one line, even once completed: the attribution sits next to the
+				// item text rather than below it, so ticking an item never grows the row. The item text
+				// takes the truncation hit (ellipsis, full text on hover) if the two don't both fit - see
+				// MAX_CHECKLIST_ITEM_LENGTH for why that's the exception rather than the rule.
+				<div key={item.id} className="flex items-center gap-2" data-testid="checklist-item">
 					<Checkbox
 						checked={item.done}
 						disabled={!canToggle || isPending}
 						onCheckedChange={(checked) => handleToggle(item, checked === true)}
-						className="mt-1"
+						className="shrink-0"
 					/>
-					<div>
-						<div className={item.done ? "line-through text-muted-foreground" : undefined}>{item.text}</div>
+					<div className="flex min-w-0 flex-1 items-baseline gap-2">
+						<span className={cn("min-w-0 flex-1 truncate", item.done && "line-through text-muted-foreground")} title={item.text}>
+							{item.text}
+						</span>
 						{item.done && item.completedAt && item.completedBy && (
-							<div className="text-xs text-muted-foreground" data-testid="checklist-item-completed-by">
+							<span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap" data-testid="checklist-item-completed-by">
 								{item.completedBy.firstName} completed on {formatDateWithTime(item.completedAt)}
-							</div>
+							</span>
 						)}
 					</div>
 				</div>

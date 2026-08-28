@@ -398,4 +398,5 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.12.2 - Fixed a bug that allowed the task history window to horizontally grow without limit
 - 1.13.0 - Microsoft 365 (Entra ID) sign-in, with optional password retirement and admin unlinking
 - 1.14.0 - Dashboard only visible to logged-in users
-- 2.0.0 - Added support for sub-tasks and checklist items in tasks
+- 2.0.1 - Added support for sub-tasks and checklist items in tasks
+- 2.0.2 - Better aligned progress bars in sub-tasks
