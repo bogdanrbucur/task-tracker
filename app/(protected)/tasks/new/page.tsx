@@ -3,6 +3,7 @@ import { getPermissions } from "@/actions/auth/get-permissions";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import getUsers from "@/app/users/_actions/getUsers";
 import { notFound } from "next/navigation";
+import { getChecklistTemplatesForPicker } from "@/app/checklist-templates/_actions/getChecklistTemplates";
 import TaskForm from "../[id]/_components/TaskForm";
 import { getEligibleParentTasks } from "../_actions/getEligibleParentTasks";
 import { getTaskCopyForPrefill } from "./_actions/getTaskCopyForPrefill";
@@ -34,6 +35,7 @@ const NewTaskPage = async ({ searchParams }: Props) => {
 	filteredUsers = filteredUsers.filter((u) => u.status === "active");
 
 	const eligibleParents = await getEligibleParentTasks();
+	const checklistTemplates = await getChecklistTemplatesForPicker();
 
 	const copyFromId = rawSearchParams.copyFrom ? Number(rawSearchParams.copyFrom) : undefined;
 	const parentIdParam = rawSearchParams.parent ? Number(rawSearchParams.parent) : undefined;
@@ -57,6 +59,7 @@ const NewTaskPage = async ({ searchParams }: Props) => {
 				}}
 				eligibleParents={eligibleParents}
 				defaultChecklistItems={copy.checklistItems}
+				checklistTemplates={checklistTemplates}
 				copyFromTaskId={copy.copyFromTaskId}
 				dueDateWasNotCopied={copy.dueDateWasNotCopied}
 			/>
@@ -73,6 +76,7 @@ const NewTaskPage = async ({ searchParams }: Props) => {
 		<TaskForm
 			users={filteredUsers}
 			eligibleParents={eligibleParents}
+			checklistTemplates={checklistTemplates}
 			defaultParentId={parentFromLink}
 			notice={copyDenied ? `Task #${copyFromId} could not be duplicated - it may not exist, or you may not have access to it.` : undefined}
 		/>

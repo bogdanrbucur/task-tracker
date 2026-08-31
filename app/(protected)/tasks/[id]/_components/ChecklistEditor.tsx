@@ -5,12 +5,17 @@
 // available to a slightly different set of people (see canToggleChecklist).
 //
 // The full item list (with each existing item's id, so ticked state on untouched items survives an
-// edit - see syncChecklistItems) is serialised into one hidden "checklistItems" field as JSON,
-// which is how a plain <form action={serverAction}> submits structured data.
+// edit - see syncChecklistItems) is serialised into one hidden field as JSON, which is how a plain
+// <form action={serverAction}> submits structured data.
+//
+// Also reused by the admin checklist-template form (app/checklist-templates), which passes a
+// different `name`/`labelText` and no `templates` - hence the props below all default to the task
+// form's original behaviour.
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { GripVertical, X } from "lucide-react";
 import { useState } from "react";
@@ -26,13 +31,33 @@ export interface ChecklistItemDraft {
 	text: string;
 }
 
-export default function ChecklistEditor({ defaultItems }: { defaultItems?: ChecklistItemDraft[] }) {
+export interface ChecklistTemplateOption {
+	id: number;
+	name: string;
+	items: { text: string }[];
+}
+
+interface Props {
+	defaultItems?: ChecklistItemDraft[];
+	/** Hidden input name the list is serialised into. */
+	name?: string;
+	/** Label text shown above the list. */
+	labelText?: string;
+	/** Whether to show the "(optional)" hint next to the label. */
+	optional?: boolean;
+	/** When non-empty, shows a Templates dropdown that appends a template's items to the list. */
+	templates?: ChecklistTemplateOption[];
+}
+
+export default function ChecklistEditor({ defaultItems, name = "checklistItems", labelText = "Checklist", optional = true, templates }: Props) {
 	const [items, setItems] = useState<ChecklistItemDraft[]>(defaultItems ?? []);
 	const [draft, setDraft] = useState("");
 	// Native HTML5 drag-and-drop, not a library: this is a single flat list with one drag handle per
 	// row, which the browser's own drag events cover without pulling in a dependency for it.
 	const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 	const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+	// Reset to "" after each pick so the same template can be applied again.
+	const [templateValue, setTemplateValue] = useState("");
 
 	function addItem() {
 		const text = draft.trim();
@@ -53,12 +78,39 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 		setItems(next);
 	}
 
+	function applyTemplate(templateId: string) {
+		const template = templates?.find((t) => String(t.id) === templateId);
+		if (!template) return;
+		// Appends after any existing items, capped at the 50-item maximum.
+		setItems((prev) => [...prev, ...template.items.map((i) => ({ text: i.text }))].slice(0, MAX_CHECKLIST_ITEMS));
+		setTemplateValue("");
+	}
+
 	return (
 		<div className="space-y-2">
-			<Label>
-				Checklist <span className="font-normal text-muted-foreground">(optional)</span>{" "}
-				{items.length > 0 && `(${items.length}/${MAX_CHECKLIST_ITEMS})`}
-			</Label>
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<Label>
+					{labelText} {optional && <span className="font-normal text-muted-foreground">(optional)</span>}{" "}
+					{items.length > 0 && `(${items.length}/${MAX_CHECKLIST_ITEMS})`}
+				</Label>
+				{templates && templates.length > 0 && (
+					<div className="flex items-center gap-2">
+						<span className="text-sm text-muted-foreground">Templates</span>
+						<Select value={templateValue} onValueChange={applyTemplate}>
+							<SelectTrigger className="h-8 w-56" data-testid="checklist-template-select">
+								<SelectValue placeholder="Add from template..." />
+							</SelectTrigger>
+							<SelectContent>
+								{templates.map((template) => (
+									<SelectItem key={template.id} value={String(template.id)}>
+										{template.name} ({template.items.length})
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+				)}
+			</div>
 			<div className="space-y-1" data-testid="checklist-editor-items">
 				{items.map((item, index) => (
 					<div
@@ -134,7 +186,7 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 				</div>
 			)}
 			{items.length >= MAX_CHECKLIST_ITEMS && <p className="text-sm text-muted-foreground">Maximum of {MAX_CHECKLIST_ITEMS} items reached.</p>}
-			<input type="hidden" name="checklistItems" value={JSON.stringify(items.filter((i) => i.text.trim()))} />
+			<input type="hidden" name={name} value={JSON.stringify(items.filter((i) => i.text.trim()))} />
 		</div>
 	);
 }

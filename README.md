@@ -404,3 +404,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.1.0 - Search functionality when selecting a parent task
 - 2.1.1 - Better parent task selection description and display in the task edit form
 - 2.1.2 - Updated to NextJS 16.3.2 and other dependencies
+- 2.2.0 - Checklist items templates

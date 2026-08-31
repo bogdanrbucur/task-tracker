@@ -29,6 +29,9 @@ export function AdminMenu() {
 							<ListItem href="/departments" title="Departments">
 								Manage departments.
 							</ListItem>
+							<ListItem href="/checklist-templates" title="Checklist templates">
+								Manage reusable checklist templates.
+							</ListItem>
 						</ul>
 					</NavigationMenuContent>
 				</NavigationMenuItem>

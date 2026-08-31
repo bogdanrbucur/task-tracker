@@ -4,6 +4,7 @@ import getUserDetails from "@/app/users/_actions/getUserById";
 import getUsers from "@/app/users/_actions/getUsers";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
+import { getChecklistTemplatesForPicker } from "@/app/checklist-templates/_actions/getChecklistTemplates";
 import { getEligibleParentTasks } from "../../_actions/getEligibleParentTasks";
 import TaskForm from "../_components/TaskForm";
 
@@ -46,6 +47,7 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// gets no eligible-parents list at all, and the picker never shows if it can't be used.
 	const childCount = await prisma.task.count({ where: { parentId: task.id } });
 	const eligibleParents = childCount > 0 ? [] : await getEligibleParentTasks(task.id);
+	const checklistTemplates = await getChecklistTemplatesForPicker();
 
 	return (
 		<TaskForm
@@ -54,6 +56,7 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 			eligibleParents={eligibleParents}
 			defaultParentId={task.parentId}
 			defaultChecklistItems={task.checklistItems.map((i) => ({ id: i.id, text: i.text }))}
+			checklistTemplates={checklistTemplates}
 		/>
 	);
 };

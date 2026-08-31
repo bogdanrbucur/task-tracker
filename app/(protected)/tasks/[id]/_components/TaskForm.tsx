@@ -16,7 +16,7 @@ import { useFormStatus } from "react-dom";
 import type { EligibleParentTask } from "../../_actions/getEligibleParentTasks";
 import submitTask from "../../new/_actions/submitTask";
 import AttachmentsUpload, { TaskAttachments } from "./AttachmentsUpload";
-import ChecklistEditor, { ChecklistItemDraft } from "./ChecklistEditor";
+import ChecklistEditor, { ChecklistItemDraft, ChecklistTemplateOption } from "./ChecklistEditor";
 import { ParentTaskSelection } from "./ParentTaskSelection";
 
 const initialState = {
@@ -41,12 +41,13 @@ interface Props {
 	eligibleParents?: EligibleParentTask[];
 	defaultParentId?: number | null;
 	defaultChecklistItems?: ChecklistItemDraft[];
+	checklistTemplates?: ChecklistTemplateOption[];
 	copyFromTaskId?: number;
 	dueDateWasNotCopied?: boolean;
 	notice?: string;
 }
 
-const TaskForm = ({ users, task, prefill, eligibleParents = [], defaultParentId = null, defaultChecklistItems, copyFromTaskId, dueDateWasNotCopied, notice }: Props) => {
+const TaskForm = ({ users, task, prefill, eligibleParents = [], defaultParentId = null, defaultChecklistItems, checklistTemplates, copyFromTaskId, dueDateWasNotCopied, notice }: Props) => {
 	const isEditing = !!task?.id;
 	const values = task ?? prefill ?? {};
 
@@ -114,7 +115,7 @@ const TaskForm = ({ users, task, prefill, eligibleParents = [], defaultParentId 
 							<AlertDescription>This due date is later than parent task #{selectedParent!.id}&apos;s. This is allowed, but you may want to align the dates.</AlertDescription>
 						</Alert>
 					)}
-					<ChecklistEditor defaultItems={defaultChecklistItems} />
+					<ChecklistEditor defaultItems={defaultChecklistItems} templates={checklistTemplates} />
 					{copyFromTaskId && <input type="hidden" name="copyFromTaskId" value={copyFromTaskId} />}
 					{/* Source fields */}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">

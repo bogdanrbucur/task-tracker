@@ -64,6 +64,28 @@ model ChecklistItem {
   @@index([taskId])
 }
 
+// Reusable, admin-managed checklist templates. Selecting one in the task form appends its items to
+// that task's checklist; tasks store copies (ChecklistItem), so there is no FK back here and
+// editing/deleting a template never affects existing tasks. 1-50 items, enforced in the server
+// actions - not here, since Prisma/SQLite have no row-count constraint.
+model ChecklistTemplate {
+  id        Int                     @id @default(autoincrement())
+  name      String                  @unique
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+  items     ChecklistTemplateItem[]
+}
+
+model ChecklistTemplateItem {
+  id         Int               @id @default(autoincrement())
+  templateId Int
+  position   Int
+  text       String
+  template   ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId])
+}
+
 model Status {
   id          Int    @id @default(autoincrement())
   name        String @unique
