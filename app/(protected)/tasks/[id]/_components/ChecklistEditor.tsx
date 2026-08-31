@@ -55,7 +55,10 @@ export default function ChecklistEditor({ defaultItems }: { defaultItems?: Check
 
 	return (
 		<div className="space-y-2">
-			<Label>Checklist {items.length > 0 && `(${items.length}/${MAX_CHECKLIST_ITEMS})`}</Label>
+			<Label>
+				Checklist <span className="font-normal text-muted-foreground">(optional)</span>{" "}
+				{items.length > 0 && `(${items.length}/${MAX_CHECKLIST_ITEMS})`}
+			</Label>
 			<div className="space-y-1" data-testid="checklist-editor-items">
 				{items.map((item, index) => (
 					<div

@@ -101,11 +101,11 @@ const TaskForm = ({ users, task, prefill, eligibleParents = [], defaultParentId 
 							</div>
 						</div>
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-						<div className="flex flex-col space-y-3 md:w-60">
-							<Label htmlFor="parentId">Parent task</Label>
-							<ParentTaskSelection tasks={eligibleParents} defaultParentId={defaultParentId} onChange={setParentId} />
-						</div>
+					<div className="flex flex-col space-y-3">
+						<Label htmlFor="parentId">
+							Parent task <span className="font-normal text-muted-foreground">(optional)</span> - if this task is a sub-task
+						</Label>
+						<ParentTaskSelection tasks={eligibleParents} defaultParentId={defaultParentId} onChange={setParentId} />
 					</div>
 					{dueAfterParent && (
 						<Alert variant="default" className="border-orange-400 text-orange-600 dark:text-orange-400" data-testid="due-after-parent-warning">

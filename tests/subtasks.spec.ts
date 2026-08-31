@@ -303,7 +303,7 @@ test.describe("Sub-tasks, checklists and progress", () => {
 		const page = await context.newPage();
 		await page.goto("/tasks/new");
 
-		await page.click('text="No parent task"');
+		await page.click('button[role="combobox"]:has-text("No parent task")');
 		await page.waitForSelector('div[role="listbox"]', { state: "visible" });
 		const listbox = page.locator('div[role="listbox"]');
 
@@ -313,6 +313,36 @@ test.describe("Sub-tasks, checklists and progress", () => {
 		await expect(listbox.getByText(closedTask.title)).toHaveCount(0);
 		await expect(listbox.getByText(alreadyChild.title)).toHaveCount(0);
 
+		await context.close();
+	});
+
+	test("The parent task selector can be searched by title and by task ID", async ({ browser }) => {
+		const alpha = await createTaskFor(employeeId, managerId, "***Parent Search Alpha Distinctive***");
+		const beta = await createTaskFor(employeeId, managerId, "***Parent Search Beta Distinctive***");
+
+		const context = await browser.newContext({ storageState: managerStatePath });
+		const page = await context.newPage();
+		await page.goto("/tasks/new");
+
+		await page.click('button[role="combobox"]:has-text("No parent task")');
+		await page.waitForSelector('div[role="listbox"]', { state: "visible" });
+		const listbox = page.locator('div[role="listbox"]');
+		const search = page.getByPlaceholder("Search by title or ID...");
+
+		// Search by a word from the title - the non-matching task drops out of the list.
+		await search.fill("Beta Distinctive");
+		await expect(listbox.getByRole("option", { name: `#${beta.id} - ${beta.title}` })).toBeVisible();
+		await expect(listbox.getByRole("option", { name: `#${alpha.id} - ${alpha.title}` })).toHaveCount(0);
+
+		// Search by task ID.
+		await search.fill(String(alpha.id));
+		await expect(listbox.getByRole("option", { name: `#${alpha.id} - ${alpha.title}` })).toBeVisible();
+
+		// Picking a result populates the hidden parentId field the form submits.
+		await listbox.getByRole("option", { name: `#${alpha.id} - ${alpha.title}` }).click();
+		await expect(page.locator('input[name="parentId"]')).toHaveValue(String(alpha.id));
+
+		await shot(page, "56-parent-selector-search");
 		await context.close();
 	});
 
