@@ -69,14 +69,6 @@ export async function getTaskProgress(tasks: TaskForProgress[]): Promise<Map<num
 			continue;
 		}
 
-		// A task that is itself Completed or Closed always reads 100%, even if it was finished
-		// before all of its checklist items were ticked (the checklist is a helper, not a gate on
-		// completing a leaf task the way open sub-tasks are).
-		if (task.statusId === 2 || task.statusId === 3) {
-			result.set(task.id, { done: total, total, percent: 100 });
-			continue;
-		}
-
 		const done = (children?.done ?? 0) + (checklist?.done ?? 0);
 		result.set(task.id, { done, total, percent: Math.round((done / total) * 100) });
 	}

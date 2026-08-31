@@ -5,7 +5,7 @@
  */
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
-import { canCompleteTask as checkCanCompleteTask, canReopenTask as checkCanReopenTask, canToggleChecklist, getTaskForAuth } from "@/actions/auth/require-auth";
+import { canCompleteTask as checkCanCompleteTask, canEditTask as checkCanEditTask, canReopenTask as checkCanReopenTask, canToggleChecklist, getTaskForAuth } from "@/actions/auth/require-auth";
 import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
 import { prismaExtendedUserSelection, UserExtended } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAndName";
@@ -100,8 +100,9 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 		select: { user: { select: { id: true, firstName: true, lastName: true, department: true, avatar: true } }, comment: true, id: true, time: true },
 	});
 
-	// Check if the user has the permission to edit the task = is admin, is manager of the assigned user, or is the assigned user
-	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id || (userPermissions.isManager && task?.assignedToUser?.id === user?.id);
+	// Same shared rule the edit route and updateTask enforce: admin, the assignee's manager, or an
+	// assignee who is themselves a manager - a plain assignee edits nothing but the checklist ticks.
+	const canEditTask = !!taskForAuth && !!user && checkCanEditTask(taskForAuth, { user, permissions: userPermissions });
 	// canCompleteTask/canReopenTask come from require-auth.ts, not local booleans, because they now
 	// also depend on open sub-tasks / the parent's status - the exact same rule the actions enforce.
 	const canCompleteTask = !!taskForAuth && !!user && checkCanCompleteTask(taskForAuth, { user, permissions: userPermissions });
@@ -300,10 +301,12 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 												<div className="flex items-center gap-3 shrink-0">
 													{child.assignedToUser && <UserAvatarNameSmall user={child.assignedToUser as UserExtended} />}
 													{/* Stacked under the badge, not beside it - same pattern as the tasks table's Status
-													    column (see TaskTable.tsx) - and only rendered when progress is applicable. */}
+													    column (see TaskTable.tsx). The bar's row is always reserved (h-4, even when empty)
+													    so the badge lands at the same height across rows regardless of whether progress
+													    applies to that particular sub-task. */}
 													<div className="flex flex-col items-start gap-1">
 														<StatusBadge statusObj={child.status} size="xs" />
-														{childProgress && <ProgressBar percent={childProgress.percent} variant="compact" />}
+														<div className="h-4">{childProgress && <ProgressBar percent={childProgress.percent} variant="compact" />}</div>
 													</div>
 												</div>
 											</Link>

@@ -25,8 +25,11 @@ const EditTaskpage = async ({ params }: { params: { id: string } }) => {
 	// If the task is not found OR task is not In Progress or Overdue, return a 404 page, included in Next.js
 	if (!task || (task.statusId !== 1 && task.statusId !== 5)) return notFound();
 
-	// Check if the user has the permission to edit the task = is admin, is manager of the assigned user, or is the assigned user
-	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id || task?.assignedToUser?.id === user?.id;
+	// Check if the user has the permission to edit the task = is admin, is manager of the assigned
+	// user, or is an assignee who is themselves a manager. A plain assignee may tick checklist
+	// items on the detail page but not edit the task's content - mirrors canEditTask in
+	// actions/auth/require-auth.ts and the Edit button's visibility on the detail page.
+	const canEditTask = userPermissions?.isAdmin || task?.assignedToUser?.managerId === user?.id || (userPermissions?.isManager && task?.assignedToUser?.id === user?.id);
 	if (!canEditTask) return notFound();
 
 	// Get logged in user details and all users

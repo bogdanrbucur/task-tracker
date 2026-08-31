@@ -64,13 +64,16 @@ function isAssigneesManager(task: TaskForAuth, actor: Actor) {
 }
 
 /**
- * Who may change a task's content: an admin, the assignee, or the assignee's manager.
- * Mirrors the gate on the edit page (app/(protected)/tasks/[id]/edit/page.tsx).
+ * Who may change a task's content (title, description, due date, parent, checklist membership):
+ * an admin, the assignee's manager, or an assignee who is themselves a manager. A plain assignee
+ * is deliberately excluded - they may tick checklist items (canToggleChecklist) but not change the
+ * task's scope. Mirrors the Edit button's visibility on the detail page and the gate on the edit
+ * page (app/(protected)/tasks/[id]/edit/page.tsx).
  */
 export function canEditTask(task: TaskForAuth, actor: Actor) {
 	if (actor.permissions.isAdmin) return true;
-	if (task.assignedToUserId === actor.user.id) return true;
-	return isAssigneesManager(task, actor);
+	if (isAssigneesManager(task, actor)) return true;
+	return actor.permissions.isManager && task.assignedToUserId === actor.user.id;
 }
 
 /**
@@ -102,18 +105,30 @@ export function canReopenTask(task: TaskForAuth) {
 	return task.parent.statusId !== 2 && task.parent.statusId !== 3;
 }
 
-/** Who may attach files to / remove attachments from a task - same rule as editing it. */
-export function canModifyTaskAttachments(task: TaskForAuth, actor: Actor) {
+/**
+ * Who may attach files to / remove attachments from a task, by attachment kind:
+ *  - "source" attachments describe the work itself, so they follow canEditTask - a plain assignee
+ *    cannot add or remove them.
+ *  - "completion" attachments are the assignee's proof they did the work, so they follow the same
+ *    identity rule as canCompleteTask (an admin or the assignee) - a plain assignee completing
+ *    their own task must be able to attach them.
+ */
+export function canModifyTaskAttachments(task: TaskForAuth, actor: Actor, type: "source" | "completion") {
+	if (type === "completion") return actor.permissions.isAdmin || task.assignedToUserId === actor.user.id;
 	return canEditTask(task, actor);
 }
 
 /**
- * Who may tick/untick a task's checklist items: the same people who may edit the task's content,
- * and only while the task is still open - ticking a Completed/Closed task's checklist would move
- * its (already-100%) progress ring without changing its status.
+ * Who may tick/untick a task's checklist items: an admin, the assignee, or the assignee's manager -
+ * a deliberately wider set than canEditTask (a plain, non-manager assignee is included here), and
+ * only while the task is still open. Ticking a Completed/Closed task's checklist would move its
+ * (already-100%) progress ring without changing its status.
  */
 export function canToggleChecklist(task: TaskForAuth, actor: Actor) {
-	return canEditTask(task, actor) && isTaskEditable(task);
+	if (!isTaskEditable(task)) return false;
+	if (actor.permissions.isAdmin) return true;
+	if (task.assignedToUserId === actor.user.id) return true;
+	return isAssigneesManager(task, actor);
 }
 
 /**

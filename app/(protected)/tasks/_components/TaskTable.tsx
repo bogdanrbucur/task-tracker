@@ -57,10 +57,14 @@ const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Pro
 						<TableCell className="hidden py-1 md:table-cell">
 							{/* Stacked under the badge, not beside it - a bar reads left-to-right as magnitude,
 							    so it needs its own line rather than competing with the badge for width. Fits
-							    within the badge's own min-w-28, so this adds no new column width. */}
+							    within the badge's own min-w-28, so this adds no new column width. The bar's
+							    row is always reserved (h-4, even when empty) rather than only rendered when
+							    applicable - the cell's own align-middle centers this whole block, so a
+							    variable-height block would center the badge itself at a different height row
+							    to row, depending on whether progress applied. */}
 							<div className="flex flex-col items-start gap-1">
 								<StatusBadge statusObj={task.status} size="xs" />
-								{progressByTaskId?.get(task.id) && <ProgressBar percent={progressByTaskId.get(task.id)!.percent} variant="compact" />}
+								<div className="h-4">{progressByTaskId?.get(task.id) && <ProgressBar percent={progressByTaskId.get(task.id)!.percent} variant="compact" />}</div>
 							</div>
 						</TableCell>
 						<TableCell className="hidden py-1 md:table-cell">{task.source}</TableCell>

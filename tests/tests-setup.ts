@@ -265,6 +265,17 @@ export async function getTaskById(id: number) {
 	return prisma.task.findUnique({ where: { id } });
 }
 
+/** Remove a fixture task and its dependent rows. Used for afterAll cleanup. */
+export async function deleteTaskById(id: number) {
+	// Change/Comment/Attachment have no onDelete: Cascade in the schema, so clear them first.
+	await prisma.change.deleteMany({ where: { taskId: id } });
+	await prisma.comment.deleteMany({ where: { taskId: id } });
+	await prisma.attachment.deleteMany({ where: { taskId: id } });
+	await prisma.checklistItem.deleteMany({ where: { taskId: id } });
+	await prisma.descriptionImage.deleteMany({ where: { taskId: id } });
+	await prisma.task.deleteMany({ where: { id } });
+}
+
 /** A task in "In Progress" (statusId 1) with an explicit status/dueDate/parent, for sub-task fixtures. */
 export async function createTaskWith(opts: {
 	assignedToUserId: string;

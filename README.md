@@ -400,3 +400,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.14.0 - Dashboard only visible to logged-in users
 - 2.0.1 - Added support for sub-tasks and checklist items in tasks
 - 2.0.2 - Better aligned progress bars in sub-tasks
+- 2.0.3 - Fixed a bug that allowed a tasks' asignee to bypass the Edit button and edit it's content. A tasks' progress is now calculate independently from its status (i.e. the progress will not be 100% when the task is marked as Completed or Closed)

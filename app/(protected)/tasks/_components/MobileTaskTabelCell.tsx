@@ -39,10 +39,12 @@ const MobileTaskTabelCell = ({ task, viewableUsers, progress }: { task: TaskExte
 							task.assignedToUser && <UserAvatarNameSmall user={task.assignedToUser as UserExtended} />
 						)}
 					</div>
-					{/* Stacked under the badge, same reasoning as the desktop Status column - see TaskTable.tsx */}
+					{/* Stacked under the badge, same reasoning as the desktop Status column - see TaskTable.tsx.
+					    The bar's row is always reserved (h-4, even when empty) so the badge lands at the
+					    same height whether or not progress applies. */}
 					<div className="py-1 flex flex-col items-end gap-1">
 						<StatusBadge statusObj={task.status} size="xs" />
-						{progress && <ProgressBar percent={progress.percent} variant="compact" />}
+						<div className="h-4">{progress && <ProgressBar percent={progress.percent} variant="compact" />}</div>
 					</div>
 				</div>
 				<div id="dates">
