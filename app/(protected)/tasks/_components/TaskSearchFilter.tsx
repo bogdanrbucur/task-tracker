@@ -9,8 +9,12 @@ export function TaskSearchFilter() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
+	// Seed from the URL so a back-navigation (or a shared link) keeps the search term visible in
+	// the field and does not clear the active filter.
+	const initialSearch = searchParams.get("search") ?? "";
+
 	// State for storing the current search input value
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useState(initialSearch);
 
 	// Reference to the search input field for programmatic focus
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -18,8 +22,9 @@ export function TaskSearchFilter() {
 	// Reference to store the debounce timeout ID
 	const timeoutId = useRef<NodeJS.Timeout | null>(null);
 
-	// Reference to track the last applied search value (prevents unnecessary URL updates)
-	const lastSearch = useRef<string>("");
+	// Reference to track the last applied search value (prevents unnecessary URL updates).
+	// Seeded with the URL value so the mount pass is a no-op and does not re-push the same URL.
+	const lastSearch = useRef<string>(initialSearch);
 
 	// Effect to handle search query changes and update the URL accordingly
 	useEffect(() => {
@@ -40,6 +45,7 @@ export function TaskSearchFilter() {
 			} else {
 				params.delete("search");
 			}
+			params.delete("page"); // a changed search starts again from page 1
 
 			// Construct the final query string and update the URL
 			const query = params.toString() ? `?${params.toString()}` : "";
@@ -85,6 +91,7 @@ export function TaskSearchFilter() {
 			<Input
 				ref={inputRef}
 				type="text"
+				defaultValue={initialSearch}
 				placeholder={search ? "" : "Search..."}
 				className="h-9 md:pl-9 pr-4 rounded-md border bg-transparent"
 				onChange={(e) => setSearch(e.target.value)}
