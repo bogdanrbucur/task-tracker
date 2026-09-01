@@ -44,6 +44,9 @@ const NewTaskPage = async ({ searchParams }: Props) => {
 	// Add sub-task: the parent must actually be eligible (still open, no parent of its own) or the
 	// field is simply left blank rather than silently accepting an invalid one.
 	const parentFromLink = parentIdParam && eligibleParents.some((p) => p.id === parentIdParam) ? parentIdParam : undefined;
+	// Duplicating a sub-task keeps its parent, subject to the same eligibility check - if the parent
+	// is closed or gone, the field is left blank rather than prefilled with an invalid one.
+	const parentFromCopy = copy?.parentId && eligibleParents.some((p) => p.id === copy.parentId) ? copy.parentId : undefined;
 
 	if (copy) {
 		return (
@@ -55,9 +58,9 @@ const NewTaskPage = async ({ searchParams }: Props) => {
 					dueDate: copy.dueDate,
 					source: copy.source,
 					sourceLink: copy.sourceLink,
-					assignedToUser: copy.assignedToUser,
 				}}
 				eligibleParents={eligibleParents}
+				defaultParentId={parentFromCopy}
 				defaultChecklistItems={copy.checklistItems}
 				checklistTemplates={checklistTemplates}
 				copyFromTaskId={copy.copyFromTaskId}

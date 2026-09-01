@@ -255,6 +255,9 @@ test.describe("Sub-tasks, checklists and progress", () => {
 		// createTaskFor's due date is 30 days out, so it is still in the future and gets copied -
 		// no "Pick a date" placeholder to click here (see the separate past-due-date coverage note).
 		await expect(page.locator('button:has-text("Pick a date")')).toHaveCount(0);
+		// The assignee is deliberately not copied - the field starts blank and must be set by hand.
+		await expect(page.locator('text="Select a user..."')).toBeVisible();
+		await pickAssignee(page, "St Employee");
 
 		await page.click('button:has-text("Create Task")');
 		await settle(page);
@@ -271,6 +274,29 @@ test.describe("Sub-tasks, checklists and progress", () => {
 		expect(copiedTask?.completedOn).toBeNull();
 
 		await shot(page, "56-task-duplicated");
+		await context.close();
+	});
+
+	test("Duplicating a sub-task keeps its parent", async ({ browser }) => {
+		const parent = await createTaskFor(employeeId, managerId, "***Parent Kept On Copy***");
+		const child = await createTaskWith({ assignedToUserId: employeeId, createdByUserId: managerId, title: "***Child Copied With Parent***", parentId: parent.id });
+
+		const context = await browser.newContext({ storageState: managerStatePath });
+		const page = await context.newPage();
+		await page.goto(`/tasks/${child.id}`);
+		await page.click('a:has-text("Duplicate")');
+		await expect(page).toHaveURL(/\/tasks\/new\?copyFrom=/);
+
+		// The parent field is prefilled from the source sub-task.
+		await expect(page.locator('button[role="combobox"]:has-text("***Parent Kept On Copy***")')).toBeVisible();
+		await pickAssignee(page, "St Employee");
+		await page.click('button:has-text("Create Task")');
+		await settle(page);
+
+		const newId = Number(page.url().match(/\/tasks\/(\d+)/)?.[1]);
+		const copiedTask = await getTaskById(newId);
+		expect(copiedTask?.parentId).toBe(parent.id);
+
 		await context.close();
 	});
 

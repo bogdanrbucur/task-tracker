@@ -19,7 +19,10 @@ export interface TaskCopyForPrefill {
 	description: string;
 	source: string | null;
 	sourceLink: string | null;
-	assignedToUser: { id: string; firstName: string; lastName: string } | null;
+	// The assignee is deliberately NOT copied - a duplicate would too easily be saved with the
+	// original's assignee still set, silently landing work on the wrong person. The copier picks one.
+	// Set when the original is itself a sub-task, so the duplicate keeps the same parent.
+	parentId: number | null;
 	// Only set when the original's due date is still in the future - see the Duplicate rule.
 	dueDate: Date | null;
 	dueDateWasNotCopied: boolean;
@@ -41,7 +44,6 @@ export async function getTaskCopyForPrefill(taskId: number): Promise<TaskCopyFor
 	const task = await prisma.task.findUnique({
 		where: { id: taskId },
 		include: {
-			assignedToUser: { select: { id: true, firstName: true, lastName: true } },
 			checklistItems: { orderBy: { position: "asc" } },
 		},
 	});
@@ -83,7 +85,7 @@ export async function getTaskCopyForPrefill(taskId: number): Promise<TaskCopyFor
 		description,
 		source: task.source,
 		sourceLink: task.sourceLink,
-		assignedToUser: task.assignedToUser,
+		parentId: task.parentId,
 		dueDate: dueDateInFuture ? task.dueDate : null,
 		dueDateWasNotCopied: !dueDateInFuture,
 		checklistItems: task.checklistItems.map((i) => ({ text: i.text })),

@@ -30,13 +30,14 @@ interface Props {
 	task?: any;
 	// Prefilled field values for a new task - from Duplicate (copyFromTaskId set) or nothing more
 	// than a parent-task link (Add sub-task, via defaultParentId alone).
+	// The assignee is intentionally absent - Duplicate does not carry it over, so a copied task
+	// starts with no assignee and the creator must pick one.
 	prefill?: {
 		title?: string;
 		description?: string;
 		dueDate?: Date | null;
 		source?: string | null;
 		sourceLink?: string | null;
-		assignedToUser?: { id: string; firstName: string; lastName: string } | null;
 	};
 	eligibleParents?: EligibleParentTask[];
 	defaultParentId?: number | null;

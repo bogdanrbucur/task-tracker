@@ -406,3 +406,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.1.2 - Updated to NextJS 16.3.2 and other dependencies
 - 2.2.0 - Checklist items templates
 - 2.2.1 - Fixed the tasks pagination not retained when navigating to a task and back to the tasks list
+- 2.2.2 - Removed the asignee when copying a task. Copy the task parent when copying a task
