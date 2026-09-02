@@ -5,7 +5,14 @@
  */
 import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
-import { canCompleteTask as checkCanCompleteTask, canEditTask as checkCanEditTask, canReopenTask as checkCanReopenTask, canToggleChecklist, getTaskForAuth } from "@/actions/auth/require-auth";
+import {
+	canCancelTask as checkCanCancelTask,
+	canCompleteTask as checkCanCompleteTask,
+	canEditTask as checkCanEditTask,
+	canReopenTask as checkCanReopenTask,
+	canToggleChecklist,
+	getTaskForAuth,
+} from "@/actions/auth/require-auth";
 import TaskHistory from "@/app/(protected)/tasks/[id]/_components/TaskHistory";
 import { prismaExtendedUserSelection, UserExtended } from "@/app/users/_actions/getUserById";
 import { UserAvatarNameNormal, UserAvatarNameSmall } from "@/components/AvatarAndName";
@@ -111,7 +118,11 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 	const canReopenTask = (userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id) && (!taskForAuth || checkCanReopenTask(taskForAuth));
 	const reopenBlockedByParent = !!taskForAuth && !checkCanReopenTask(taskForAuth);
 	const canToggleTaskChecklist = !!taskForAuth && !!user && canToggleChecklist(taskForAuth, { user, permissions: userPermissions });
-	const canCancelTask = userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id;
+	// canCancelTask comes from require-auth.ts too, same reason as canCompleteTask - it also gates on
+	// open sub-tasks now. mayCancelTask ignores that gating, just to decide whether to render the
+	// disabled "sub-tasks open" placeholder instead of hiding the Cancel button entirely.
+	const mayCancelTask = userPermissions?.isAdmin || task?.assignedToUser?.manager?.id === user?.id;
+	const canCancelTask = !!taskForAuth && !!user && checkCanCancelTask(taskForAuth, { user, permissions: userPermissions });
 
 	// Get all active users for the @ mentions
 	const users = await prisma.user.findMany({
@@ -184,7 +195,16 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									)
 								) : null}
 								{canCloseTask && task.statusId === 2 && <CloseTaskButton taskId={task.id} />}
-								{canCancelTask && task.statusId !== 4 && task.statusId !== 3 && <CancelTaskButton taskId={task.id} />}
+								{mayCancelTask &&
+									task.statusId !== 4 &&
+									task.statusId !== 3 &&
+									(openChildrenCount > 0 ? (
+										<Button size="sm" disabled title="All sub-tasks must be completed, closed or cancelled first" className="gap-1 bg-red-400">
+											{openChildrenCount} sub-task{openChildrenCount === 1 ? "" : "s"} open
+										</Button>
+									) : (
+										canCancelTask && <CancelTaskButton taskId={task.id} />
+									))}
 							</div>
 						</div>
 						{reopenBlockedByParent && (task.statusId === 2 || task.statusId === 3) && (

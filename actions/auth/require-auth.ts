@@ -90,9 +90,15 @@ export function canCompleteTask(task: TaskForAuth, actor: Actor) {
 	return task._count.children === 0;
 }
 
-/** Who may close, reopen or cancel a task: an admin or the assignee's manager. */
+/** Who may close or reopen a task: an admin or the assignee's manager. */
 export function canManageTask(task: TaskForAuth, actor: Actor) {
 	return actor.permissions.isAdmin || isAssigneesManager(task, actor);
+}
+
+/** Who may cancel a task: an admin or the assignee's manager - and only once every sub-task is done, same as canCompleteTask. */
+export function canCancelTask(task: TaskForAuth, actor: Actor) {
+	if (!canManageTask(task, actor)) return false;
+	return task._count.children === 0;
 }
 
 /**

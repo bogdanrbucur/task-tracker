@@ -139,6 +139,23 @@ test.describe("Sub-tasks, checklists and progress", () => {
 		await context.close();
 	});
 
+	test("A parent cannot be cancelled while a sub-task is still open", async ({ browser }) => {
+		const parent = await createTaskFor(employeeId, managerId, "***Blocked Cancel Parent***");
+		await createTaskWith({ assignedToUserId: employeeId, createdByUserId: managerId, title: "***Blocked Cancel Child***", parentId: parent.id });
+
+		// Cancel is a manager action, not the assignee's - sign in as the manager
+		const context = await browser.newContext({ storageState: managerStatePath });
+		const page = await context.newPage();
+		await page.goto(`/tasks/${parent.id}`);
+
+		// The Cancel button is replaced by a disabled "N sub-task(s) open" indicator - see page.tsx
+		await expect(page.locator('button:has-text("sub-task")')).toBeVisible();
+		await expect(page.getByRole("button", { name: "Cancel", exact: true })).toHaveCount(0);
+
+		await shot(page, "55-parent-cancel-blocked");
+		await context.close();
+	});
+
 	test("A cancelled sub-task does not count against the parent's progress", async ({ browser }) => {
 		const parent = await createTaskFor(employeeId, managerId, "***Progress With Cancelled Child***");
 		await createTaskWith({ assignedToUserId: employeeId, createdByUserId: managerId, title: "***Done Child A***", parentId: parent.id, statusId: 2, completedOn: new Date() });
