@@ -73,7 +73,13 @@ const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Pro
 								<div className="h-4">{progressByTaskId?.get(task.id) && <ProgressBar percent={progressByTaskId.get(task.id)!.percent} variant="compact" />}</div>
 							</div>
 						</TableCell>
-						<TableCell className="hidden py-1 md:table-cell">{task.source}</TableCell>
+						<TableCell className="hidden py-1 md:table-cell">
+							{/* Clamped to two lines (same as Title) so a long source string can't drag the
+							    row past its fixed height - full text on hover via the native title tooltip. */}
+							<span className="line-clamp-2" title={task.source ?? undefined}>
+								{task.source}
+							</span>
+						</TableCell>
 						<TableCell className="hidden py-1 md:table-cell w-min whitespace-nowrap">{formatDate(task.createdAt)}</TableCell>
 						<TableCell className={cn(dueColor(task), "hidden py-1 md:table-cell w-min whitespace-nowrap")}>{formatDate(task.dueDate)}</TableCell>
 						{task.completedOn ? (

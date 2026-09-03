@@ -20,7 +20,9 @@ const MobileTaskTabelCell = ({ task, viewableUsers, progress }: { task: TaskExte
 				    chip - the cheapest way to tell the two kinds of row apart in a flat list, as
 				    discussed for the Jira-style epic/story distinction. */}
 				{task.parentId && <CornerDownRight className="h-3 w-3 text-muted-foreground shrink-0" data-testid="subtask-indicator" />}
-				<span className="truncate md:min-w-0 md:whitespace-normal md:line-clamp-2">{task.title}</span>
+				<span className="truncate md:min-w-0 md:whitespace-normal md:line-clamp-2" title={task.title}>
+					{task.title}
+				</span>
 				{!!task._count?.children && (
 					<span className="text-xs text-muted-foreground shrink-0" data-testid="subtask-count-chip">
 						{task._count.children} sub-task{task._count.children === 1 ? "" : "s"}
