@@ -20,7 +20,7 @@ const TaskTopSection = async ({ searchParams }: { searchParams: TasksQuery }) =>
 	allUsers = allUsers.filter((u) => u.status === "active");
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 py-1 md:py-3 ">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 py-1 md:py-2 ">
 			<div className="flex space-x-3 justify-between md:justify-start">
 				<TaskStatusFilter />
 				<TaskUserFilter users={allUsers} />

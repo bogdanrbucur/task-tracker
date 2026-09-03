@@ -301,6 +301,14 @@
 	* {
 		@apply border-border;
 	}
+	html {
+		/* Always reserve the scrollbar gutter. Without this, navigating from a page that scrolls
+		   (the dashboard, whose grid is pinned to 88vh and overflows) to one that doesn't (the
+		   tasks list) makes the classic scrollbar appear/disappear, and every mx-auto centred
+		   element - the content card, the footer - jumps sideways by the scrollbar's width.
+		   No effect where the OS uses overlay scrollbars. */
+		scrollbar-gutter: stable;
+	}
 	body {
 		@apply bg-background text-foreground;
 	}

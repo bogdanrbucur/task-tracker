@@ -23,6 +23,10 @@ export interface TaskExtended extends Task {
 	_count?: { children: number };
 }
 
+// Selectable page sizes for the tasks list. The first entry is the default. Shared by the page
+// (which clamps the URL value to this set) and the Pagination control that renders the picker.
+export const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
+
 type StatusTypes = "1" | "2" | "3" | "4" | "5" | undefined;
 
 // All (default): no filter. hideSubtasks: only tasks with no parent - ordinary tasks and parents,
@@ -34,6 +38,7 @@ export interface TasksQuery {
 	orderBy: keyof Task;
 	sortOrder: "asc" | "desc";
 	page: string;
+	pageSize?: string;
 	user: string;
 	search: string;
 	dept: string;

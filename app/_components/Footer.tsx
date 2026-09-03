@@ -5,14 +5,18 @@ import Link from "next/link";
 export default function Footer() {
 	const version = getVersion();
 	return (
-		<footer className="flex items-center h-7 px-4">
+		// 3-track grid with equal 1fr side tracks: the version chip stays hard left, and the
+		// centre "made in" cluster is centred across the full footer width. The footer spans the
+		// viewport (like the page content, which is only shrunk symmetrically by <main>'s p-3),
+		// so that centre lines up with the centred pagination controls above it.
+		<footer className="grid grid-cols-[1fr_auto_1fr] items-center h-7 px-4">
 			<div className="flex text-left text-xs text-muted-foreground items-center">
 				<svg height="9" width="9" className="mr-1">
 					<circle cx="4" cy="4" r="4" fill={process.env.DEPLOYMENT} />
 				</svg>
 				{version}
 			</div>
-			<div className="flex justify-center items-center space-x-2 mx-auto">
+			<div className="flex justify-center items-center space-x-2">
 				<div className="flex text-xs gap-1 items-center">
 					Proudly made in
 					<div>
@@ -41,6 +45,8 @@ export default function Footer() {
 					<Mail size="16" />
 				</Link>
 			</div>
+			{/* Empty right track; equal 1fr to the left keeps the centre cluster centred. */}
+			<div />
 		</footer>
 	);
 }

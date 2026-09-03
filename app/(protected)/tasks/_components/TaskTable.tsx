@@ -23,7 +23,10 @@ const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Pro
 	const sortOrder = searchParams.sortOrder;
 
 	return (
-		<Table>
+		// table-fixed + explicit per-column widths (below) so column widths are identical on every
+		// page, regardless of the content each page happens to hold. Without this, the browser
+		// auto-sizes columns to their content and every page navigation reflows them.
+		<Table className="md:table-fixed">
 			<TableHeader>
 				<TableRow>
 					{columns.map((column) => (
@@ -51,7 +54,10 @@ const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Pro
 			</TableHeader>
 			<TableBody>
 				{tasks.map((task) => (
-					<TableRow key={task.id}>
+					// Fixed row height so a page of short (one-line) titles is exactly as tall as a page
+					// with wrapped two-line titles - the table container no longer jumps between pages.
+					// 3.25rem is the tightest that still fits a clamped two-line title without clipping.
+					<TableRow key={task.id} className="md:h-[3.70rem]">
 						<TableCell className="hidden py-1 md:table-cell">{task.id}</TableCell>
 						<MobileTaskTabelCell task={task} viewableUsers={viewableUsers} progress={progressByTaskId?.get(task.id) ?? null} />
 						<TableCell className="hidden py-1 md:table-cell">
@@ -93,38 +99,40 @@ const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Pro
 
 export default TaskTable;
 
+// Widths are fixed per column (table-fixed on <Table>) so navigation between pages never reflows
+// the layout. The Title column carries no width and absorbs the remaining space.
 const columns: { label: string; value: keyof Task; className?: string }[] = [
-	{ label: "#", value: "id", className: "hidden md:table-cell py-1" },
+	{ label: "#", value: "id", className: "hidden md:table-cell py-1 md:w-12" },
 	{ label: "Title", value: "title", className: "py-1" },
 	{
 		label: "Status",
 		value: "statusId",
-		className: "hidden md:table-cell py-1",
+		className: "hidden md:table-cell py-1 md:w-36",
 	},
 	{
 		label: "Source",
 		value: "source",
-		className: "hidden md:table-cell py-1",
+		className: "hidden md:table-cell py-1 md:w-36",
 	},
 	{
 		label: "Created",
 		value: "createdAt",
-		className: "hidden md:table-cell py-1",
+		className: "hidden md:table-cell py-1 md:w-32 whitespace-nowrap",
 	},
 	{
 		label: "Due Date",
 		value: "dueDate",
-		className: "hidden md:table-cell py-1",
+		className: "hidden md:table-cell py-1 md:w-32 whitespace-nowrap",
 	},
 	{
 		label: "Completed",
 		value: "completedOn",
-		className: "hidden md:table-cell py-1",
+		className: "hidden md:table-cell py-1 md:w-32 whitespace-nowrap",
 	},
 	{
 		label: "Assigned to",
 		value: "assignedToUserId",
-		className: "hidden md:table-cell py-1",
+		className: "hidden md:table-cell py-1 md:w-48",
 	},
 ];
 

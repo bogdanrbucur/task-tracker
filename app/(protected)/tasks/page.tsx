@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import prisma from "@/prisma/client";
 import { Department, Prisma, Status, Task, User } from "@prisma/client";
 import { notFound } from "next/navigation";
-import { buildTaskOrderBy, buildTaskWhere, type TaskExtended, type TasksQuery } from "./_actions/buildTaskQuery";
+import { buildTaskOrderBy, buildTaskWhere, PAGE_SIZE_OPTIONS, type TaskExtended, type TasksQuery } from "./_actions/buildTaskQuery";
 import { getTaskProgress } from "./_actions/taskProgress";
 import TaskTable, { columnNames } from "./_components/TaskTable";
 import TaskTopSection from "./_components/TaskTopSection";
@@ -38,7 +38,11 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 	const where = buildTaskWhere(rawSearchParams);
 	const orderBy = buildTaskOrderBy(rawSearchParams, columnNames);
 	const page = rawSearchParams.page ? parseInt(rawSearchParams.page) : 1;
-	const pageSize = 10;
+	// User-selectable via the control next to the pagination buttons. Anything outside the
+	// allowed set (or absent) falls back to the default so a hand-edited URL can't ask for an
+	// unbounded page.
+	const requestedPageSize = rawSearchParams.pageSize ? parseInt(rawSearchParams.pageSize) : PAGE_SIZE_OPTIONS[0];
+	const pageSize = (PAGE_SIZE_OPTIONS as readonly number[]).includes(requestedPageSize) ? requestedPageSize : PAGE_SIZE_OPTIONS[0];
 
 	const tasks = await prisma.task.findMany({
 		where,
@@ -67,6 +71,7 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 		orderBy: rawSearchParams.orderBy,
 		sortOrder: rawSearchParams.sortOrder,
 		page: rawSearchParams.page,
+		pageSize: rawSearchParams.pageSize,
 		user: rawSearchParams.user,
 		search: rawSearchParams.search,
 		dept: rawSearchParams.dept,
@@ -74,11 +79,11 @@ export default async function TasksPage({ searchParams }: { searchParams: TasksQ
 	};
 
 	return (
-		<Card className="container mx-auto px-0 md:px-0">
+		<Card className="container mx-auto px-0 md:px-0 flex flex-1 flex-col">
 			<div className="fade-in container p-2 md:px-7">
 				<TaskTopSection searchParams={query} />
 				<TaskTable tasks={tasks as TaskExtended[]} searchParams={query} viewableUsers={viewableUsers} progressByTaskId={progressByTaskId} />
-				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} />
+				<Pagination itemCount={taskCount} pageSize={pageSize} currentPage={page} pageSizeOptions={PAGE_SIZE_OPTIONS} />
 			</div>
 		</Card>
 	);

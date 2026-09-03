@@ -411,3 +411,5 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.3.0 - Revamped dashboard charts
 - 2.3.1 - Fine tuning the departments bar chart
 - 2.4.0 - Implemented [Catpuccin themes color palette](https://catppuccin.com/palette/), or close to
+- 2.5.0 - Implemented tasks list pagination, fixed columns widths and row heights
+- 2.5.1 - Better footer and pagination buttons alignment

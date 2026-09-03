@@ -60,8 +60,11 @@ export default async function Home({
 	const teamTasks = getTeamTasks(userDetails, allTasks);
 
 	return (
-		<Card className="container mx-auto p-0">
-			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1" style={{ height: "88vh", maxHeight: "88vh" }}>
+		<Card className="container mx-auto p-0 flex flex-1 flex-col">
+			{/* Fill the space <main> gives us instead of a magic 88vh. The tasks page card fills the
+			    same box, so the card edges and the footer no longer jump when navigating between
+			    the two. min-h keeps the charts usable on short viewports (the card then scrolls). */}
+			<div className="grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-1 flex-1 min-h-[600px]">
 				<StatusChart data={statusTasksChartData} isGuest={false} />
 				<div className="fade-in row-span-2 flex flex-col h-full ">
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
