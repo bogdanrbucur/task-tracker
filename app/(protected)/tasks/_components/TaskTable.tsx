@@ -106,10 +106,10 @@ const TaskTable = ({ searchParams, tasks, viewableUsers, progressByTaskId }: Pro
 export default TaskTable;
 
 // Widths are fixed per column (table-fixed on <Table>) so navigation between pages never reflows
-// the layout. The Title column carries no width and absorbs the remaining space.
+// the layout. The "Assigned to" column carries no width and absorbs the remaining space.
 const columns: { label: string; value: keyof Task; className?: string }[] = [
 	{ label: "#", value: "id", className: "hidden md:table-cell py-1 md:w-12" },
-	{ label: "Title", value: "title", className: "py-1" },
+	{ label: "Title", value: "title", className: "py-1 md:w-96" },
 	{
 		label: "Status",
 		value: "statusId",
@@ -138,7 +138,7 @@ const columns: { label: string; value: keyof Task; className?: string }[] = [
 	{
 		label: "Assigned to",
 		value: "assignedToUserId",
-		className: "hidden md:table-cell py-1 md:w-48",
+		className: "hidden md:table-cell py-1",
 	},
 ];
 
