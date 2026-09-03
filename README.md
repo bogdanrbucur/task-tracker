@@ -418,3 +418,5 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.5.4 - Reduce users page size to 10
 - 2.5.5 - Users list fixed columns widths
 - 2.5.6 - Fix silent failure when deactivating a manager with disabled subordinates
+- 2.5.7 - Fix to retain users list page when navigating to a user and back to the users list
+- 2.5.8 - Fix to only display active users when creating/duplicating a task

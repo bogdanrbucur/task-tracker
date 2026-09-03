@@ -6,6 +6,7 @@ import { UserExtended } from "@/app/users/_actions/getUserById";
 import { UpdateUser } from "@/app/users/new/submitUser";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
+import { invalidateUsersCache } from "@/app/users/_actions/getUsers";
 
 export default async function updateUser(data: UpdateUser, editingUser: UserExtended) {
 	// This is exported from a "use server" module, so it is a callable endpoint in its own right
@@ -55,6 +56,8 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 		}
 
 		if (!updatedUser) throw new Error("Failed to update user.");
+		// Name / department / manager changes must show through in the cached list the pickers use.
+		invalidateUsersCache();
 		return updatedUser;
 	} catch (error: any) {
 		logger(error?.message ? error.message : "Error updating user");

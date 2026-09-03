@@ -6,6 +6,7 @@ import { UserExtended } from "@/app/users/_actions/getUserById";
 import { NewUser } from "@/app/users/new/submitUser";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
+import { invalidateUsersCache } from "@/app/users/_actions/getUsers";
 import { sendEmail } from "../../email/email";
 import generatePassChangeToken from "../../password-reset/_actions/generatePassChangeToken";
 
@@ -46,6 +47,9 @@ export default async function createUser(data: NewUser, editingUser: UserExtende
 				lastWelcomeEmailSent: new Date(),
 			},
 		});
+
+		// Refresh the cached user list so the new user is immediately available in pickers.
+		invalidateUsersCache();
 
 		return { newUser, emailStatus };
 	} catch (error: any) {

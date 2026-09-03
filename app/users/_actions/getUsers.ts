@@ -20,3 +20,10 @@ export default async function getUsers() {
 
 	return users;
 }
+
+// Call after any mutation that changes the set of users or their status/manager/department
+// (create, update, activate/deactivate, delete). Without this the 5 minute TTL lets a
+// just-deactivated user keep showing up as selectable in the task assignee dropdowns.
+export function invalidateUsersCache() {
+	userCache.del("users");
+}

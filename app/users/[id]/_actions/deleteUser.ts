@@ -5,6 +5,7 @@ import { getAuth } from "@/actions/auth/get-auth";
 import { getPermissions } from "@/actions/auth/get-permissions";
 import logger from "@/lib/logging";
 import prisma from "@/prisma/client";
+import { invalidateUsersCache } from "@/app/users/_actions/getUsers";
 import fs from "fs-extra";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -56,6 +57,9 @@ export default async function deleteUser(prevState: any, formData: FormData) {
 
 			// Delete the user's avatar file
 			logger(`User ${deletedUser.email} deleted. Avatar deleted.`);
+
+			// Drop the cached user list so the deleted user disappears from pickers right away.
+			invalidateUsersCache();
 
 			return { message: null, success: true };
 		} else return { message: null, success: false };

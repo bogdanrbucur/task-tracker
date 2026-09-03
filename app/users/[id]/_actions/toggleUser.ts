@@ -6,6 +6,7 @@ import { getPermissions } from "@/actions/auth/get-permissions";
 import logger from "@/lib/logging";
 import { lucia } from "@/lib/lucia";
 import prisma from "@/prisma/client";
+import { invalidateUsersCache } from "@/app/users/_actions/getUsers";
 import fs from "fs-extra";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -80,6 +81,9 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		// Handle other errors
 		else return { message: (error as any).message };
 	}
+	// Drop the cached user list so the task assignee dropdowns stop offering a just-deactivated
+	// user (and immediately offer a re-activated one).
+	invalidateUsersCache();
 	// refresh the page
 	revalidatePath(`/users/${formData.get("id")}`);
 }

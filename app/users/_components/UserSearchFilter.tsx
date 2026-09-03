@@ -7,31 +7,47 @@ import { useEffect, useRef, useState } from "react";
 export function UserSearchFilter() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [search, setSearch] = useState("");
+
+	// Seed from the URL so a back-navigation (or a shared link) keeps the search term visible in
+	// the field and does not clear the active filter.
+	const initialSearch = searchParams.get("search") ?? "";
+
+	const [search, setSearch] = useState(initialSearch);
 	const inputRef = useRef<HTMLInputElement | null>(null); // To store the reference to the input element
 	const timeoutId = useRef<NodeJS.Timeout | null>(null); // To store the timeout ID
 
-	// Update the URL when the selected userId changes
+	// Track the last applied search value (prevents unnecessary URL updates). Seeded with the URL
+	// value so the mount pass is a no-op and does not re-push the same URL (which would drop the
+	// `page` param on a back-navigation).
+	const lastSearch = useRef<string>(initialSearch);
+
+	// Update the URL when the search value changes
 	useEffect(() => {
 		// Clear the previous timeout if it exists
 		if (timeoutId.current) clearTimeout(timeoutId.current);
 
 		// Set a new timeout
 		timeoutId.current = setTimeout(() => {
-			const params = new URLSearchParams();
-			// Add the existing searchPramas to the URL
-			if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
-			if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
-			if (searchParams.get("active")) params.append("active", searchParams.get("active")!);
+			// Prevent unnecessary updates if the search value hasn't changed
+			if (lastSearch.current === search) return;
 
-			// Add the selected search to the URL
-			if (search !== "") params.append("search", search);
-			if (search === "") params.delete("search");
+			// Preserve existing search parameters while updating the search query
+			const params = new URLSearchParams(searchParams.toString());
+
+			if (search !== "") params.set("search", search);
+			else params.delete("search");
+			params.delete("page"); // a changed search starts again from page 1
 
 			const query = params.toString() ? "?" + params.toString() : "";
 			router.push(`/users${query}`);
+
+			lastSearch.current = search;
 		}, 250); // 250ms delay
-	}, [search]);
+
+		return () => {
+			if (timeoutId.current) clearTimeout(timeoutId.current);
+		};
+	}, [search, router, searchParams]);
 
 	// Focus the search filter on and off with CMD/CTRL + K
 	useEffect(() => {
@@ -59,6 +75,7 @@ export function UserSearchFilter() {
 			<Input
 				ref={inputRef}
 				type="text"
+				defaultValue={initialSearch}
 				placeholder={search ? "" : "Search..."}
 				className="h-9 md:pl-9 pr-4 rounded-md borderbg-transparent "
 				onChange={(e) => setSearch(e.target.value)}
