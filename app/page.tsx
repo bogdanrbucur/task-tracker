@@ -4,7 +4,7 @@ import prisma from "@/prisma/client";
 import { redirect } from "next/navigation";
 import { getAuth } from "../actions/auth/get-auth";
 import { TaskExtended } from "./(protected)/tasks/page";
-import DepartmentsChart from "./_components/DepartmentsChart";
+import DepartmentsBarChart from "./_components/DepartmentsBarChart";
 import MyTasks from "./_components/MyTasks";
 import StatusChart from "./_components/StatusChart";
 import TeamTasks from "./_components/TeamTasks";
@@ -67,7 +67,7 @@ export default async function Home({
 					{userDetails && <MyTasks tasks={userDetails?.assignedTasks} hasSubordinates={hasSubordinates} />}
 					{hasSubordinates && <TeamTasks tasks={teamTasks as TaskExtended[]} />}
 				</div>
-				<DepartmentsChart data={deptTasksChartData} isGuest={false} />
+				<DepartmentsBarChart data={deptTasksChartData} isGuest={false} />
 			</div>
 		</Card>
 	);

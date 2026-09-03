@@ -408,3 +408,5 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.2.1 - Fixed the tasks pagination not retained when navigating to a task and back to the tasks list
 - 2.2.2 - Removed the asignee when copying a task. Copy the task parent when copying a task
 - 2.2.3 - Block cancelling a task with open sub-tasks
+- 2.3.0 - Revamped dashboard charts
+- 2.3.1 - Fine tuning the departments bar chart

@@ -67,3 +67,6 @@ sftp.json
 
 # Logs
 /logs
+
+# Claude
+/.playwright-mcp
