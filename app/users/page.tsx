@@ -96,7 +96,7 @@ export default async function UsersPage({ searchParams }: Props) {
 	}
 
 	const page = rawSearchParams.page ? parseInt(rawSearchParams.page) : 1;
-	const pageSize = 12;
+	const pageSize = 10;
 	const users = await prisma.user.findMany({
 		where,
 		orderBy: orderBy ? orderBy : newOrderBy,

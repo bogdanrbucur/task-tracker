@@ -415,3 +415,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.5.1 - Better footer and pagination buttons alignment
 - 2.5.2 - Test fixes for new charts format
 - 2.5.3 - Fix tasks list rows getting too tall because of the Source length
+- 2.5.4 - Reduce users page size to 10
