@@ -26,7 +26,11 @@ const UserTable = ({ searchParams, users }: Props) => {
 	const columns = m365Enabled ? [...baseColumns, m365Column] : baseColumns;
 
 	return (
-		<Table>
+		// table-fixed + explicit per-column widths (below) so column widths are identical on every
+		// page, regardless of the content each page happens to hold. Without this, the browser
+		// auto-sizes columns to their content and every page navigation reflows them. Kept to md+
+		// so the mobile single-column layout is unaffected.
+		<Table className="md:table-fixed">
 			<TableHeader>
 				<TableRow>
 					{columns.map((column) => (
@@ -61,7 +65,9 @@ const UserTable = ({ searchParams, users }: Props) => {
 								{user.firstName} {user.lastName}
 							</div> */}
 						</TableCell>
-						<TableCell className="hidden md:table-cell py-1.5">{user.department?.name}</TableCell>
+						<TableCell className="hidden md:table-cell py-1.5 truncate" title={user.department?.name ?? undefined}>
+							{user.department?.name}
+						</TableCell>
 						<TableCell className="py-1.5">
 							{user.manager && (
 								<Link href={`/users/${user.manager?.id}`}>
@@ -77,9 +83,9 @@ const UserTable = ({ searchParams, users }: Props) => {
 						{m365Enabled && (
 							<TableCell className="hidden md:table-cell py-1.5">
 								{user.entraOid ? (
-									<Badge variant="secondary" className="gap-1.5 py-1 font-normal max-w-[200px]" title={user.entraUpn ?? undefined}>
+									<Badge variant="secondary" className="gap-1.5 py-1 font-normal h-auto whitespace-normal break-all text-left" title={user.entraUpn ?? undefined}>
 										<CircleCheck size={14} className="shrink-0 text-green-600 dark:text-green-400" />
-										<span className="truncate">{user.entraUpn ?? "Linked"}</span>
+										<span>{user.entraUpn ?? "Linked"}</span>
 									</Badge>
 								) : (
 									<Badge variant="outline" className="gap-1.5 py-1 font-normal text-muted-foreground">
@@ -98,17 +104,19 @@ const UserTable = ({ searchParams, users }: Props) => {
 
 export default UserTable;
 
+// Widths are fixed per column (table-fixed on <Table>) so navigation between pages never reflows
+// the layout. The Name column carries no width and absorbs the remaining space.
 const baseColumns: { label: string; value: keyof UserExtended; className?: string }[] = [
 	{ label: "Name", value: "firstName", className: "py-1.5" },
-	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5" },
-	{ label: "Manager", value: "manager", className: "md:table-cell py-1.5" },
-	{ label: "Open Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5" },
+	{ label: "Department", value: "department", className: "hidden md:table-cell py-1.5 md:w-44" },
+	{ label: "Manager", value: "manager", className: "md:table-cell py-1.5 md:w-72" },
+	{ label: "Open Tasks", value: "assignedTasks", className: "hidden md:table-cell py-1.5 md:w-28" },
 ];
 
 const m365Column: { label: string; value: keyof UserExtended; className?: string } = {
 	label: "Microsoft 365",
 	value: "entraOid",
-	className: "hidden md:table-cell py-1.5",
+	className: "hidden md:table-cell py-1.5 md:w-80",
 };
 
 // isM365Enabled() is a runtime flag, so the sortable column set can't be a fixed module-level
