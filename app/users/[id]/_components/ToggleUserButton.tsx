@@ -54,6 +54,7 @@ export default function ToggleUserButton({
 					{status === "active" || status === "unverified" ? <UserRoundX size="18" /> : <UserRoundCheck size="18" />}
 				</Button>
 			</form>
+			{state?.message && <p className="text-xs text-red-500">{state.message}</p>}
 			{dialogOpen && (
 				<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
 					<AlertDialogContent className="z-50">

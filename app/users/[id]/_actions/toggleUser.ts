@@ -30,11 +30,15 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 		// Find the user with the given email in the database
 		const user = await prisma.user.findUnique({
 			where: { id: data.id },
-			select: { id: true, status: true, subordinates: true, assignedTasks: true, hashedPassword: true },
+			select: { id: true, status: true, subordinates: { select: { id: true, status: true } }, assignedTasks: true, hashedPassword: true },
 		});
 
 		if (!user) throw new Error("User not found.");
-		if (user.subordinates.length > 0) throw new Error("User has subordinates.");
+		// Only active/unverified subordinates block deactivation. Inactive subordinates keep their
+		// `managerId` pointing here, so counting them would permanently block a former manager.
+		// This matches the UI gate in the user page, which only counts active subordinates.
+		const blockingSubordinates = user.subordinates.filter((subordinate) => subordinate.status !== "inactive");
+		if (blockingSubordinates.length > 0) throw new Error("User has active subordinates.");
 
 		// Check if the user has assigned tasks and they are either In Progress, Pending Review or Overdue
 		const tasksInProgress = user.assignedTasks.filter((task) => task.statusId === 1);
@@ -54,6 +58,12 @@ export default async function toggleUser(prevState: any, formData: FormData) {
 			// Nothing re-checks `active` once a session exists, so without this a deactivated user
 			// keeps full access until their session happens to expire
 			await lucia.invalidateUserSessions(updatedUser.id);
+
+			// Detach from the org hierarchy: unlink any remaining (inactive) subordinates and clear
+			// this user's own manager, so stale `managerId` links don't permanently block the
+			// deactivation of this user or of their former manager.
+			await prisma.user.updateMany({ where: { managerId: data.id }, data: { managerId: null } });
+			await prisma.user.update({ where: { id: data.id }, data: { managerId: null } });
 
 			// Delete the user's avatar
 			await prisma.avatar.deleteMany({ where: { userId: data.id } });

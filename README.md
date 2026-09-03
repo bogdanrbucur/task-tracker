@@ -417,3 +417,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.5.3 - Fix tasks list rows getting too tall because of the Source length
 - 2.5.4 - Reduce users page size to 10
 - 2.5.5 - Users list fixed columns widths
+- 2.5.6 - Fix silent failure when deactivating a manager with disabled subordinates
