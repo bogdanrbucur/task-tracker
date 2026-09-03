@@ -22,11 +22,11 @@ const TaskHistory = ({ changes }: { changes: Change[] }) => {
 								<div className="whitespace-pre-wrap [overflow-wrap:anywhere] rounded border border-input bg-muted/30 p-2 text-xs md:text-sm" data-testid="description-diff">
 									{descriptionDiff.parts.map((part, index) =>
 										part.added ? (
-											<ins key={index} className="bg-green-100 text-green-900 no-underline dark:bg-green-900/40 dark:text-green-300">
+											<ins key={index} className="bg-green-100 text-green-900 no-underline">
 												{part.value}
 											</ins>
 										) : part.removed ? (
-											<del key={index} className="bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-300">
+											<del key={index} className="bg-red-100 text-red-900">
 												{part.value}
 											</del>
 										) : (

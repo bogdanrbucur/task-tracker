@@ -9,6 +9,7 @@ interface Props {
 }
 
 const SEGMENTS = [
+	// Fills use the softened chart colour; the tooltip labels use the -ink rung. See globals.css.
 	{ key: "overdue" as const, label: "Overdue", color: "hsl(var(--chart-overdue))", statusId: 5 },
 	{ key: "inprogress" as const, label: "In Progress", color: "hsl(var(--chart-inprogress))", statusId: 1 },
 	{ key: "completed" as const, label: "Pending Review", color: "hsl(var(--chart-pendingreview))", statusId: 2 },
@@ -29,6 +30,10 @@ function edgeSegmentKeys(entry: DeptTaskChartData) {
 }
 
 const BAR_RADIUS = 4;
+// Stacked segments differ from each other by only ~1.1-1.3:1 in luminance - they are told apart by
+// hue, not brightness - so touching segments blur into one bar. A hairline gap separates them, the
+// same job the donut's stroke does.
+const SEGMENT_GAP = 2;
 // Fixed height per department row, so spacing stays constant whether there are
 // 3 departments or 15 - the chart grows with the data instead of stretching to
 // fill whatever panel height happens to be available
@@ -88,7 +93,10 @@ export default function DepartmentsBarChart({ data, isGuest }: Props) {
 									const { x, y, width, height, payload } = props;
 									if (!width) return <g />;
 									const { first, last } = edgeSegmentKeys(payload);
-									return <path d={roundedBarPath(x, y, width, height, segment.key === first, segment.key === last)} fill={segment.color} />;
+									// Every segment but the visually last gives up its trailing pixels to the gap
+									const isLast = segment.key === last;
+									const drawn = isLast ? width : Math.max(1, width - SEGMENT_GAP);
+									return <path d={roundedBarPath(x, y, drawn, height, segment.key === first, isLast)} fill={segment.color} />;
 								}}
 							>
 								{sorted.map((entry, index) => (
@@ -111,9 +119,9 @@ const DeptTooltip = ({ active, payload, label }: any) => {
 	return (
 		<div className="rounded-md border bg-popover px-3 py-2 text-sm shadow-md">
 			<p className="font-semibold mb-1">{label}</p>
-			<p style={{ color: "hsl(var(--chart-overdue))" }}>{row.overdue} Overdue</p>
-			<p style={{ color: "hsl(var(--chart-inprogress))" }}>{row.inprogress} In Progress</p>
-			<p style={{ color: "hsl(var(--chart-pendingreview))" }}>{row.completed} Pending Review</p>
+			<p style={{ color: "hsl(var(--chart-overdue-ink))" }}>{row.overdue} Overdue</p>
+			<p style={{ color: "hsl(var(--chart-inprogress-ink))" }}>{row.inprogress} In Progress</p>
+			<p style={{ color: "hsl(var(--chart-pendingreview-ink))" }}>{row.completed} Pending Review</p>
 		</div>
 	);
 };

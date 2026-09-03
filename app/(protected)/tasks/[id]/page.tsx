@@ -199,7 +199,7 @@ export default async function TaskDetailsPage({ params, searchParams }: Props) {
 									task.statusId !== 4 &&
 									task.statusId !== 3 &&
 									(openChildrenCount > 0 ? (
-										<Button size="sm" disabled title="All sub-tasks must be completed, closed or cancelled first" className="gap-1 bg-red-400">
+										<Button size="sm" variant="destructive" disabled title="All sub-tasks must be completed, closed or cancelled first" className="gap-1">
 											{openChildrenCount} sub-task{openChildrenCount === 1 ? "" : "s"} open
 										</Button>
 									) : (

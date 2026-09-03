@@ -26,7 +26,7 @@ export function CancelTaskButton({ taskId }: { taskId: number }) {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
-				<Button size="sm" className="gap-1 bg-red-400">
+				<Button size="sm" variant="destructive" className="gap-1">
 					Cancel
 					<CircleX size="18" />
 				</Button>

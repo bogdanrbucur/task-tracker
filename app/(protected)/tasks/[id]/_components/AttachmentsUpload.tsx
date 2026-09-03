@@ -148,7 +148,7 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 						required
 						disabled={type === "completion"}
 					/>
-					<Button className="bg-red-400 text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
+					<Button variant="destructive" className="text-sm max-w-16" type="button" size="sm" onClick={() => handleRemoveAttachment(index)}>
 						Remove
 					</Button>
 				</div>

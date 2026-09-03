@@ -24,7 +24,8 @@ interface Props {
 
 export default function ProgressBar({ percent, done, total, variant = "full", className }: Props) {
 	const clamped = Math.min(100, Math.max(0, Math.round(percent)));
-	const fillClass = clamped === 100 ? "bg-green-500" : "bg-primary";
+	// -600 not -500: Latte's green accent only reaches 2.17:1 against the muted track.
+	const fillClass = clamped === 100 ? "bg-green-600" : "bg-primary";
 
 	if (variant === "compact") {
 		return (
