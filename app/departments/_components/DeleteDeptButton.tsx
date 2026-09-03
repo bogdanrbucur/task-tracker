@@ -42,7 +42,7 @@ export default function DeleteDeptButton({ dept }: { dept: Department }) {
 	return (
 		<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<AlertDialogTrigger asChild>
-				<Button size="sm" className="gap-1 min-w-24 max-w-24 bg-red-400" onClick={() => setDialogOpen(true)}>
+				<Button size="sm" variant="destructive" className="gap-1 min-w-24 max-w-24" onClick={() => setDialogOpen(true)}>
 					Delete <CircleX size="18" />
 				</Button>
 			</AlertDialogTrigger>

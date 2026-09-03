@@ -21,6 +21,7 @@ import {
 	countResetTokens,
 	createExtraUser,
 	createTaskFor,
+	deleteTaskById,
 	deleteUserByEmail,
 	getAttachmentsForTask,
 	getDepartments,
@@ -40,17 +41,27 @@ const adminStatePath = "./tests/sec-admin-state.json";
 const normalStatePath = "./tests/sec-normal-state.json";
 const outsiderStatePath = "./tests/sec-outsider-state.json";
 const preResetStatePath = "./tests/sec-prereset-state.json";
+const managerAssigneeStatePath = "./tests/sec-manager-assignee-state.json";
 
 // A user with no relationship to the fixture task: not the assignee, not their manager, not admin
 const outsiderEmail = "security-outsider@resend.dev";
 // Kept separate from the shared seed users so changing its password disturbs nothing else
 const resetTargetEmail = "security-reset@resend.dev";
+// An assignee who is themselves a manager (has an active report) - canEditTask lets this user
+// edit their own task, unlike a plain assignee.
+const managerAssigneeEmail = "security-manager-assignee@resend.dev";
+// Reports to managerAssignee. Doubles as a plain assignee whose manager may edit their task.
+const reportEmail = "security-report@resend.dev";
 
 const securityTaskTitle = "***Security Fixture Task***";
 
 let adminId: string;
 let normalId: string;
 let taskId: number;
+let managerAssigneeId: string;
+let reportId: string;
+let managerAssigneeTaskId: number;
+let reportTaskId: number;
 
 /** Numbered screenshot + attachment, same convention as full-cycle-task.spec.ts. */
 async function shot(page: Page, name: string) {
@@ -85,15 +96,29 @@ test.describe("Security regressions", () => {
 		const task = await createTaskFor(normalId, adminId, securityTaskTitle);
 		taskId = task.id;
 
+		// A manager-assignee and their direct report, each with their own fixture task.
+		const managerAssignee = await createExtraUser(managerAssigneeEmail, { firstName: "Mgr", lastName: "Assignee" });
+		managerAssigneeId = managerAssignee.id;
+		const report = await createExtraUser(reportEmail, { firstName: "Direct", lastName: "Report", managerId: managerAssigneeId });
+		reportId = report.id;
+		managerAssigneeTaskId = (await createTaskFor(managerAssigneeId, adminId, "***Security Fixture Task (manager-assignee)***")).id;
+		reportTaskId = (await createTaskFor(reportId, adminId, "***Security Fixture Task (report)***")).id;
+
 		await signIn(browser, user1email, adminStatePath);
 		await signIn(browser, user2email, normalStatePath);
 		await signIn(browser, outsiderEmail, outsiderStatePath);
+		await signIn(browser, managerAssigneeEmail, managerAssigneeStatePath);
 	});
 
 	test.afterAll(async () => {
 		await deleteUserByEmail(outsiderEmail);
 		await deleteUserByEmail(resetTargetEmail);
-		for (const p of [adminStatePath, normalStatePath, outsiderStatePath, preResetStatePath]) await fs.remove(p);
+		// Tasks reference their assignee/creator by FK, so drop the fixture tasks before their users.
+		await deleteTaskById(managerAssigneeTaskId);
+		await deleteTaskById(reportTaskId);
+		await deleteUserByEmail(reportEmail);
+		await deleteUserByEmail(managerAssigneeEmail);
+		for (const p of [adminStatePath, normalStatePath, outsiderStatePath, preResetStatePath, managerAssigneeStatePath]) await fs.remove(p);
 	});
 
 	//
@@ -462,22 +487,75 @@ test.describe("Security regressions", () => {
 		await context.close();
 	});
 
-	test("The assignee can still edit their own task", async ({ browser }) => {
-		// The counterpart to the test above: the authorization fix must not lock out legitimate edits
+	test("A plain assignee cannot reach the edit page for their own task", async ({ browser }) => {
+		// New policy: a non-manager assignee may tick checklist items on the detail page (covered in
+		// subtasks.spec.ts) but may not change the task's content. The edit route 404s for them.
+		const before = await getTaskById(taskId);
 		const context = await browser.newContext({ storageState: normalStatePath });
 		const page = await context.newPage();
-		const newTitle = "***Security Fixture Task (edited by assignee)***";
 
 		await page.goto(`/tasks/${taskId}/edit`);
-		await page.waitForLoadState("networkidle");
-		await page.fill('input[name="title"]', newTitle);
-		await page.click('button:has-text("Save Task")');
-		await page.waitForLoadState("networkidle");
-		await page.waitForTimeout(1500);
+		await expect(page.getByRole("heading", { name: /could not find the page/i })).toBeVisible();
+		await expect(page.locator('input[name="title"]')).toHaveCount(0);
 
 		const after = await getTaskById(taskId);
-		expect(after?.title).toBe(newTitle);
-		await shot(page, "32-task-edit-allowed-for-assignee");
+		expect(after?.title).toBe(before?.title);
+		await shot(page, "32-task-edit-blocked-for-plain-assignee");
+		await context.close();
+	});
+
+	test("A plain assignee's forged edit submission is rejected by updateTask", async ({ browser }) => {
+		// The edit page is gated, so the only way to make the request is to load the form as someone
+		// who may (the admin), then swap the session before submitting - the action must reject on its own.
+		const before = await getTaskById(taskId);
+		const context = await browser.newContext({ storageState: adminStatePath });
+		const page = await context.newPage();
+		await page.goto(`/tasks/${taskId}/edit`);
+		await page.waitForLoadState("networkidle");
+		await page.fill('input[name="title"]', "Edited by a plain assignee");
+
+		const normalState = await fs.readJson(normalStatePath);
+		await context.clearCookies();
+		await context.addCookies(normalState.cookies);
+
+		await page.click('button:has-text("Save Task")');
+		await page.waitForLoadState("networkidle");
+
+		await expect.poll(async () => (await getTaskById(taskId))?.title).toBe(before?.title);
+		await shot(page, "34-task-edit-action-rejects-plain-assignee");
+		await context.close();
+	});
+
+	test("An assignee who is also a manager can edit their own task", async ({ browser }) => {
+		// canEditTask: isManager && assignee === actor. The counterpart to the blocks above - the
+		// authorization fix must not lock out legitimate edits.
+		const context = await browser.newContext({ storageState: managerAssigneeStatePath });
+		const page = await context.newPage();
+		const newTitle = "***Security Fixture Task (edited by manager-assignee)***";
+
+		await page.goto(`/tasks/${managerAssigneeTaskId}/edit`);
+		await expect(page.locator('input[name="title"]')).toBeVisible();
+		await page.fill('input[name="title"]', newTitle);
+		await page.click('button:has-text("Save Task")');
+
+		await expect.poll(async () => (await getTaskById(managerAssigneeTaskId))?.title).toBe(newTitle);
+		await shot(page, "35-task-edit-allowed-for-manager-assignee");
+		await context.close();
+	});
+
+	test("The assignee's manager can edit the task", async ({ browser }) => {
+		// canEditTask: isAssigneesManager. managerAssignee is the report's manager.
+		const context = await browser.newContext({ storageState: managerAssigneeStatePath });
+		const page = await context.newPage();
+		const newTitle = "***Security Fixture Task (edited by assignee's manager)***";
+
+		await page.goto(`/tasks/${reportTaskId}/edit`);
+		await expect(page.locator('input[name="title"]')).toBeVisible();
+		await page.fill('input[name="title"]', newTitle);
+		await page.click('button:has-text("Save Task")');
+
+		await expect.poll(async () => (await getTaskById(reportTaskId))?.title).toBe(newTitle);
+		await shot(page, "36-task-edit-allowed-for-assignees-manager");
 		await context.close();
 	});
 

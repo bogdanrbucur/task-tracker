@@ -156,14 +156,14 @@ const CommentsSection = ({ userId, taskId, comments, users }: { userId?: string;
 						{isMentioning && (
 							<ul
 								ref={mentionsListRef}
-								className="absolute z-10 py-1 list-disc gap-0 shadow-lg max-h-56 overflow-auto rounded-lg border bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-700"
+								className="absolute z-10 py-1 list-disc gap-0 shadow-lg max-h-56 overflow-auto rounded-lg border border-border bg-popover"
 								data-testid="users-mentions-list"
 							>
 								{filteredUsers.map((user, index) => (
 									<li
 										key={user.id}
 										className={`cursor-pointer mx-1 px-4 py-1.5 rounded-sm text-sm flex items-center gap-2 ${
-											index === highlightedIndex ? "bg-gray-100 dark:bg-neutral-800" : "hover:bg-gray-100 dark:hover:bg-neutral-800"
+											index === highlightedIndex ? "bg-accent text-accent-foreground" : "hover:bg-accent hover:text-accent-foreground"
 										}`}
 										onClick={() => handleUserSelect(user)}
 									>

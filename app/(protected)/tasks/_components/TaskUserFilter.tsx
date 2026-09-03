@@ -12,26 +12,25 @@ import { useEffect, useState } from "react";
 export function TaskUserFilter({ users }: { users: UserExtended[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	// Get the existing user from the URL
+	// Seed from the URL so a back-navigation (or a shared link) keeps the active user filter.
 	const existingUser = searchParams.get("user");
 	const [open, setOpen] = useState(false);
 	const [userId, setUserId] = useState(existingUser ?? "");
 
-	// Update the URL when the selected userId changes
+	// Keep the URL's `user` param in sync with the selection.
+	//
+	// Idempotent by design: it returns early when the selection already matches the URL, so the
+	// mount pass - and React StrictMode's double-invoke in dev - is a no-op. Landing on the list
+	// via the browser Back button therefore never rewrites the URL and never drops `page`. The
+	// URL is only touched on a real change, which resets pagination to page 1.
 	useEffect(() => {
-		const params = new URLSearchParams();
-		// Add the existing searchPramas to the URL
-		if (searchParams.get("orderBy")) params.append("orderBy", searchParams.get("orderBy")!);
-		if (searchParams.get("sortOrder")) params.append("sortOrder", searchParams.get("sortOrder")!);
-		if (searchParams.get("status")) params.append("status", searchParams.get("status")!);
-		if (searchParams.get("dept")) params.append("dept", searchParams.get("dept")!);
-		// Add the selected user to the URL
-		if (userId !== "") params.append("user", userId);
-		if (userId === "") params.delete("user");
-		if (searchParams.get("search")) params.append("search", searchParams.get("search")!);
+		if ((searchParams.get("user") ?? "") === userId) return;
 
-		const query = params.toString() ? "?" + params.toString() : "";
-		router.push(`/tasks${query}`);
+		const params = new URLSearchParams(searchParams.toString());
+		if (userId) params.set("user", userId);
+		else params.delete("user");
+		params.delete("page"); // a filter change starts again from page 1
+		router.push(`/tasks?${params.toString()}`);
 	}, [userId]);
 
 	return (

@@ -5,19 +5,29 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
+      // Disabled: the filled variants mute to the muted/muted-foreground pair rather than fading,
+      // because opacity-50 on a tonal fill drops the label to ~2.2:1 and leaves the fill within
+      // 1.02:1 of the page - the control disappears. The unfilled variants have nothing to mute.
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        // Filled with the accent's soft rendering, not the raw accent - a saturated accent slab
+        // is far too loud in Latte. The hairline border is what gives the button an edge in
+        // Latte, where the pale wash sits only ~1.05:1 off the page background.
+        default:
+          "border border-primary-soft-foreground/20 bg-primary-soft text-primary-soft-foreground hover:bg-primary-soft-hover disabled:border-transparent disabled:bg-muted disabled:text-muted-foreground",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "border border-destructive-soft-foreground/20 bg-destructive-soft text-destructive-soft-foreground hover:bg-destructive-soft-hover disabled:border-transparent disabled:bg-muted disabled:text-muted-foreground",
+        // Affirmative counterpart to `destructive`, for actions like re-activating a user.
+        success:
+          "border border-success-soft-foreground/20 bg-success-soft text-success-soft-foreground hover:bg-success-soft-hover disabled:border-transparent disabled:bg-muted disabled:text-muted-foreground",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50",
+        ghost: "hover:bg-accent hover:text-accent-foreground disabled:opacity-50",
+        link: "text-primary underline-offset-4 hover:underline disabled:opacity-50",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -25,5 +25,11 @@ export default async function compareTasks(oldTask: Task, newTask: Task, editing
 
 	if (oldTask.assignedToUserId !== newTask.assignedToUserId) changes.push(`Assigned to changed from ${oldUser} to ${newUser} by ${editingUserFullName}`);
 
+	if (oldTask.parentId !== newTask.parentId) {
+		if (newTask.parentId === null) changes.push(`Removed as a sub-task of #${oldTask.parentId} by ${editingUserFullName}`);
+		else if (oldTask.parentId === null) changes.push(`Made a sub-task of #${newTask.parentId} by ${editingUserFullName}`);
+		else changes.push(`Parent task changed from #${oldTask.parentId} to #${newTask.parentId} by ${editingUserFullName}`);
+	}
+
 	return changes;
 }

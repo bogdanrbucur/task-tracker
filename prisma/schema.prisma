@@ -33,6 +33,10 @@ model Task {
   status                    Status       @relation(fields: [statusId], references: [id])
   assignedToUser            User?        @relation("AssignedToUser", fields: [assignedToUserId], references: [id])
   createdByUser             User?        @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  parentId                  Int?
+  parent                    Task?        @relation("SubTasks", fields: [parentId], references: [id])
+  children                  Task[]       @relation("SubTasks")
+  checklistItems            ChecklistItem[]
 
   @@index([assignedToUserId])
   @@index([title])
@@ -41,6 +45,45 @@ model Task {
   @@index([createdAt])
   @@index([source])
   @@index([assignedToUserId, statusId])
+  @@index([parentId])
+}
+
+// Free-text checklist items on a task (e.g. one per vessel). Max 50 per task, enforced in the
+// server actions - not here, since Prisma/SQLite have no row-count constraint.
+model ChecklistItem {
+  id            Int      @id @default(autoincrement())
+  taskId        Int
+  position      Int
+  text          String
+  done          Boolean  @default(false)
+  completedAt   DateTime?
+  completedById String?
+  task          Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  completedBy   User?    @relation("ChecklistCompletedBy", fields: [completedById], references: [id])
+
+  @@index([taskId])
+}
+
+// Reusable, admin-managed checklist templates. Selecting one in the task form appends its items to
+// that task's checklist; tasks store copies (ChecklistItem), so there is no FK back here and
+// editing/deleting a template never affects existing tasks. 1-50 items, enforced in the server
+// actions - not here, since Prisma/SQLite have no row-count constraint.
+model ChecklistTemplate {
+  id        Int                     @id @default(autoincrement())
+  name      String                  @unique
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+  items     ChecklistTemplateItem[]
+}
+
+model ChecklistTemplateItem {
+  id         Int               @id @default(autoincrement())
+  templateId Int
+  position   Int
+  text       String
+  template   ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId])
 }
 
 model Status {
@@ -99,6 +142,7 @@ model User {
   sessions             Session[]
   assignedTasks        Task[]      @relation("AssignedToUser")
   createdTasks         Task[]      @relation("CreatedByUser")
+  completedChecklistItems ChecklistItem[] @relation("ChecklistCompletedBy")
   createdByUser        User?       @relation("CreatedByUser", fields: [createdByUserId], references: [id])
   createdUsers         User[]      @relation("CreatedByUser")
   manager              User?       @relation("ManagerToUser", fields: [managerId], references: [id])

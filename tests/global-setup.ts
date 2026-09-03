@@ -5,6 +5,7 @@
 // it here is what lets the suite be split across files.
 
 import {
+	createSubtaskUsers,
 	createTaskStatuses,
 	createTestDepartment,
 	createTestImage,
@@ -35,4 +36,6 @@ export default async function globalSetup() {
 	const department = await createTestDepartment();
 	// Seeded here, not in workflows.spec's beforeAll - see the note on createWorkflowUsers
 	await createWorkflowUsers(department.id);
+	// Seeded here for the same reason, and kept separate from the pair above - see createSubtaskUsers
+	await createSubtaskUsers();
 }

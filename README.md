@@ -398,3 +398,19 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 1.12.2 - Fixed a bug that allowed the task history window to horizontally grow without limit
 - 1.13.0 - Microsoft 365 (Entra ID) sign-in, with optional password retirement and admin unlinking
 - 1.14.0 - Dashboard only visible to logged-in users
+- 2.0.1 - Added support for sub-tasks and checklist items in tasks
+- 2.0.2 - Better aligned progress bars in sub-tasks
+- 2.0.3 - Fixed a bug that allowed a tasks' asignee to bypass the Edit button and edit it's content. A tasks' progress is now calculate independently from its status (i.e. the progress will not be 100% when the task is marked as Completed or Closed)
+- 2.1.0 - Search functionality when selecting a parent task
+- 2.1.1 - Better parent task selection description and display in the task edit form
+- 2.1.2 - Updated to NextJS 16.3.2 and other dependencies
+- 2.2.0 - Checklist items templates
+- 2.2.1 - Fixed the tasks pagination not retained when navigating to a task and back to the tasks list
+- 2.2.2 - Removed the asignee when copying a task. Copy the task parent when copying a task
+- 2.2.3 - Block cancelling a task with open sub-tasks
+- 2.3.0 - Revamped dashboard charts
+- 2.3.1 - Fine tuning the departments bar chart
+- 2.4.0 - Implemented [Catpuccin themes color palette](https://catppuccin.com/palette/), or close to
+- 2.5.0 - Implemented tasks list pagination, fixed columns widths and row heights
+- 2.5.1 - Better footer and pagination buttons alignment
+- 2.5.2 - Test fixes for new charts format

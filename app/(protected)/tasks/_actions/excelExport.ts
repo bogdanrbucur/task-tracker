@@ -1,6 +1,9 @@
 import { markdownToPlainText } from "@/lib/richText";
 import XLSX from "xlsx-js-style";
 import { TaskExtended } from "../page";
+import type { TaskProgress } from "./taskProgress";
+
+type ExportTask = TaskExtended & { parent?: { id: number; title: string } | null; progress?: TaskProgress | null };
 
 /**
  * Defuse spreadsheet formula injection.
@@ -15,7 +18,7 @@ function neutraliseFormula(value: string | null | undefined) {
 	return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
 }
 
-export async function generateExcelExport(tasks: TaskExtended[]) {
+export async function generateExcelExport(tasks: ExportTask[]) {
 	const dataArray = [];
 	const headers = [
 		"ID",
@@ -32,6 +35,8 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 		"Due on",
 		"Completed on",
 		"Updated At",
+		"Parent task",
+		"Progress",
 	];
 	dataArray.push(headers);
 
@@ -53,6 +58,8 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 			task.dueDate,
 			task.completedOn,
 			task.updatedAt,
+			task.parent ? `#${task.parent.id} ${neutraliseFormula(task.parent.title)}` : "",
+			task.progress ? `${task.progress.percent}%` : "",
 		];
 		dataArray.push(data);
 	});
@@ -76,11 +83,13 @@ export async function generateExcelExport(tasks: TaskExtended[]) {
 		{ wch: 10 },
 		{ wch: 12 },
 		{ wch: 10 },
+		{ wch: 30 },
+		{ wch: 10 },
 	];
 
 	// Styling...
-	// Center and bold range A1:N1
-	for (let col = 0; col <= 13; col++) {
+	// Center and bold range A1:P1
+	for (let col = 0; col <= 15; col++) {
 		const row = 0;
 		const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
 		// if the cell exists (has data)

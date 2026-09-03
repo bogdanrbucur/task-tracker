@@ -466,7 +466,7 @@ test.describe("Task creation and closing", () => {
 		await test.step("Status chart to be visible in dashboard", async () =>
 			await expect(page.locator('div[id="status-chart"] g.recharts-layer.recharts-pie')).toBeVisible());
 		await test.step("Department chart to be visibile in dashboard", async () =>
-			await expect(page.locator('div[id="dept-chart"] g.recharts-layer.recharts-pie')).toBeVisible());
+			await expect(page.locator('[data-testid="dept-chart-rendered"] svg.recharts-surface')).toBeVisible());
 		await test.step("Pending task to be visible in dashboard", async () => await expect(page.locator('div[id="my-tasks"]')).toContainText(taskTitle));
 		await context.close();
 	});
@@ -576,7 +576,7 @@ test.describe("Task creation and closing", () => {
 		});
 
 		await test.step("Department chart to be visibile in dashboard", async () => {
-			await expect(page.locator('div[id="dept-chart"] g.recharts-layer.recharts-pie')).toBeVisible();
+			await expect(page.locator('[data-testid="dept-chart-rendered"] svg.recharts-surface')).toBeVisible();
 		});
 
 		await test.step("Pending task to be visible in dashboard", async () => {

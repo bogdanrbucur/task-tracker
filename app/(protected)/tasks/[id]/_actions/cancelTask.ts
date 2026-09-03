@@ -1,6 +1,6 @@
 "use server";
 
-import { PERMISSION_DENIED, canManageTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
+import { PERMISSION_DENIED, canCancelTask, getActor, getTaskForAuth } from "@/actions/auth/require-auth";
 import { EmailResponse, sendEmail } from "@/app/email/email";
 import getUserDetails from "@/app/users/_actions/getUserById";
 import logger from "@/lib/logging";
@@ -33,11 +33,18 @@ export default async function cancelTask(prevState: any, formData: FormData) {
 			cancelComment: formData.get("cancelComment") as string,
 		});
 
-		// Only an admin or the assignee's manager may cancel a task - the same rule the task page
-		// uses to decide whether to show the Cancel button
+		// Only an admin or the assignee's manager may cancel a task, and only once every sub-task is
+		// done - the same rule the task page uses to decide whether to show the Cancel button
 		const taskForAuth = await getTaskForAuth(Number(data.taskId));
 		if (!taskForAuth) return { message: "Task not found." };
-		if (!canManageTask(taskForAuth, actor)) return { message: "You are not authorized to cancel this task." };
+		if (!canCancelTask(taskForAuth, actor)) {
+			// _count.children only counts sub-tasks that are not yet Completed/Closed/Cancelled -
+			// see getTaskForAuth - so a non-zero count here means open sub-tasks are the reason.
+			if (taskForAuth._count.children > 0) {
+				return { message: `This task has ${taskForAuth._count.children} open sub-task${taskForAuth._count.children === 1 ? "" : "s"} and cannot be cancelled yet.` };
+			}
+			return { message: "You are not authorized to cancel this task." };
+		}
 
 		// The editor is always the signed-in user
 		const editor = await getUserDetails(actor.user.id);

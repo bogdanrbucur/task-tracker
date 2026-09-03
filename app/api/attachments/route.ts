@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
 	// Being signed in is not enough - only someone who may edit this task may attach to it
 	const taskForAuth = await getTaskForAuth(task.id);
-	if (!taskForAuth || !canModifyTaskAttachments(taskForAuth, actor)) {
+	if (!taskForAuth || !canModifyTaskAttachments(taskForAuth, actor, type)) {
 		return NextResponse.json({ error: "Permission denied" }, { status: 403 });
 	}
 

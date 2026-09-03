@@ -36,7 +36,7 @@ export default function RootLayout({
 						<EmailChecker />
 						{/* Global toaster mounted once for the whole app */}
 						<GlobalToaster />
-						<main className="p-3 flex-1">{children}</main>
+						<main className="p-3 flex-1 flex flex-col">{children}</main>
 						<Footer />
 					</div>
 				</ThemeProvider>

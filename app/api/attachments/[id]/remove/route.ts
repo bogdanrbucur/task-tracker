@@ -29,7 +29,7 @@ export async function DELETE(req: NextRequest, context: any) {
 
 	// Deleting is a write: being signed in is not enough, the caller must be able to edit the task
 	const taskForAuth = await getTaskForAuth(attachment.taskId);
-	if (!taskForAuth || !canModifyTaskAttachments(taskForAuth, actor)) {
+	if (!taskForAuth || !canModifyTaskAttachments(taskForAuth, actor, attachment.type as "source" | "completion")) {
 		return NextResponse.json({ message: "Permission denied." }, { status: 403 });
 	}
 
