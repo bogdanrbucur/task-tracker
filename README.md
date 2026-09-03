@@ -413,3 +413,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.4.0 - Implemented [Catpuccin themes color palette](https://catppuccin.com/palette/), or close to
 - 2.5.0 - Implemented tasks list pagination, fixed columns widths and row heights
 - 2.5.1 - Better footer and pagination buttons alignment
+- 2.5.2 - Test fixes for new charts format

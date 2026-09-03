@@ -68,7 +68,7 @@ export default function DepartmentsBarChart({ data, isGuest }: Props) {
 			<div className="p-0">
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Department distribution</h4>
 			</div>
-			<div className="flex-1 min-h-0 overflow-y-auto">
+			<div className="flex-1 min-h-0 overflow-y-auto" data-testid="dept-chart-rendered">
 				<ResponsiveContainer width="100%" height={sorted.length * ROW_HEIGHT}>
 					<BarChart data={sorted} layout="vertical" margin={{ top: 8, right: 32, bottom: 8, left: 0 }} barCategoryGap="30%" barSize={28}>
 						<XAxis type="number" hide />
