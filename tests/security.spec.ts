@@ -16,19 +16,23 @@
 import { Browser, Page, expect, test } from "@playwright/test";
 import fs from "fs-extra";
 import path from "path";
+import sharp from "sharp";
 import {
 	attachmentsDirFor,
+	avatarFileExists,
 	countResetTokens,
 	createExtraUser,
 	createTaskFor,
+	deleteAvatarRow,
 	deleteTaskById,
 	deleteUserByEmail,
 	getAttachmentsForTask,
+	getAvatarRow,
 	getDepartments,
 	getLatestResetToken,
 	getTaskById,
 	getUserByEmail,
-	testAttachmentPath,
+	linkUserToEntra,
 	user1email,
 	user1firstName,
 	user2email,
@@ -576,6 +580,68 @@ test.describe("Security regressions", () => {
 		await expect(page.locator('[data-testid="m365-signin"]')).toHaveCount(0);
 		// The password form is still the way in
 		await expect(page.locator('input[name="password"]')).toBeVisible();
+	});
+
+	// Avatars for Entra-linked users are owned by Microsoft 365 (re-pulled on every sign-in), so the
+	// user form must not offer a manual picker for them, and a forged upload must not write one.
+	// These run even though the M365 feature is off in .env.test: the gate is purely user.entraOid.
+	const entraAvatarEmail = "security-entra-avatar@resend.dev";
+	const entraAvatarImagePath = "./tests/entra-avatar-fixture.jpg";
+	let entraAvatarUserId: string;
+
+	test.beforeAll(async () => {
+		const [dept] = await getDepartments();
+		const linked = await createExtraUser(entraAvatarEmail, { firstName: "Entra", lastName: "Linked", departmentId: dept?.id ?? null });
+		entraAvatarUserId = linked.id;
+		await linkUserToEntra(entraAvatarEmail, "fixture-oid-entra-avatar");
+		// A real image, so the forged-upload test fails loudly if the server guard is removed
+		// (saveAvatar would then actually resize and persist it) rather than passing because
+		// sharp choked on a non-image.
+		await sharp({ create: { width: 32, height: 32, channels: 3, background: { r: 10, g: 20, b: 30 } } }).jpeg().toFile(entraAvatarImagePath);
+	});
+
+	test.afterAll(async () => {
+		await deleteAvatarRow(entraAvatarUserId);
+		await deleteUserByEmail(entraAvatarEmail);
+		await fs.remove(entraAvatarImagePath);
+	});
+
+	test("The user form hides the avatar upload for an Entra-linked user", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: adminStatePath });
+		const page = await context.newPage();
+
+		// Control: a normal user's edit form still has the file picker.
+		await page.goto(`/users/${normalId}/edit`);
+		await expect(page.locator('input[name="avatar"]')).toBeVisible();
+
+		await page.goto(`/users/${entraAvatarUserId}/edit`);
+		await expect(page.getByTestId("avatar-managed-by-m365")).toBeVisible();
+		await expect(page.locator('input[name="avatar"]')).toHaveCount(0);
+		await shot(page, "59-entra-avatar-picker-hidden");
+		await context.close();
+	});
+
+	test("A forged avatar upload for an Entra-linked user is ignored server-side", async ({ browser }) => {
+		const context = await browser.newContext({ storageState: adminStatePath });
+		const page = await context.newPage();
+
+		await page.goto(`/users/${entraAvatarUserId}/edit`);
+		// The picker is gone from the DOM - re-add one, exactly as a hand-crafted multipart POST
+		// to the form's server action would carry, then submit.
+		await page.evaluate(() => {
+			const form = document.querySelector("form");
+			const input = document.createElement("input");
+			input.type = "file";
+			input.name = "avatar";
+			form?.appendChild(input);
+		});
+		await page.setInputFiles('input[name="avatar"]', entraAvatarImagePath);
+		await page.click('button:has-text("Save User")');
+		await page.waitForURL(`**/users/${entraAvatarUserId}`);
+
+		expect(await getAvatarRow(entraAvatarUserId)).toBeNull();
+		expect(avatarFileExists(entraAvatarUserId)).toBe(false);
+		await context.close();
 	});
 
 	test("The sign-in page will not reflect an arbitrary error code back to the user", async ({ page }) => {

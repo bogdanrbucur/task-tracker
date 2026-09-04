@@ -284,6 +284,13 @@ A user who was created but never opened their welcome email is activated by thei
 Microsoft sign-in. A user an admin has deactivated is refused, and can never be revived this way.
 Password sign-in keeps working for everyone, linked or not, as long as `PASSWORD_AUTH_ENABLED` is on.
 
+Every M365 sign-in also pulls the user's profile photo from Entra (Graph, `User.Read`, no extra
+consent) and stores it as their avatar; if the tenant has no photo for them the avatar falls back to
+their initials. The manual avatar upload is hidden for linked users. This runs only on the Microsoft
+sign-in path, so in a tenant where linked users can still sign in with a password their photo will not
+refresh until their next Microsoft sign-in - one more reason to set `PASSWORD_AUTH_ENABLED=false` once
+M365 is rolled out to everyone.
+
 #### App registration
 
 1. Entra admin center -> App registrations -> New registration.
@@ -421,3 +428,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.5.7 - Fix to retain users list page when navigating to a user and back to the users list
 - 2.5.8 - Fix to only display active users when creating/duplicating a task
 - 2.5.9 - Only active users are included in department queries
+- 2.6.0 - Sync user avatars from Microsoft 365 (Entra) on every sign-in, with initials fallback when the tenant has no photo

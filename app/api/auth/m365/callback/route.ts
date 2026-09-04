@@ -1,6 +1,7 @@
 // Completes the Microsoft 365 (Entra ID) authorization code flow and issues a Lucia session.
 
 import { resolveM365User } from "@/actions/auth/link-m365";
+import { syncEntraAvatar } from "@/actions/auth/sync-entra-avatar";
 import logger from "@/lib/logging";
 import { lucia } from "@/lib/lucia";
 import {
@@ -122,6 +123,11 @@ export async function GET(req: NextRequest) {
 	try {
 		const result = await resolveM365User({ oid: claims.oid, email, upn });
 		if ("error" in result) return fail(result.error);
+
+		// Refresh the avatar from Entra on every sign-in. Awaited so its logging runs and the
+		// write finishes before the redirect, but it never throws - a Graph or disk failure
+		// must not block a valid sign-in.
+		if (accessToken) await syncEntraAvatar(result.user.id, accessToken);
 
 		const session = await lucia.createSession(result.user.id, {});
 		const sessionCookie = lucia.createSessionCookie(session.id);

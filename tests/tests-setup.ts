@@ -346,6 +346,19 @@ export function avatarFileExists(userId: string) {
 	return fs.readdirSync(dir).some((file) => path.parse(file).name === userId);
 }
 
+/** Link a seeded user to a fake Entra identity, as resolveM365User would on first sign-in. */
+export async function linkUserToEntra(email: string, entraOid: string) {
+	return prisma.user.update({ where: { email }, data: { entraOid, entraLinkedAt: new Date() } });
+}
+
+export async function getAvatarRow(userId: string) {
+	return prisma.avatar.findUnique({ where: { userId } });
+}
+
+export async function deleteAvatarRow(userId: string) {
+	await prisma.avatar.deleteMany({ where: { userId } });
+}
+
 /** Wipe uploads between runs - these used to accumulate forever under FILES_PATH. */
 export async function deleteTestFiles() {
 	if (FILES_PATH && fs.existsSync(FILES_PATH)) await fs.remove(FILES_PATH);

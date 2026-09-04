@@ -124,8 +124,10 @@ export default async function submitUser(prevState: any, formData: FormData) {
 			if (newUser) logger(`New user created: ${newUser.firstName} ${newUser.lastName} / ${newUser.email} by ${editingUser.firstName} ${editingUser.lastName}`);
 		}
 
-		// Save the avatar locally
-		if (newUser && data.avatar && data.avatar?.size > 0) {
+		// Save the avatar locally. Skip it for Entra-linked users: their photo comes from
+		// Microsoft 365 on every sign-in, so an upload here (the form hides the picker, but a
+		// forged POST would not) would only be clobbered at their next sign-in.
+		if (newUser && !newUser.entraOid && data.avatar && data.avatar?.size > 0) {
 			const avatar = formData.get("avatar") as File;
 			await saveAvatar(avatar, newUser);
 		}

@@ -34,6 +34,9 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [isAdminChecked, setIsAdminChecked] = useState<boolean>(false);
 	const editingSelf = editor === user?.id;
+	// Entra-linked users get their photo from Microsoft 365 on every sign-in, so a manual
+	// upload here would just be overwritten. Hide the picker and say so.
+	const avatarFromEntra = Boolean(user?.entraOid);
 
 	// Get the avatar file from the server
 	const avatar = user?.avatar ? `/api/avatars/${user.id}` : undefined;
@@ -101,7 +104,13 @@ export default function UserForm({ editor, user, users, departments }: Props) {
 								<AvatarImage alt="Avatar" src={imageUrl || ""} />
 								<AvatarFallback>JD</AvatarFallback>
 							</Avatar>
-							<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} />
+							{avatarFromEntra ? (
+								<p className="text-xs text-muted-foreground" data-testid="avatar-managed-by-m365">
+									Photo is managed by Microsoft 365 and refreshed at sign-in.
+								</p>
+							) : (
+								<Input name="avatar" type="file" accept="image/*" onChange={handleImageChange} />
+							)}
 						</div>
 					</div>
 					{/* Do not allow admins to un-make themselves admins */}

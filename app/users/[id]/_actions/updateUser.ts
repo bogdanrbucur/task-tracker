@@ -22,7 +22,7 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 		// The admin flag may only be changed by an admin, and never on your own account - otherwise
 		// any user could grant themselves admin by posting isAdmin, and an admin could accidentally
 		// lock themselves out.
-		const target = await prisma.user.findUnique({ where: { id: data.id }, select: { isAdmin: true } });
+		const target = await prisma.user.findUnique({ where: { id: data.id }, select: { isAdmin: true, entraOid: true } });
 		const isAdmin = permissions.isAdmin && data.id !== agent.id ? !!data.isAdmin : (target?.isAdmin ?? false);
 
 		const updatedUser = await prisma.user.update({
@@ -40,8 +40,9 @@ export default async function updateUser(data: UpdateUser, editingUser: UserExte
 		// First check if the user has an avatar
 		const currentAvatar = await prisma.avatar.findFirst({ where: { userId: data.id } });
 
-		// Update the avatar if a new one was uploaded
-		if (data.avatarPath) {
+		// Update the avatar if a new one was uploaded. Never for Entra-linked users - their photo
+		// is owned by Microsoft 365 and re-pulled on every sign-in.
+		if (data.avatarPath && !target?.entraOid) {
 			// Delete the current avatar if a new one was uploaded
 			if (currentAvatar)
 				// Delete the database entry
