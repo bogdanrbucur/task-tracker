@@ -8,7 +8,6 @@ import DepartmentsTopSection from "./_components/DeptTopSection";
 
 // export const revalidate = 5;
 
-
 interface Props {
 	searchParams: DepartmentsQuery;
 }
@@ -32,7 +31,7 @@ export default async function DepartmentsPage({ searchParams }: Props) {
 		orderBy,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
-		select: { id: true, name: true, users: { select: { id: true } } },
+		select: { id: true, name: true, users: { select: { id: true }, where: { active: true } } },
 	})) as DepartmentExpanded[];
 	const departmentsCount = await prisma.department.count();
 
