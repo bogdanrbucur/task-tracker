@@ -44,7 +44,9 @@ export async function POST(req: NextRequest) {
 	const attachments = [];
 	try {
 		for (const [index, file] of files.entries()) {
-			const addedAttachment = await saveAttachment(file, task, descriptions[index] as string, type);
+			// Description is optional; fall back to the file name so the task page always has link text
+			const description = ((descriptions[index] as string | undefined) ?? "").trim() || file.name;
+			const addedAttachment = await saveAttachment(file, task, description, type);
 			attachments.push(addedAttachment);
 		}
 	} catch (error) {

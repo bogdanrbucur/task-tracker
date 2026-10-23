@@ -429,3 +429,4 @@ Run command pallette `Ctrl+Shift+P` and search for `SFTP: Config` to create a ne
 - 2.5.8 - Fix to only display active users when creating/duplicating a task
 - 2.5.9 - Only active users are included in department queries
 - 2.6.0 - Sync user avatars from Microsoft 365 (Entra) on every sign-in, with initials fallback when the tenant has no photo
+- 2.6.1 - Confirmation dialog when closing a task without a screenshot and updated Nextjs and dependencies

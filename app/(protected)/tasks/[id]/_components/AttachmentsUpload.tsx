@@ -21,7 +21,18 @@ const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 // Component for uploading and managing attachments
-export default function AttachmentsUpload({ taskId, taskAttachments, type }: { taskId: number; taskAttachments: TaskAttachments[]; type: "source" | "completion" }) {
+export default function AttachmentsUpload({
+	taskId,
+	taskAttachments,
+	type,
+	onAttachmentsChange,
+}: {
+	taskId: number;
+	taskAttachments: TaskAttachments[];
+	type: "source" | "completion";
+	// Lets a parent react to uploads/removals, e.g. CompleteTaskButton warning about completing without one
+	onAttachmentsChange?: (count: number) => void;
+}) {
 	const [attachments, setAttachments] = useState(taskAttachments || []);
 	const [descriptions, setDescriptions] = useState<string[]>([]);
 	const [newDescription, setNewDescription] = useState<string>("");
@@ -34,6 +45,10 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 		const descriptions = taskAttachments.map((attachment) => attachment.description);
 		setDescriptions(descriptions as string[]);
 	}, []);
+
+	useEffect(() => {
+		onAttachmentsChange?.(attachments.length);
+	}, [attachments.length, onAttachmentsChange]);
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
@@ -58,38 +73,43 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 	};
 
 	const handleAddAttachment = async () => {
-		if (selectedFile && newDescription) {
-			const formData = new FormData();
-			formData.append("file", selectedFile);
-			formData.append("description", newDescription);
+		if (!selectedFile) {
+			setAttachmentError("Choose a file to attach first.");
+			return;
+		}
+		// The description is optional - without one, the file name is what gets listed on the task
+		const description = newDescription.trim() || selectedFile.name;
 
-			try {
-				const response = await fetch(`/api/attachments?id=${taskId}&type=${type}`, {
-					method: "POST",
-					body: formData,
-				});
+		const formData = new FormData();
+		formData.append("file", selectedFile);
+		formData.append("description", description);
 
-				if (!response.ok) {
-					throw new Error(response.statusText);
-				}
+		try {
+			const response = await fetch(`/api/attachments?id=${taskId}&type=${type}`, {
+				method: "POST",
+				body: formData,
+			});
 
-				const data = (await response.json()) as {
-					id: string;
-					path: string;
-					description: string | null;
-				};
-				console.log("File uploaded successfully:", data);
-				const updatedAttachments = await getTaskAttachments(taskId);
-				setAttachments(updatedAttachments.filter((a: TaskAttachments) => a.type === type));
-				setDescriptions([...descriptions, newDescription]);
-				setNewDescription(""); // Reset the new description input
-				setSelectedFile(null); // Reset the selected file input
-				if (fileInputRef.current) fileInputRef.current.value = ""; // Clear the file input
-				setAttachmentError(null);
-			} catch (error) {
-				console.error("Error uploading file:", error);
-				setAttachmentError(`Error uploading file ${selectedFile?.name}: ${error}`);
+			if (!response.ok) {
+				throw new Error(response.statusText);
 			}
+
+			const data = (await response.json()) as {
+				id: string;
+				path: string;
+				description: string | null;
+			};
+			console.log("File uploaded successfully:", data);
+			const updatedAttachments = await getTaskAttachments(taskId);
+			setAttachments(updatedAttachments.filter((a: TaskAttachments) => a.type === type));
+			setDescriptions([...descriptions, description]);
+			setNewDescription(""); // Reset the new description input
+			setSelectedFile(null); // Reset the selected file input
+			if (fileInputRef.current) fileInputRef.current.value = ""; // Clear the file input
+			setAttachmentError(null);
+		} catch (error) {
+			console.error("Error uploading file:", error);
+			setAttachmentError(`Error uploading file ${selectedFile?.name}: ${error}`);
 		}
 	};
 
@@ -154,13 +174,17 @@ export default function AttachmentsUpload({ taskId, taskAttachments, type }: { t
 				</div>
 			))}
 			<div className="text-sm">Add attachment</div>
+			{/* Selecting a file uploads nothing by itself - only Add does, which is easy to miss */}
+			<p className="text-xs text-muted-foreground" data-testid="attachment-add-hint">
+				Choose a file, then click <span className="font-semibold">Add</span>. The file is only attached once it appears in the list above.
+			</p>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 items-center">
 				<Input className="space-y-3 w-60" type="file" accept="*" onChange={handleFileChange} ref={fileInputRef} />
 				<Input
 					className=""
 					name="newDescription"
 					type="text"
-					placeholder="Description for new attachment"
+					placeholder="(optional) Description - defaults to the file name"
 					value={newDescription}
 					onChange={(e) => setNewDescription(e.target.value)}
 				/>

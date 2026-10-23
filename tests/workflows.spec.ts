@@ -193,6 +193,8 @@ test.describe("Workflow coverage", () => {
 			await page.click('button:has-text("Complete")');
 			await page.fill('[name="completeComment"]', "Completed by the workflow test.");
 			await page.click('button:has-text("Confirm")');
+			// No attachment was added, so completing asks for confirmation first
+			await page.click('[data-testid="complete-without-attachment-button"]');
 			await settle(page);
 
 			expect((await getTaskById(reopenTaskId))?.statusId, "should be Pending Review").toBe(2);

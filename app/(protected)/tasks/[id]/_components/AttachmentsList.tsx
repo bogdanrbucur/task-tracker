@@ -34,11 +34,11 @@ export default function AttachmentList({ attachments }: { attachments: Attachmen
 				<div key={att.id}>
 					{isPhoto(att.path) ? (
 						<span onClick={() => handlePhotoClick(`/api/attachments/${att.id}`)} className="text-blue-600 hover:underline cursor-pointer">
-							{att.description}
+							{att.description || att.path}
 						</span>
 					) : (
 						<a href={`/api/attachments/${att.id}`} target="_blank" className="text-blue-600 hover:underline" data-testid="completion-attachment">
-							{att.description}
+							{att.description || att.path}
 						</a>
 					)}
 				</div>
